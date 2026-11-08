@@ -1,0 +1,12 @@
+{
+  "category": "Lunch",
+  "meal": true,
+  "name": "Bacon QPC",
+  "order": 3,
+  "price": 859,
+  "sizes": {
+    "L": 1399,
+    "M": 1299
+  },
+  "taxable": true
+}

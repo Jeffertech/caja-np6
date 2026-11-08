@@ -1,0 +1,12 @@
+{
+  "category": "Lunch",
+  "meal": true,
+  "name": "10 Nuggets",
+  "order": 16,
+  "price": 659,
+  "sizes": {
+    "L": 1279,
+    "M": 1099
+  },
+  "taxable": true
+}

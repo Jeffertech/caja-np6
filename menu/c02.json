@@ -1,0 +1,12 @@
+{
+  "category": "Lunch",
+  "meal": true,
+  "name": "QPC",
+  "order": 2,
+  "price": 689,
+  "sizes": {
+    "L": 1299,
+    "M": 900
+  },
+  "taxable": true
+}

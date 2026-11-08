@@ -1,0 +1,8 @@
+{
+  "category": "Condiments",
+  "name": "Grape Jam",
+  "off": true,
+  "order": 11,
+  "price": 25,
+  "taxable": true
+}

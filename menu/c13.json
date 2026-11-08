@@ -1,0 +1,15 @@
+{
+  "category": "Lunch",
+  "includes": [
+    "2 SNACK WRAP RANCH"
+  ],
+  "meal": true,
+  "name": "Snack Wrap Ranch",
+  "order": 13,
+  "price": 299,
+  "sizes": {
+    "L": 1259,
+    "M": 1099
+  },
+  "taxable": true
+}

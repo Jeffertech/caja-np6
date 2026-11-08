@@ -1,0 +1,11 @@
+{
+  "category": "Happy Meal",
+  "includes": [
+    "CHS BURGER"
+  ],
+  "kind": "happy",
+  "name": "Chs Burger Happy Meal",
+  "order": 2,
+  "price": 589,
+  "taxable": true
+}

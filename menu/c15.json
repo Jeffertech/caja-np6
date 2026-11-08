@@ -1,0 +1,18 @@
+{
+  "alwaysMeal": true,
+  "category": "Lunch",
+  "defaultSize": "M",
+  "includes": [
+    "SNACK WRAP RANCH",
+    "SNACK WRAP SPICY"
+  ],
+  "meal": true,
+  "name": "Snack Wrap Mix & Match",
+  "order": 15,
+  "price": 1149,
+  "sizes": {
+    "L": 1269,
+    "M": 1149
+  },
+  "taxable": true
+}

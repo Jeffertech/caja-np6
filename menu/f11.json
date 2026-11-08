@@ -1,0 +1,13 @@
+{
+  "category": "Drinks",
+  "defaultSize": "S",
+  "name": "Decaf",
+  "order": 11,
+  "price": 159,
+  "sizes": {
+    "L": 239,
+    "M": 199,
+    "S": 159
+  },
+  "taxable": true
+}

@@ -1,0 +1,12 @@
+{
+  "category": "Lunch",
+  "meal": true,
+  "name": "Dbl Bacon QPC",
+  "order": 6,
+  "price": 1099,
+  "sizes": {
+    "L": 1599,
+    "M": 1598
+  },
+  "taxable": true
+}

@@ -1,0 +1,1249 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="NP6"><meta name="robots" content="noindex,nofollow"><title>NP6</title><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style><script>window.CM_STANDALONE = true;window.CM_ACCESS_HASH = "fece1fcf033eecc8ccc4ab8d61e9d9665841bf173870a7bc2a227da4498c3067";</script></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: register screen in the style of a fast-food till — receipt column on the left, number row, size keys,
+   category keys and a product grid in the middle, function keys (Void / Clear / Total) on the right.
+   Deliberately single-theme (brushed-steel console), every colour set explicitly. */
+:root{
+  color-scheme:light;
+  --steel:#b9bec4; --steel-hi:#d7dbdf; --steel-lo:#9aa0a7; --paper:#e9ece6; --ink:#15191d; --muted:#4f5862;
+  --bar:#3a4048; --bar-ink:#e8edf2;
+  --k-blue:#1f4f97; --k-red:#a3202a; --k-green:#2c7a2c; --k-teal:#7fb6b8; --k-gold:#d9b51c; --k-grey:#6c737b; --k-maroon:#6b1a1f;
+  --ok:#1f7a2a; --warn:#a3202a;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+html,body{height:100%}
+body{background:linear-gradient(180deg,var(--steel-hi),var(--steel) 40%,var(--steel-lo));color:var(--ink);font-family:var(--body);font-size:15px;
+  padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px));padding-block:8px;box-sizing:border-box;min-height:100%}
+*{box-sizing:border-box}
+.num{font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #ffd84a;outline-offset:2px}
+input,select{font:inherit;color:var(--ink);background:#fff;border:1px solid var(--steel-lo);border-radius:4px;padding:8px 10px;min-width:0}
+.wrap{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+
+/* status bar */
+.status{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch}
+.cell{background:var(--bar);color:var(--bar-ink);border-radius:3px;padding:5px 10px;font-family:var(--mono);font-size:13px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.cell.title{font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.cell.ok{background:var(--ok)} .cell.warn{background:var(--warn)}
+.spacer{flex:1}
+nav{display:flex;gap:4px}
+nav[hidden]{display:none}
+@media (orientation:portrait) and (min-height:900px) and (min-width:700px){
+  .np{grid-template-rows:auto auto repeat(6,minmax(96px,auto))}
+  .ticket{min-height:420px}
+}
+nav button{border:0;border-radius:3px;background:var(--bar);color:var(--bar-ink);font-family:var(--display);font-weight:600;font-size:16px;text-transform:uppercase;letter-spacing:.05em;padding:5px 14px}
+nav button[aria-selected="true"]{background:var(--k-gold);color:var(--ink)}
+
+/* register */
+.reg{display:grid;grid-template-columns:minmax(250px,300px) minmax(0,1fr);gap:8px}
+.ticket{background:var(--paper);border:1px solid var(--steel-lo);border-radius:10px;overflow:hidden;box-shadow:inset 0 1px 3px rgb(0 0 0/.15);display:flex;flex-direction:column;min-height:560px;font-family:var(--mono);font-size:14px}
+.ticket .hd{display:flex;justify-content:space-between;background:#d4d8d0;padding:4px 8px;border-bottom:1px solid var(--steel-lo);font-size:12px}
+.lines{list-style:none;margin:0;padding:4px 0;flex:1;overflow:auto;min-height:140px}
+.lines li{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:4px;padding:3px 8px;cursor:pointer;text-transform:uppercase}
+.lines li[aria-selected="true"]{background:var(--k-blue);color:#fff}
+.lines .nt{display:block;font-size:11px;padding-left:14px;opacity:.75}
+.lines .empty{display:block;cursor:default;text-transform:none;color:var(--muted);font-family:var(--body);padding:16px 8px}
+.tot{padding:6px 8px 8px 36px;border-top:1px dashed var(--steel-lo);display:grid;gap:1px}
+.tot div{display:flex;justify-content:space-between}
+.tot .g{font-weight:600;font-size:16px}
+.chg{margin:0 8px 8px;padding:10px;background:var(--ok);color:#fff;text-align:center;font-family:var(--display);font-size:30px;font-weight:700}
+.foot{padding:6px 8px;border-top:1px solid var(--steel-lo);background:#d4d8d0;font-family:var(--body);font-size:12px;color:var(--muted)}
+
+.panel{display:grid;gap:6px;min-width:0;align-content:start}
+.digits{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px}
+.digit{aspect-ratio:1;max-height:62px;border-radius:50%;border:2px solid #8d949b;background:radial-gradient(circle at 35% 30%,#fff,#d9dde1 70%,#b7bdc3);
+  font-family:var(--display);font-size:clamp(20px,3vw,34px);font-weight:700;color:#222;justify-self:center;width:100%;max-width:62px;padding:0}
+.digit[aria-pressed="true"]{background:radial-gradient(circle at 35% 30%,#fff8cf,#ffd84a 70%,#c9a514)}
+.body{display:grid;grid-template-columns:minmax(0,1fr) 84px;gap:6px}
+.col{display:flex;flex-direction:column;gap:6px}
+.key{border:0;border-radius:5px;min-height:58px;padding:4px 5px;font-family:var(--display);font-weight:600;font-size:15px;line-height:1.05;color:#fff;
+  text-shadow:0 1px 1px rgb(0 0 0/.45);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 70%,#fff),var(--c) 55%,color-mix(in srgb,var(--c) 75%,#000));
+  box-shadow:inset 0 1px 0 rgb(255 255 255/.35),0 2px 0 rgb(0 0 0/.3);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow-wrap:anywhere}
+.key:active{transform:translateY(1px);box-shadow:inset 0 1px 0 rgb(255 255 255/.2)}
+.key small{font-family:var(--body);font-weight:500;font-size:12px;opacity:.95;text-shadow:none;margin-top:2px}
+.key.dark-text{color:var(--ink);text-shadow:none}
+.key.size{--c:var(--k-teal);color:var(--ink);text-shadow:none;font-size:30px}
+.key.size small{font-size:11px}
+.key[aria-pressed="true"]{outline:3px solid #ffd84a;outline-offset:1px}
+.key:disabled{filter:grayscale(.7);opacity:.5;cursor:not-allowed}
+.key.big{border-radius:50%;aspect-ratio:1;min-height:0;font-size:17px;margin-top:auto}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:6px}
+.cats .key{--c:var(--k-blue);min-height:50px}
+.cats .key[aria-selected="true"]{--c:var(--k-gold);color:var(--ink);text-shadow:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:6px;align-content:start}
+.grid .key{min-height:64px}
+.notice{background:var(--paper);border:1px dashed var(--steel-lo);padding:14px;color:var(--muted);border-radius:4px}
+
+/* NP6-style category row: one key per menu, split in two when the menu has a second page */
+.tabs{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(66px,1fr);gap:5px;overflow-x:auto;padding-bottom:2px}
+.tab{display:flex;flex-direction:column;border-radius:5px;min-height:50px;background:linear-gradient(180deg,#3d73c4,var(--k-blue) 55%,#163a70);box-shadow:inset 0 1px 0 rgb(255 255 255/.35),0 2px 0 rgb(0 0 0/.3)}
+.tab button{flex:1;border:0;background:transparent;color:#fff;font-family:var(--display);font-weight:600;font-size:13px;line-height:1;padding:3px 2px;text-shadow:0 1px 1px rgb(0 0 0/.5)}
+.tab button[aria-pressed="true"]{color:#ffd84a;text-decoration:underline;text-underline-offset:2px}
+.tab hr{margin:0 6px;border:0;border-top:1px solid rgb(255 255 255/.45)}
+.tab.on{outline:3px solid #ffd84a;outline-offset:1px}
+/* product tile: name band, picture, yellow price tag */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;align-content:start}
+.tile{position:relative;display:flex;flex-direction:column;border:1px solid #7d848b;border-radius:3px;background:#fff;padding:0;min-height:82px;overflow:hidden;box-shadow:0 2px 0 rgb(0 0 0/.25)}
+.tile:active{transform:translateY(1px)}
+.tn{background:var(--c);color:var(--tc,#fff);font-family:var(--display);font-weight:600;font-size:12px;line-height:1.05;padding:2px 3px;min-height:2.3em;display:flex;align-items:center;justify-content:center;text-align:center;overflow-wrap:anywhere}
+.ti{flex:1;display:flex;align-items:center;justify-content:center;padding:3px 3px 14px}
+.ti svg{width:48px;height:36px}
+.tp{position:absolute;left:2px;bottom:2px;background:#ffe500;color:#111;font-family:var(--mono);font-weight:600;font-size:12px;padding:0 3px;line-height:1.3}
+.np{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));grid-template-rows:auto auto repeat(6,minmax(64px,auto));gap:5px;min-width:0}
+.np .digit{max-width:58px}
+.np .tab{min-height:46px}
+.np .tile,.np .key{min-height:0}
+.key.size{--c:#e9c45a;position:relative;isolation:isolate;background:none;box-shadow:none;border-radius:0;color:var(--ink);text-shadow:none;font-size:27px;line-height:1}
+.key.size::before{content:"";position:absolute;left:50%;top:50%;width:min(52px,82%);aspect-ratio:1;z-index:-1;transform:translate(-50%,-50%) rotate(45deg);border-radius:11px;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--c) 55%,#fff),var(--c) 55%,color-mix(in srgb,var(--c) 80%,#000));box-shadow:1px 2px 2px rgb(0 0 0/.3),inset 0 1px 0 rgb(255 255 255/.5)}
+.key.size small{font-size:9px}
+.key.size[aria-pressed="true"]{--c:#1f5fbf;color:#fff;outline:none}
+.key.size:focus-visible{outline:none}
+.key.size:focus-visible::before{outline:3px solid #ffd84a;outline-offset:2px}
+.key.size:disabled{filter:none;opacity:.8}
+.key.round{border-radius:50%;aspect-ratio:1;align-self:center;justify-self:center;width:100%;max-width:80px;font-size:14px}
+.npgrid{display:grid;grid-template-columns:62px repeat(8,minmax(0,1fr));gap:5px;min-width:0;align-content:start}
+.npgrid .key.size{min-height:0}
+.npgrid .tile{min-height:0}
+.tile.off{filter:grayscale(1);opacity:.75;cursor:not-allowed}
+.tile .ua{position:absolute;right:2px;bottom:2px;background:#2b2b2b;color:#fff;font-family:var(--mono);font-size:8px;padding:0 3px;line-height:1.5}
+.key.mauve{--c:#9a6a90}
+.receipt{width:min(380px,100%);background:#fff;font-family:var(--mono);font-size:14px;gap:8px}
+.rc-head{display:grid;text-align:center;gap:2px;border-bottom:1px dashed #999;padding-bottom:8px}
+.rc-head b{font-size:16px;letter-spacing:.05em}
+.rc-lines{display:grid;gap:4px;max-height:45vh;overflow:auto}
+.rc-line{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:4px;text-transform:uppercase}
+.rc-line small{display:block;font-size:11px;color:var(--muted);padding-left:8px}
+.rc-tot{border-top:1px dashed #999;padding-top:6px;display:grid;gap:2px}
+.rc-tot div{display:flex;justify-content:space-between}
+.rc-tot .g{font-size:20px;font-weight:600}
+.rc-note{margin:0;font-family:var(--body);font-size:13px;color:var(--muted);text-align:center}
+.key.black{--c:#2b2b2b}
+
+/* tender */
+.tender{display:grid;gap:8px}
+.tender h2{margin:0;justify-self:center;font-family:var(--display);font-size:clamp(26px,4vw,40px);letter-spacing:.08em;text-transform:uppercase;color:#4d545b;
+  text-shadow:0 1px 0 #fff;background:linear-gradient(180deg,#eef0f2,#aeb4ba);padding:2px 30px;border-radius:4px}
+.tgrid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:8px}
+.due{background:#fff;border:1px solid var(--steel-lo);padding:8px 10px;font-family:var(--mono);display:grid;gap:4px}
+.due div{display:flex;justify-content:space-between}
+.due .big{font-size:22px;font-weight:600}
+.pad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.pk{border:2px solid #8d949b;border-radius:6px;background:linear-gradient(180deg,#fff,#d7dbdf);font-family:var(--display);font-size:clamp(26px,4vw,44px);font-weight:700;min-height:62px;color:#222}
+.pk.sm{font-size:20px}
+.tside{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;align-content:start}
+.tside .key{--c:var(--k-green);min-height:60px;font-size:18px}
+.tside .wide{grid-column:1/-1}
+.tside .back{--c:#111}
+
+/* registro / menú */
+.page{display:grid;gap:8px}
+.card{background:var(--paper);border:1px solid var(--steel-lo);border-radius:4px;padding:14px;display:grid;gap:10px;min-width:0}
+.card h2{margin:0;font-family:var(--display);font-size:20px;text-transform:uppercase;letter-spacing:.05em}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.stat{background:var(--bar);color:var(--bar-ink);padding:8px 10px;border-radius:3px;display:grid}
+.stat small{font-size:11px;text-transform:uppercase;letter-spacing:.08em;opacity:.8}
+.stat b{font-family:var(--mono);font-size:22px;font-weight:600}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid #c9cdc4;vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.r{text-align:right}
+tr.void td{text-decoration:line-through;color:var(--muted)}
+.tag{font-size:11px;padding:1px 6px;border-radius:99px;border:1px solid var(--muted);color:var(--muted);white-space:nowrap}
+.btn{border:1px solid var(--steel-lo);background:linear-gradient(180deg,#fff,#dfe2e5);border-radius:4px;padding:7px 12px}
+.btn.go{background:var(--k-green);border-color:var(--k-green);color:#fff;font-weight:600}
+.btn.no{color:var(--warn);border-color:var(--warn);background:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.chk{display:flex;gap:6px;align-items:center;font-size:14px}
+.chk input{width:20px;height:20px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.form{display:grid;grid-template-columns:2fr 1.3fr repeat(4,minmax(70px,1fr)) auto;gap:8px;align-items:end}
+label{display:grid;gap:3px;font-size:12px;color:var(--muted)}
+.hint{margin:0;color:var(--muted);font-size:13px;line-height:1.45}
+.empty-p{color:var(--muted);margin:0}
+
+/* dialogs + toast */
+.overlay{position:fixed;inset:0;background:rgb(0 0 0/.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+.dialog{background:var(--paper);border-radius:6px;width:min(420px,100%);padding:16px;display:grid;gap:10px}
+.dialog h3{margin:0;font-family:var(--display);font-size:22px;text-transform:uppercase}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:6px;z-index:30;max-width:90vw}
+
+@media (max-width:860px){
+  .reg{grid-template-columns:minmax(170px,210px) minmax(0,1fr)}
+  .ticket{font-size:12px}
+  .body{grid-template-columns:minmax(0,1fr) 66px}
+  .npgrid{grid-template-columns:44px repeat(8,minmax(0,1fr));gap:3px}
+  .tn{font-size:10px}
+  .ti svg{width:30px;height:24px}
+  .tgrid{grid-template-columns:minmax(0,1fr)}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .two{grid-template-columns:minmax(0,1fr)}
+  .form{grid-template-columns:1fr 1fr}
+  .form .wide{grid-column:1/-1}
+}
+@media (max-width:600px){
+  .reg{grid-template-columns:minmax(0,1fr)}
+  .ticket{order:-1;min-height:0;max-height:38vh}
+}
+@media (max-width:480px){ .digits{grid-template-columns:repeat(5,minmax(0,1fr))} }
+@media (prefers-reduced-motion:reduce){.key:active{transform:none}}
+</style>
+
+<div class="wrap">
+  <div class="status">
+    <span class="cell num" id="clock">--:--</span>
+    <span class="cell num" id="ordno">Orden 1</span>
+    <span class="cell">EFECTIVO</span>
+    <span class="cell" id="sync">Conectando…</span>
+    <span class="spacer"></span>
+    <nav role="tablist" hidden>
+      <button role="tab" aria-selected="true" data-view="venta">← Volver a la caja</button>
+      <button role="tab" aria-selected="false" data-view="registro">Registro</button>
+      <button role="tab" aria-selected="false" data-view="menu">Menú</button>
+    </nav>
+  </div>
+  <main id="main"></main>
+</div>
+<div id="layer"></div>
+
+<script>
+(() => {
+const STANDALONE = !!window.CM_STANDALONE;
+const LS = {
+  get(k, d){ try{ const v = localStorage.getItem('cm.'+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('cm.'+k, JSON.stringify(v)); }catch(e){} }
+};
+const SIZES = { S:'SM', M:'MED', L:'LG', Mini:'MINI' };
+const PALETTE = ['--k-red','--k-blue','--k-green','--k-gold','--k-maroon','--k-grey','--k-teal'];
+const S = {
+  view:'venta', db:null, mode:'loading',
+  menu: (function(){ const E = [{"category": "Breakfast", "id": "a01", "name": "Egg McMuffin", "order": 1, "price": 569, "taxable": true}, {"category": "Breakfast", "id": "a02", "name": "SE McMuffin", "order": 2, "price": 499, "taxable": true}, {"category": "Breakfast", "id": "a03", "name": "BEC Biscuit", "order": 3, "price": 519, "taxable": true}, {"category": "Breakfast", "id": "a04", "name": "SE Biscuit", "order": 4, "price": 489, "taxable": true}, {"category": "Breakfast", "id": "a05", "name": "BEC McGriddle", "order": 5, "price": 619, "taxable": true}, {"category": "Breakfast", "id": "a06", "name": "SEC McGriddle", "order": 6, "price": 579, "taxable": true}, {"category": "Breakfast", "id": "a07", "name": "Saus Burrito", "order": 7, "price": 199, "taxable": true}, {"category": "Breakfast", "id": "a08", "name": "BEC Bagel", "order": 8, "price": 669, "taxable": true}, {"category": "Breakfast", "id": "a09", "name": "Steak EC Bagel", "order": 9, "price": 779, "taxable": true}, {"category": "Breakfast", "id": "a10", "name": "SEC Bagel", "order": 10, "price": 699, "taxable": true}, {"category": "Breakfast", "id": "a11", "name": "Egg Bacon Muffin", "order": 11, "price": 569, "taxable": true}, {"category": "Breakfast", "id": "a12", "name": "McChicken Biscuit", "order": 12, "price": 439, "taxable": true}, {"category": "Breakfast", "id": "a13", "name": "Chicken McGriddle", "order": 13, "price": 469, "taxable": true}, {"category": "Breakfast", "id": "a14", "name": "Saus Biscuit", "order": 14, "price": 189, "taxable": true}, {"category": "Breakfast", "id": "a15", "name": "Hotcakes", "order": 15, "price": 569, "taxable": true}, {"category": "Breakfast", "id": "a16", "name": "Hotcakes & Sausage", "order": 16, "price": 729, "taxable": true}, {"category": "Breakfast", "id": "a17", "name": "Big Breakfast", "order": 17, "price": 619, "taxable": true}, {"category": "Breakfast", "id": "a18", "name": "Big Breakfast w/ Hotcakes", "order": 18, "price": 729, "taxable": true}, {"category": "Breakfast", "id": "a19", "name": "Oatmeal", "order": 19, "price": 399, "taxable": true}, {"category": "Breakfast", "id": "a20", "name": "Saus McMuffin", "order": 20, "price": 199, "taxable": true}, {"category": "Breakfast", "id": "a21", "name": "Hashbrown", "order": 21, "price": 189, "taxable": true}, {"category": "Breakfast 2", "id": "b01", "name": "Egg Biscuit", "order": 1, "price": 299, "taxable": true}, {"category": "Breakfast 2", "id": "b02", "name": "Egg Chs Biscuit", "order": 2, "price": 419, "taxable": true}, {"category": "Breakfast 2", "id": "b03", "name": "SEC Biscuit", "order": 3, "price": 549, "taxable": true}, {"category": "Breakfast 2", "id": "b04", "name": "Saus McGriddle", "order": 4, "price": 549, "taxable": true}, {"category": "Breakfast 2", "id": "b05", "name": "Saus Biscuit", "order": 5, "price": 189, "taxable": true}, {"category": "Breakfast 2", "id": "b06", "name": "Egg Chs Bagel", "order": 6, "price": 599, "taxable": true}, {"category": "Breakfast 2", "id": "b07", "name": "SEC Bagel", "order": 7, "price": 699, "taxable": true}, {"category": "Breakfast 2", "id": "b08", "name": "Bagel", "order": 8, "price": 239, "taxable": true}, {"category": "Breakfast 2", "id": "b09", "name": "Hotcakes & Bacon", "order": 9, "price": 619, "taxable": true}, {"category": "Breakfast 2", "id": "b10", "name": "Hashbrown", "order": 10, "price": 189, "taxable": true}, {"category": "Lunch", "id": "c01", "meal": true, "name": "Big Mac", "order": 1, "price": 699, "sizes": {"L": 1299, "M": 1239}, "taxable": true}, {"category": "Lunch", "id": "c02", "meal": true, "name": "QPC", "order": 2, "price": 689, "sizes": {"L": 1299, "M": 900}, "taxable": true}, {"category": "Lunch", "id": "c03", "meal": true, "name": "Bacon QPC", "order": 3, "price": 859, "sizes": {"L": 1399, "M": 1299}, "taxable": true}, {"category": "Lunch", "id": "c04", "meal": true, "name": "QP Deluxe", "order": 4, "price": 719, "sizes": {"L": 1329, "M": 1249}, "taxable": true}, {"category": "Lunch", "id": "c05", "meal": true, "name": "Dbl QPC", "order": 5, "price": 1049, "sizes": {"L": 1748, "M": 1598}, "taxable": true}, {"category": "Lunch", "id": "c06", "meal": true, "name": "Dbl Bacon QPC", "order": 6, "price": 1099, "sizes": {"L": 1599, "M": 1598}, "taxable": true}, {"category": "Lunch", "id": "c07", "meal": true, "name": "McCrispy", "order": 7, "price": 649, "sizes": {"L": 1269, "M": 1119}, "taxable": true}, {"category": "Lunch", "id": "c08", "meal": true, "name": "Spicy McCrispy", "order": 8, "price": 699, "sizes": {"L": 1279, "M": 1179}, "taxable": true}, {"category": "Lunch", "id": "c09", "meal": true, "name": "Dlx McCrispy", "order": 9, "price": 739, "sizes": {"L": 1299, "M": 1199}, "taxable": true}, {"category": "Lunch", "id": "c10", "meal": true, "name": "Dlx Spicy McCrispy", "order": 10, "price": 739, "sizes": {"L": 1299, "M": 1199}, "taxable": true}, {"category": "Lunch", "id": "c11", "meal": true, "name": "4 McCrispy Strips", "order": 11, "price": 759, "sizes": {"L": 1279, "M": 1209}, "taxable": true}, {"category": "Lunch", "id": "c12", "meal": true, "name": "3 McCrispy Strips", "order": 12, "price": 619, "sizes": {"L": 1159, "M": 1089}, "taxable": true}, {"category": "Lunch", "id": "c13", "includes": ["2 SNACK WRAP RANCH"], "meal": true, "name": "Snack Wrap Ranch", "order": 13, "price": 299, "sizes": {"L": 1259, "M": 1099}, "taxable": true}, {"category": "Lunch", "id": "c14", "includes": ["2 SNACK WRAP SPICY"], "meal": true, "name": "Snack Wrap Spicy", "order": 14, "price": 299, "sizes": {"L": 1269, "M": 1149}, "taxable": true}, {"alwaysMeal": true, "category": "Lunch", "defaultSize": "M", "id": "c15", "includes": ["SNACK WRAP RANCH", "SNACK WRAP SPICY"], "meal": true, "name": "Snack Wrap Mix & Match", "order": 15, "price": 1149, "sizes": {"L": 1269, "M": 1149}, "taxable": true}, {"category": "Lunch", "id": "c16", "meal": true, "name": "10 Nuggets", "order": 16, "price": 659, "sizes": {"L": 1279, "M": 1099}, "taxable": true}, {"category": "Lunch", "id": "c17", "meal": true, "name": "Filet-O-Fish", "order": 17, "price": 679, "sizes": {"L": 1259, "M": 1079}, "taxable": true}, {"category": "Lunch", "id": "c18", "meal": true, "name": "Chs Burger", "order": 18, "price": 279, "sizes": {"L": 1199, "M": 1019}, "taxable": true}, {"category": "Lunch", "id": "c19", "name": "Daily Double", "order": 19, "price": 439, "taxable": true}, {"category": "Lunch", "id": "c20", "name": "Dbl Cheese", "order": 20, "price": 339, "taxable": true}, {"category": "Lunch", "id": "c21", "meal": true, "name": "Triple Chs", "order": 21, "price": 599, "sizes": {"L": 1279, "M": 1129}, "taxable": true}, {"category": "Lunch", "defaultSize": "S", "id": "c22", "name": "Fries", "order": 22, "price": 279, "sizes": {"L": 499, "M": 399, "S": 279}, "taxable": true}, {"category": "Lunch 2", "id": "d01", "name": "4 Nuggets", "order": 1, "price": 259, "taxable": true}, {"category": "Lunch 2", "id": "d02", "name": "6 Nuggets", "order": 2, "price": 379, "taxable": true}, {"category": "Lunch 2", "id": "d03", "name": "20 Nuggets", "order": 3, "price": 1029, "taxable": true}, {"category": "Lunch 2", "id": "d04", "name": "40 Nuggets", "order": 4, "price": 1429, "taxable": true}, {"category": "Lunch 2", "id": "d05", "name": "Dbl Filet", "order": 5, "price": 799, "taxable": true}, {"category": "Lunch 2", "id": "d06", "name": "Hamburger", "order": 6, "price": 269, "taxable": true}, {"category": "Lunch 2", "id": "d07", "name": "Dbl Hamburger", "order": 7, "price": 359, "taxable": true}, {"category": "Lunch 2", "id": "d08", "name": "QTR Ham", "order": 8, "price": 599, "taxable": true}, {"category": "Lunch 2", "id": "d09", "name": "McDouble", "order": 9, "price": 289, "taxable": true}, {"category": "Lunch 2", "id": "d10", "name": "McChicken", "order": 10, "price": 269, "taxable": true}, {"category": "Lunch 2", "id": "d11", "name": "Daily Double", "order": 11, "price": 439, "taxable": true}, {"category": "Lunch 2", "id": "d12", "name": "Bacon McDbl", "order": 12, "price": 469, "taxable": true}, {"category": "Lunch 2", "id": "d13", "name": "Triple Chs", "order": 13, "price": 599, "taxable": true}, {"category": "McValue", "id": "e01", "name": "$4 Saus McMuffin Meal Deal", "order": 1, "price": 400, "taxable": true}, {"category": "McValue", "id": "e02", "name": "$4 Saus Biscuit Meal Deal", "order": 2, "price": 400, "taxable": true}, {"alwaysMeal": true, "category": "McValue", "defaultSize": "S", "id": "e03", "includes": ["MCCHICKEN", "4 NUGGETS"], "meal": true, "name": "$6 McChicken Meal Deal", "nuggets": 4, "order": 3, "price": 600, "sizes": {"L": 929, "M": 829, "S": 600}, "taxable": true}, {"alwaysMeal": true, "category": "McValue", "defaultSize": "S", "id": "e04", "includes": ["MCDOUBLE", "4 NUGGETS"], "meal": true, "name": "$7 McDouble Meal Deal", "nuggets": 4, "order": 4, "price": 700, "sizes": {"L": 1029, "M": 929, "S": 700}, "taxable": true}, {"category": "McValue", "id": "e05", "name": "McDbl & SFry Bdl", "order": 5, "price": 400, "taxable": true}, {"category": "McValue", "id": "e06", "name": "McCkn & SFry Bdl", "order": 6, "price": 400, "taxable": true}, {"category": "McValue", "id": "e07", "name": "6Ngg SFry Bdl", "order": 7, "price": 400, "taxable": true}, {"category": "McValue", "id": "e08", "meal": true, "name": "6 Nuggets", "order": 8, "price": 379, "sizes": {"L": 1059, "M": 919}, "taxable": true}, {"category": "McValue", "id": "e09", "name": "McDouble", "order": 9, "price": 289, "taxable": true}, {"category": "McValue", "id": "e10", "name": "McChicken", "order": 10, "price": 269, "taxable": true}, {"category": "McValue", "id": "e11", "meal": true, "mealType": "breakfast", "name": "Saus Biscuit", "order": 11, "price": 189, "sizes": {"M": 400}, "taxable": true}, {"category": "McValue", "id": "e12", "meal": true, "mealType": "breakfast", "name": "Saus Muffin", "order": 12, "price": 199, "sizes": {"M": 400}, "taxable": true}, {"category": "McValue", "id": "e13", "meal": true, "mealType": "breakfast", "name": "Saus Burrito", "order": 13, "price": 199, "sizes": {"M": 749}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f01", "name": "Coke", "order": 1, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f02", "name": "Diet Coke", "order": 2, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f03", "name": "Sprite", "order": 3, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f04", "name": "Dr. Pepper", "order": 4, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f05", "name": "Fanta Orange", "order": 5, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f06", "name": "Coke Zero", "order": 6, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f07", "name": "Orange Hi-C", "order": 7, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f08", "name": "Iced Tea", "order": 8, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f09", "name": "Swt Tea Glass", "order": 9, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f10", "name": "Coffee", "order": 10, "price": 159, "sizes": {"L": 239, "M": 199, "S": 159}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f11", "name": "Decaf", "order": 11, "price": 159, "sizes": {"L": 239, "M": 199, "S": 159}, "taxable": true}, {"category": "Drinks", "id": "f12", "name": "Hot Tea", "off": true, "order": 12, "price": 150, "taxable": true}, {"category": "Drinks", "id": "f13", "name": "Dasani Water", "order": 13, "price": 199, "taxable": true}, {"category": "Drinks", "id": "f14", "name": "Orange Juice", "order": 14, "price": 399, "taxable": true}, {"category": "Drinks", "id": "f15", "name": "Apple Juice", "order": 15, "price": 179, "taxable": true}, {"category": "Drinks", "id": "f16", "name": "Milk Jug", "order": 16, "price": 179, "taxable": true}, {"category": "Drinks", "id": "f17", "name": "Choc Milk Jug", "order": 17, "price": 179, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f18", "name": "Fanta Strawberry", "order": 6, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "McCafé", "id": "g01", "name": "Iced Coffee", "order": 1, "price": 369, "taxable": true}, {"category": "McCafé", "id": "g02", "name": "Mocha", "off": true, "order": 2, "price": 339, "taxable": true}, {"category": "McCafé", "id": "g03", "name": "Frappe", "order": 3, "price": 459, "taxable": true}, {"category": "McCafé", "id": "g04", "name": "Hot Chocolate", "off": true, "order": 4, "price": 319, "taxable": true}, {"category": "McCafé", "id": "g05", "name": "Cappuccino", "off": true, "order": 5, "price": 379, "taxable": true}, {"category": "McCafé", "id": "g06", "name": "Macchiato", "off": true, "order": 6, "price": 379, "taxable": true}, {"category": "McCafé", "id": "g07", "name": "Americano", "off": true, "order": 7, "price": 339, "taxable": true}, {"category": "McCafé", "id": "g08", "name": "Espresso", "off": true, "order": 8, "price": 259, "taxable": true}, {"category": "McCafé", "id": "g09", "name": "Chocolate Shake", "order": 9, "price": 539, "taxable": true}, {"category": "McCafé", "id": "g10", "name": "Vanilla Shake", "order": 10, "price": 539, "taxable": true}, {"category": "McCafé", "id": "g11", "name": "Strawberry Shake", "order": 11, "price": 539, "taxable": true}, {"category": "McCafé", "id": "g12", "name": "Strwbry Ban Smoothie", "order": 12, "price": 519, "taxable": true}, {"category": "McCafé", "id": "g13", "name": "Mngo Pinapl Smoothie", "order": 13, "price": 519, "taxable": true}, {"category": "McCafé", "id": "g14", "name": "Lemonade", "order": 14, "price": 269, "taxable": true}, {"category": "McCafé", "id": "g15", "name": "Unswt Tea Lemonade", "order": 15, "price": 269, "taxable": true}, {"category": "McCafé", "id": "g16", "name": "Swt Tea Lemonade", "order": 16, "price": 269, "taxable": true}, {"category": "McCafé", "id": "g17", "name": "Sprt Wht Peach", "order": 17, "price": 339, "taxable": true}, {"category": "McCafé", "id": "g18", "name": "Blu Rasberry", "order": 18, "price": 339, "taxable": true}, {"category": "McCafé", "id": "g19", "name": "Frozen Coke", "order": 19, "price": 339, "taxable": true}, {"category": "McCafé", "id": "g20", "name": "Latte", "off": true, "order": 20, "price": null, "taxable": true}, {"category": "McCafé", "id": "g21", "name": "Wild Cherry", "off": true, "order": 21, "price": 239, "taxable": true}, {"category": "Dessert", "id": "h01", "name": "Apple Pie", "order": 1, "price": 299, "taxable": true}, {"category": "Dessert", "id": "h02", "name": "2 Apple Pies", "order": 2, "price": 500, "taxable": true}, {"category": "Dessert", "id": "h03", "name": "Holiday Pie", "order": 3, "price": 219, "taxable": true}, {"category": "Dessert", "id": "h04", "name": "2 Pack Holiday Pies", "order": 4, "price": 459, "taxable": true}, {"category": "Dessert", "id": "h05", "name": "1 Apple 1 Holiday Pie", "order": 5, "price": 459, "taxable": true}, {"category": "Dessert", "id": "h06", "name": "Vanilla Cone", "order": 6, "price": 339, "taxable": true}, {"category": "Dessert", "id": "h07", "name": "Hot Fudge Sundae", "order": 7, "price": 499, "taxable": true}, {"category": "Dessert", "id": "h08", "name": "Caramel Sundae", "order": 8, "price": 499, "taxable": true}, {"category": "Dessert", "id": "h09", "name": "Plain Sundae", "order": 9, "price": 489, "taxable": true}, {"category": "Dessert", "id": "h10", "name": "1 Cookie", "order": 10, "price": 179, "taxable": true}, {"category": "Dessert", "id": "h11", "name": "3 Cookies", "order": 11, "price": 439, "taxable": true}, {"category": "Dessert", "id": "h12", "name": "Cookie Tote", "order": 12, "price": 729, "taxable": true}, {"category": "Dessert", "id": "h13", "name": "Oreo McFlurry", "order": 13, "price": 589, "taxable": true}, {"category": "Dessert", "id": "h14", "name": "M&M McFlurry", "order": 14, "price": 589, "taxable": true}, {"category": "Bakery", "id": "h15", "name": "Apple Slices", "order": 15, "price": 139, "taxable": true}, {"category": "Dessert", "id": "h16", "name": "1 Apple 1 Pumpkin Pie", "off": true, "order": 16, "price": 459, "taxable": true}, {"category": "Dessert", "id": "h17", "name": "Pumpkin Pie", "off": true, "order": 17, "price": 219, "taxable": true}, {"category": "Dessert", "id": "h18", "name": "2 Pumpkin Pies", "off": true, "order": 18, "price": 459, "taxable": true}, {"category": "Happy Meal", "id": "i01", "includes": ["HAMBURGER"], "kind": "happy", "name": "Hamburger Happy Meal", "order": 1, "price": 619, "taxable": true}, {"category": "Happy Meal", "id": "i02", "includes": ["CHS BURGER"], "kind": "happy", "name": "Chs Burger Happy Meal", "order": 2, "price": 589, "taxable": true}, {"category": "Happy Meal", "id": "i03", "includes": ["4 NUGGETS"], "kind": "happy", "name": "4 Nuggets Happy Meal", "nuggets": 4, "order": 3, "price": 589, "taxable": true}, {"category": "Happy Meal", "id": "i04", "includes": ["6 NUGGETS"], "kind": "happy", "name": "6 Nuggets Happy Meal", "nuggets": 6, "order": 4, "price": 659, "taxable": true}, {"category": "Happy Meal", "id": "i05", "name": "Extra Toy", "order": 5, "price": 249, "taxable": true}, {"category": "Happy Meal", "id": "i06", "name": "Orange Hi-C (HM)", "order": 6, "price": 149, "taxable": true}, {"category": "Happy Meal", "id": "i07", "name": "Swt Tea Glass (HM)", "order": 7, "price": 100, "taxable": true}, {"category": "Happy Meal", "id": "i08", "kind": "toy", "name": "Surprise Me", "order": 8, "price": 0, "taxable": true}, {"category": "Happy Meal", "id": "i09", "kind": "toy", "name": "Under 3 Toy", "order": 9, "price": 0, "taxable": true}, {"category": "Happy Meal", "id": "i10", "kind": "toy", "name": "No Toy", "order": 10, "price": 0, "taxable": true}, {"category": "Happy Meal", "id": "i11", "kind": "hmside", "name": "Extra Kids Fries", "order": 11, "price": 0, "taxable": true}, {"category": "LSM", "id": "j01", "name": "Dbl Qtr Chs Dlx", "order": 1, "price": 929, "taxable": true}, {"category": "LSM", "id": "j02", "name": "Value Pack", "order": 2, "price": 2249, "taxable": true}, {"category": "LSM 2", "id": "j03", "name": "Jets Pack", "order": 3, "price": 1699, "taxable": true}, {"category": "LSM", "id": "j04", "name": "40 Nuggets 2L Fry", "order": 4, "price": 2099, "taxable": true}, {"category": "LSM", "id": "j05", "name": "Classic Pack Big Mac", "order": 5, "price": 2389, "taxable": true}, {"category": "LSM", "id": "j06", "name": "Egg Bacon Muffin", "order": 6, "price": 569, "taxable": true}, {"category": "Condiments", "id": "k01", "name": "BBQ Sauce", "order": 1, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k02", "name": "Sweet & Sour", "order": 2, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k03", "name": "Hot Mustard", "order": 3, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k04", "name": "Ranch", "order": 4, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k05", "name": "Buffalo", "order": 5, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k06", "name": "Honey Mustard", "order": 6, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k07", "name": "Honey", "order": 7, "price": 25, "taxable": true}, {"category": "Condiments", "id": "k08", "name": "Tartar Sauce", "order": 8, "price": 40, "taxable": true}, {"category": "Condiments", "id": "k09", "name": "Spicy Pepper Sauce", "order": 9, "price": 50, "taxable": true}, {"category": "Condiments", "id": "k10", "name": "Extra Sauce", "order": 10, "price": 65, "taxable": true}, {"category": "Condiments", "id": "k11", "name": "Grape Jam", "off": true, "order": 11, "price": 25, "taxable": true}, {"category": "Condiments", "id": "k12", "name": "Syrup", "order": 12, "price": 25, "taxable": true}, {"category": "Condiments", "id": "k13", "name": "No Sauce", "order": 13, "price": 0, "taxable": true}, {"category": "Condiments", "id": "k14", "name": "Ketchup", "order": 14, "price": 0, "taxable": true}, {"category": "Salad", "id": "x01", "kind": "dummy", "name": "Grill Salad", "price": null, "taxable": true}, {"category": "Salad", "id": "x02", "kind": "dummy", "name": "Crispy Salad", "price": null, "taxable": true}, {"category": "Salad", "id": "x03", "kind": "dummy", "name": "No Meat", "price": null, "taxable": true}, {"category": "Gifts", "id": "x10", "kind": "dummy", "name": "Activation $ AMT", "price": 2000, "taxable": false}, {"category": "Gifts", "id": "x11", "kind": "dummy", "name": "Arch Card $5", "price": 500, "taxable": false}, {"category": "Gifts", "id": "x12", "kind": "dummy", "name": "Arch Card $10", "price": 1000, "taxable": false}, {"category": "Gifts", "id": "x13", "kind": "dummy", "name": "Arch Card $25", "price": 2500, "taxable": false}, {"category": "Gifts", "id": "x14", "kind": "dummy", "name": "Arch Card $50", "price": 5000, "taxable": false}, {"category": "Gifts", "id": "x15", "kind": "dummy", "name": "Reload $ AMT", "price": null, "taxable": false}, {"category": "Gifts", "id": "x16", "kind": "dummy", "name": "Reload $5", "price": 500, "taxable": false}, {"category": "Gifts", "id": "x17", "kind": "dummy", "name": "Reload $10", "price": 1000, "taxable": false}, {"category": "Gifts", "id": "x18", "kind": "dummy", "name": "Reload $25", "price": 2500, "taxable": false}, {"category": "Gifts", "id": "x19", "kind": "dummy", "name": "Reload $50", "price": 5000, "taxable": false}, {"category": "Gifts", "id": "x20", "kind": "dummy", "name": "Treat Cert", "price": 145, "taxable": false}, {"category": "Gifts", "id": "x21", "kind": "dummy", "name": "Paper Diploma", "price": null, "taxable": false}, {"category": "Gifts", "id": "x22", "kind": "dummy", "name": "Survey Redemption", "price": null, "taxable": false}, {"category": "Gifts", "id": "x23", "kind": "dummy", "name": "$1 Gift Cert", "price": null, "taxable": false}, {"category": "Gifts", "id": "x24", "kind": "dummy", "name": "$5 Gift Cert", "price": null, "taxable": false}, {"category": "Gifts", "id": "x25", "kind": "dummy", "name": "Daily Paper", "price": 140, "taxable": false}], V = '7895f853104a'; const saved = LS.get('menu', null); if (saved && LS.get('menuV', '') === V) return saved; const out = E.map(e => { const o = saved && saved.find(s => s.id === e.id); return o && typeof o.off === 'boolean' ? { ...e, off: o.off } : e; }); if (saved) for (const s of saved) if (!E.some(e => e.id === s.id)) out.push(s); LS.set('menu', out); LS.set('menuV', V); return out; })(), sales: LS.get('sales', []), pending: LS.get('pending', []),
+  taxRate: LS.get('taxRate', 6.625), mgrPin: LS.get('mgrPin', ''), showPrices: LS.get('showPrices', true),
+  order: [], sel: -1, cat: null, qty: '', size: null,
+  tender: false, entry: '', done: null,
+  regDate: today(), editId: null, confirmDel: null
+};
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = c => (c < 0 ? '-' : '') + '$' + (Math.abs(c)/100).toFixed(2);
+const plain = c => (c/100).toFixed(2);
+const toCents = v => { const n = parseFloat(String(v).replace(/[^0-9.]/g,'')); return isFinite(n) ? Math.round(n*100) : 0; };
+function today(d = new Date()){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function toast(msg){ const t = document.createElement('div'); t.className='toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(()=>t.remove(), 2600); }
+function catColor(c){ const cats = categories(); const i = Math.max(0, cats.indexOf(c)); return `var(${PALETTE[i % PALETTE.length]})`; }
+
+function lineAmt(l){ return l.promo ? 0 : l.price * (l.qty - (l.free || 0)); }
+function calc(lines, rate){
+  let sub = 0, taxable = 0;
+  for (const l of lines){ const amt = lineAmt(l); sub += amt; if (l.taxable) taxable += amt; }
+  const tax = Math.round(taxable * rate / 100);
+  return { sub, tax, total: sub + tax };
+}
+function itemPrice(it, size){
+  if (size && it.sizes && it.sizes[size]) return { price: it.sizes[size], size };
+  return { price: it.price, size: it.sizes ? (it.defaultSize || null) : null };
+}
+
+/* ---------- sync ---------- */
+function setSync(){
+  const el = $('#sync');
+  if (S.mode === 'cloud'){ el.className = 'cell ok'; el.textContent = S.pending.length ? `${S.pending.length} POR SUBIR` : 'GUARDADO'; }
+  else if (S.mode === 'local'){ el.className = 'cell warn'; el.textContent = STANDALONE ? 'GUARDADO EN ESTE IPAD' : 'SOLO ESTE EQUIPO'; }
+  else { el.className = 'cell'; el.textContent = 'CONECTANDO…'; }
+  const n = mergedSales().filter(s => s.date === today()).length + 1;
+  $('#ordno').textContent = 'ORDEN ' + String(n).padStart(3,'0');
+}
+function mergedSales(){
+  const ids = new Set(S.sales.map(s => s.id));
+  return S.sales.concat(S.pending.filter(p => !ids.has(p.id))).sort((a,b) => b.ts - a.ts);
+}
+async function flushPending(){
+  if (!S.db || !S.pending.length) return;
+  const left = [];
+  for (const sale of S.pending){ try { await S.db.collection('sales').doc(sale.id).set(sale); } catch(e){ left.push(sale); } }
+  S.pending = left; LS.set('pending', left); setSync();
+}
+async function saveSale(sale){
+  if (S.db){ try { await S.db.collection('sales').doc(sale.id).set(sale); return; } catch(e){} }
+  if (S.mode === 'cloud'){ S.pending.push(sale); LS.set('pending', S.pending); toast('Sin conexión: la venta se subirá después'); }
+  else { S.sales.unshift(sale); LS.set('sales', S.sales); }
+  setSync(); render();
+}
+async function patchSale(id, patch){
+  const local = S.pending.find(p => p.id === id);
+  if (local){ Object.assign(local, patch); LS.set('pending', S.pending); render(); return; }
+  if (S.db){ try { await S.db.collection('sales').doc(id).update(patch); } catch(e){ toast('No se pudo guardar el cambio. Revisa la conexión.'); } return; }
+  const s = S.sales.find(x => x.id === id); if (s){ Object.assign(s, patch); LS.set('sales', S.sales); render(); }
+}
+async function saveMenuItem(item){
+  if (S.db){ try { await S.db.collection('menu').doc(item.id).set(item); return true; } catch(e){ toast('No se pudo guardar el producto.'); return false; } }
+  const i = S.menu.findIndex(m => m.id === item.id); if (i >= 0) S.menu[i] = item; else S.menu.push(item);
+  LS.set('menu', S.menu); return true;
+}
+async function deleteMenuItem(id){
+  if (S.db){ try { await S.db.collection('menu').doc(id).delete(); } catch(e){ toast('No se pudo borrar.'); } return; }
+  S.menu = S.menu.filter(m => m.id !== id); LS.set('menu', S.menu); render();
+}
+async function saveTax(rate){
+  S.taxRate = rate; await saveSettings();
+  render();
+}
+async function connect(){
+  let db = null;
+  try { db = window.claude?.use ? await window.claude.use('db') : null; } catch(e){ db = null; }
+  if (!db){ S.mode = 'local'; setSync(); render(); return; }
+  S.db = db; S.mode = 'cloud'; setSync();
+  db.collection('menu').onSnapshot(snap => { S.menu = snap.docs.map(d => ({ id:d.id, ...d.data() })); LS.set('menu', S.menu); render(); },
+    () => toast('No se pudo leer el menú.'));
+  db.collection('sales').orderBy('ts','desc').limit(1000).onSnapshot(snap => {
+    S.sales = snap.docs.map(d => ({ id:d.id, ...d.data() })); LS.set('sales', S.sales);
+    const ids = new Set(S.sales.map(s => s.id));
+    if (S.pending.some(p => ids.has(p.id))){ S.pending = S.pending.filter(p => !ids.has(p.id)); LS.set('pending', S.pending); }
+    setSync(); render();
+  }, () => toast('No se pudieron leer las ventas.'));
+  db.doc('settings/config').onSnapshot(d => {
+    if (d.exists && typeof d.data().taxRate === 'number'){ S.taxRate = d.data().taxRate; LS.set('taxRate', S.taxRate); }
+    if (d.exists && d.data().mgrPin){ S.mgrPin = d.data().mgrPin; LS.set('mgrPin', S.mgrPin); }
+    if (d.exists) render();
+  });
+  flushPending();
+  window.addEventListener('online', flushPending);
+}
+
+/* ---------- views ---------- */
+function render(){
+  document.querySelectorAll('nav button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.view === S.view)));
+  document.querySelector('nav').hidden = S.view === 'venta';
+  const m = $('#main');
+  const keep = document.activeElement?.id;
+  m.innerHTML = S.view === 'venta' ? viewVenta() : S.view === 'registro' ? viewRegistro() : viewMenu();
+  if (keep && document.getElementById(keep) && S.view !== 'venta') document.getElementById(keep).focus();
+}
+function categories(){
+  const seen = []; for (const it of S.menu){ const c = it.category || 'Otros'; if (!seen.includes(c)) seen.push(c); }
+  return seen;
+}
+function ticketHtml(){
+  normalizeSauces();
+  const t = calc(S.order, S.taxRate);
+  const lines = S.order.length ? S.order.map((l,i) => `
+    <li data-line="${i}" aria-selected="${i === S.sel}">
+      <span class="num">${l.qty}</span><span>${esc(l.name)}${partsHtml(l)}${l.taxable ? '' : '<span class="nt">*SIN TAX</span>'}</span><span class="num">${plain(lineAmt(l))}</span>
+    </li>`).join('')
+    : S.done ? '' : `<li class="empty">Toca un producto. Para varios, toca primero el número (ej. 3 y luego el producto).</li>`;
+  const d = S.done;
+  return `
+  <section class="ticket" aria-label="Orden">
+    <div class="hd"><span>EFECTIVO</span><span class="num">${new Date().toLocaleDateString()}</span></div>
+    ${d ? `<ul class="lines">${d.lines.map(l => `<li style="cursor:default"><span class="num">${l.qty}</span><span>${esc(l.name)}${partsHtml(l)}</span><span class="num">${plain(lineAmt(l))}</span></li>`).join('')}</ul>
+      <div class="tot num"><div><span>Sub Total</span><span>${plain(d.subtotal)}</span></div><div><span>Tax</span><span>${plain(d.tax)}</span></div>
+      <div class="g"><span>Total</span><span>${plain(d.total)}</span></div><div><span>Efectivo</span><span>${plain(d.paid)}</span></div></div>
+      <div class="chg num">CAMBIO ${money(d.change)}</div>
+      <button class="btn go" data-act="receipt" style="margin:0 8px 8px;font-size:16px;padding:10px">Mostrar recibo al cliente</button>`
+    : `<ul class="lines">${lines}</ul>
+      <div class="tot num"><div><span>Sub Total</span><span>${plain(t.sub)}</span></div><div><span>Tax ${S.taxRate}%</span><span>${plain(t.tax)}</span></div>
+      <div class="g"><span>Total</span><span>${plain(t.total)}</span></div></div>`}
+    <div class="foot">${S.qty || S.size ? `Siguiente: ${S.qty ? S.qty + ' × ' : ''}${S.size ? SIZES[S.size] : ''}` : 'Venta sin caja · se guarda en Registro'}</div>
+  </section>`;
+}
+function partsHtml(l){ return (l.parts || []).map(p => `<span class="nt">${esc(p)}</span>`).join('') + (l.free ? `<span class="nt">${l.free} GRATIS (NUGGETS)</span>` : '') + (l.promo ? '<span class="nt">PROMO (MANAGER) $0.00</span>' : ''); }
+function lineLabel(l){ return l.name + (l.parts && l.parts.length ? ' (' + l.parts.join(', ') + ')' : '') + (l.free ? ` (${l.free} gratis)` : '') + (l.promo ? ' (PROMO)' : ''); }
+/* Nugget sauces: 4 or 6 pc = 1 free, 10 = 2, 20 = 3, 40 = 6; extra sauces are charged. */
+const NUGGET_FREE = { 4:1, 6:1, 10:2, 20:3, 40:6 };
+const SAUCE_RE = /bbq|sour|mustard|honey|ranch|buffalo|spicy pepper|ketchup/i;
+function freeSaucesFor(l){
+  const it = S.menu.find(m => m.id === l.itemId); if (!it) return 0;
+  if (it.nuggets) return (NUGGET_FREE[it.nuggets] || 0) * l.qty;
+  const m = /(\d+)\s*(nugget|ngg)/i.exec(it.name || '');
+  return m ? (NUGGET_FREE[+m[1]] || 0) * l.qty : 0;
+}
+function normalizeSauces(){
+  let left = S.order.reduce((n, l) => n + freeSaucesFor(l), 0);
+  for (const l of S.order){
+    if (!l.sauce) continue;
+    l.free = l.price > 0 ? Math.min(l.qty, left) : 0;
+    left -= l.free;
+  }
+}
+function viewVenta(){
+  return `<div class="reg">${ticketHtml()}<section class="panel">${S.tender ? tenderHtml() : menuPanelHtml()}</section></div>`;
+}
+function tabGroups(){
+  const cats = categories(), used = new Set(), groups = [];
+  const base = c => c.replace(/\s+2$/, '');
+  for (const c of cats){
+    if (used.has(c)) continue;
+    if (/\s2$/.test(c) && cats.includes(base(c))) continue;
+    const two = cats.find(x => x !== c && /\s2$/.test(x) && base(x) === c);
+    groups.push(two ? [c, two] : [c]); used.add(c); if (two) used.add(two);
+  }
+  for (const c of cats) if (!used.has(c)) groups.push([c]);
+  return groups;
+}
+const DRINK_COLORS = [[/diet/,'#b9bcc0'],[/zero/,'#222'],[/coke/,'#c8102e'],[/sprite/,'#2e9e4f'],[/fanta|hi-c|orange/,'#f28c28'],[/pepper/,'#7a1f2b'],
+  [/lemonade/,'#f2d64b'],[/tea/,'#a0522d'],[/water|dasani/,'#8ecae6'],[/apple/,'#e9c46a'],[/choc/,'#7b4a2a'],[/milk/,'#f4f4f4'],[/strawb|strwb/,'#f48fb1'],
+  [/vanilla/,'#f3e5ab'],[/mango/,'#ffb347'],[/peach/,'#ffcba4'],[/blu/,'#3fa9f5'],[/cherry/,'#b0002a'],[/frozen/,'#c8102e'],[/mocha|frappe|coffee/,'#8b5a2b']];
+function drinkColor(n){ for (const [re,c] of DRINK_COLORS) if (re.test(n)) return c; return '#5b8fd1'; }
+function iconFor(it){
+  const n = (it.name || '').toLowerCase(), cat = (it.category || '').toLowerCase();
+  const BUN = '#d9993f';
+  const bun = (patty, h = 5) => `<path d="M8 16a16 10 0 0 1 32 0z" fill="${BUN}"/><rect x="7" y="17" width="34" height="3" rx="1.5" fill="#5aa832"/><rect x="7" y="20" width="34" height="${h}" rx="2.5" fill="${patty}"/><path d="M8 ${21+h}h32a3 3 0 0 1-3 4H11a3 3 0 0 1-3-4z" fill="${BUN}"/>`;
+  let s;
+  if (/condiment/.test(cat) || /sauce|ranch|mustard|honey|jam|syrup|buffalo|sour|bbq/.test(n))
+    s = `<rect x="12" y="14" width="24" height="16" rx="3" fill="#e2e2e2"/><rect x="11" y="10" width="26" height="6" rx="2" fill="#b5651d"/>`;
+  else if (/card|cert|reload|activation|diploma|survey|daily paper/.test(n))
+    s = `<rect x="8" y="9" width="32" height="20" rx="3" fill="#c8102e"/><rect x="8" y="14" width="32" height="4" fill="#7a0a1c"/><rect x="12" y="21" width="10" height="3" fill="#ffc72c"/>`;
+  else if (/salad|no meat/.test(n))
+    s = `<path d="M8 16h32a16 14 0 0 1-32 0z" fill="#fff" stroke="#bbb"/><ellipse cx="24" cy="16" rx="16" ry="5" fill="#7cb342"/>`;
+  else if (/happy meal|toy|surprise|pack|bdl|deal/.test(n))
+    s = `<rect x="9" y="12" width="30" height="22" rx="2" fill="#d52b1e"/><path d="M17 12a7 7 0 0 1 14 0" fill="none" stroke="#d52b1e" stroke-width="3"/><rect x="9" y="20" width="30" height="5" fill="#ffc72c"/>`;
+  else if (/fries|fry/.test(n))
+    s = `<g fill="#f4c430"><rect x="14" y="4" width="4" height="18"/><rect x="19" y="2" width="4" height="20"/><rect x="24" y="3" width="4" height="19"/><rect x="29" y="5" width="4" height="17"/></g><path d="M11 14h26l-3 20H14z" fill="#d52b1e"/>`;
+  else if (/nugget|strips/.test(n))
+    s = `<ellipse cx="15" cy="21" rx="9" ry="7" fill="#e0a43a"/><ellipse cx="31" cy="15" rx="9" ry="7" fill="#d29433"/><ellipse cx="31" cy="27" rx="8" ry="6" fill="#e8b04a"/>`;
+  else if (/burrito|wrap/.test(n))
+    s = `<g transform="rotate(-15 24 19)"><rect x="5" y="12" width="38" height="14" rx="7" fill="#efe1c0"/><path d="M5 19a7 7 0 0 0 7 7V12a7 7 0 0 0-7 7z" fill="#7cb342"/></g>`;
+  else if (/hotcake|big breakfast/.test(n))
+    s = `<ellipse cx="24" cy="28" rx="17" ry="5" fill="#c98b45"/><ellipse cx="24" cy="22" rx="17" ry="5" fill="#d99c55"/><ellipse cx="24" cy="16" rx="17" ry="5" fill="#e6ad66"/><rect x="20" y="11" width="8" height="5" fill="#fff3a0"/>`;
+  else if (/bagel/.test(n))
+    s = `<circle cx="24" cy="18" r="14" fill="#c99a5b"/><circle cx="24" cy="18" r="4.5" fill="#fff"/>`;
+  else if (/hashbrown/.test(n))
+    s = `<rect x="9" y="9" width="30" height="18" rx="9" fill="#e9b949"/><rect x="12" y="12" width="24" height="12" rx="6" fill="#f2c95e"/>`;
+  else if (/oatmeal/.test(n))
+    s = `<path d="M8 16h32a16 14 0 0 1-32 0z" fill="#fff" stroke="#bbb"/><ellipse cx="24" cy="16" rx="16" ry="4" fill="#d9c49a"/>`;
+  else if (/biscuit|muffin|mcgriddle|mcmuf|mcmuffin/.test(n))
+    s = `<ellipse cx="24" cy="12" rx="15" ry="6" fill="#e2b77a"/><rect x="9" y="15" width="30" height="5" fill="#f6c915"/><rect x="9" y="19" width="30" height="4" fill="#b5651d"/><ellipse cx="24" cy="26" rx="15" ry="6" fill="#e2b77a"/>`;
+  else if (/mccrispy|mcchicken|chicken|filet|fish/.test(n))
+    s = bun(/fish|filet/.test(n) ? '#f0d9a0' : '#e3a344', 6);
+  else if (/pie/.test(n))
+    s = `<rect x="8" y="10" width="32" height="16" rx="3" fill="#d89a3c"/><g stroke="#a86b1f" stroke-width="2"><line x1="15" y1="13" x2="15" y2="23"/><line x1="24" y1="13" x2="24" y2="23"/><line x1="33" y1="13" x2="33" y2="23"/></g>`;
+  else if (/cone|sundae|mcflurry/.test(n))
+    s = /cone/.test(n) ? `<path d="M17 16h14l-7 18z" fill="#d9a35b"/><circle cx="24" cy="11" r="9" fill="#fffaf0" stroke="#ccc"/>`
+      : `<path d="M13 14h22l-3 20H16z" fill="#fff" stroke="#ccc"/><path d="M13 14c2-8 20-8 22 0z" fill="#fffaf0" stroke="#ccc"/><path d="M15 15q9 5 18 0" fill="none" stroke="${/fudge|oreo/.test(n) ? '#4a2c17' : /caramel|m&m/.test(n) ? '#c77d2b' : '#ddd'}" stroke-width="3"/>`;
+  else if (/cookie/.test(n))
+    s = `<circle cx="24" cy="18" r="13" fill="#c98b45"/><g fill="#4a2c17"><circle cx="19" cy="14" r="2"/><circle cx="28" cy="16" r="2"/><circle cx="22" cy="23" r="2"/><circle cx="30" cy="24" r="1.6"/></g>`;
+  else if (/slices/.test(n))
+    s = `<rect x="10" y="10" width="28" height="20" rx="3" fill="#cfe9b0"/><path d="M14 22c4-8 16-8 20 0z" fill="#f6f1d0"/>`;
+  else if (/burger|mac|qpc|qp |double|dbl|chs|cheese|ham|mcdbl|qtr|triple/.test(n))
+    s = bun('#6b3a1e', /dbl|double|triple|qpc|qtr|mac/.test(n) ? 7 : 5);
+  else if (/shake|frappe|smoothie|frozen|blu|peach|cherry/.test(n))
+    s = `<path d="M14 13h20l-3 21H17z" fill="${drinkColor(n)}"/><path d="M13 13c0-6 5-8 11-8s11 2 11 8z" fill="#fff" stroke="#ccc"/><rect x="26" y="0" width="3" height="10" fill="#d52b1e"/>`;
+  else if (/coffee|decaf|hot tea|cappuccino|macchiato|americano|espresso|hot chocolate|mocha|latte/.test(n))
+    s = `<path d="M13 9h22l-3 25H16z" fill="#f4f1ea" stroke="#6b4a2e"/><rect x="14.5" y="17" width="19" height="8" fill="#6b4a2e"/><rect x="11" y="6" width="26" height="4" rx="2" fill="#4a3322"/>`;
+  else if (/juice|milk|jug/.test(n))
+    s = `<path d="M17 9h14v4l3 4v17H14V17l3-4z" fill="${drinkColor(n)}" stroke="#999"/><rect x="19" y="4" width="10" height="5" fill="#2a6fdb"/>`;
+  else if (/water|dasani/.test(n))
+    s = `<rect x="18" y="8" width="12" height="26" rx="4" fill="#8ecae6" stroke="#5a9bbf"/><rect x="20" y="3" width="8" height="5" fill="#2a6fdb"/>`;
+  else
+    s = `<path d="M14 9h20l-3 25H17z" fill="${drinkColor(n)}"/><rect x="12" y="6" width="24" height="4" rx="2" fill="#e6e6e6" stroke="#bbb"/><rect x="26" y="0" width="3" height="8" fill="#bbb"/>`;
+  return `<svg viewBox="0 0 48 36" aria-hidden="true">${s}</svg>`;
+}
+/* NP6 screen, rebuilt from the store's photos as one 10-column grid:
+   column 0 = size keys (or products on Condiments), columns 1-8 = products (8 also holds Make Change Meal / Show Prices),
+   column 9 = Promo Item, Clear Choice, Side Choice, Void Line, Take Out Total.
+   Rows: digits, menu keys, then six product rows. Positions are [itemId, row 1-6, column 0-8]. */
+const TABS = [['Breakfast','Breakfast 2'],['Lunch','Lunch 2'],['McValue','Salad'],['Drinks'],['McCafé'],
+  ['Dessert','Bakery'],['Happy Meal','B-day Party'],['LSM','LSM 2'],['Condiments','Gifts']];
+const SIZE_ROWS = {
+  'Breakfast':['XS','S','M','L','','Sr'], 'Breakfast 2':['XS','S','M','L','','Sr'], 'Lunch':['XS','S','M','L','','Sr'],
+  'Lunch 2':['XS','S','M','L','XL','Sr'], 'McValue':['XS','S','M','L','XL','Sr'], 'Salad':['XS','S','M','L','','Sr'],
+  'Drinks':['XS','S','M','L','XL','Sr'], 'McCafé':['','S','M','L','XL',''], 'Dessert':['S','M','L','Mini','2 Pack','XL'],
+  'Bakery':['XS','S','M','L','2 Pack','Sr'], 'Happy Meal':['XS','S','M','L','XL','Sr'], 'B-day Party':['XS','S','M','L','XL','Sr'],
+  'LSM':['XS','S','M','L','',''], 'LSM 2':['XS','S','M','L','XL',''], 'Condiments':null, 'Gifts':['XS','S','M','L','','Sr']
+};
+const SIZE_NAMES = { XS:'X Small', S:'Small', M:'Medium', L:'Large', XL:'X Large', Sr:'Senior', Mini:'', '2 Pack':'' };
+const MEAL_KEY = new Set(['Breakfast','Breakfast 2','Lunch','Lunch 2','McValue','Salad','Happy Meal','LSM','LSM 2']);
+const DRINK_ROW = [['f01',5,1],['f02',5,2],['f03',5,3],['f05',5,4],['f08',5,5],['f09',5,6],['f10',5,7]];
+const LAYOUT = {
+  'Breakfast': [['a01',1,1],['a02',1,2],['a03',1,3],['a04',1,4],['a05',1,5],['a06',1,6],['a07',1,7],
+    ['a08',2,1],['a09',2,2],['a10',2,3],['a11',2,4],['a12',2,5],['a13',2,6],['a14',2,7],
+    ['a15',3,1],['a16',3,2],['a17',3,3],['a18',3,4],['a19',3,6],['a21',4,1],['a20',4,4],
+    ...DRINK_ROW,['f04',6,1],['f18',6,3],['f14',6,5],['f13',6,6],['f11',6,7]],
+  'Breakfast 2': [['b01',1,1],['b02',1,2],['b03',1,4],['b04',2,1],['b05',2,4],['b07',2,6],['b08',2,7],
+    ['b06',3,1],['b10',4,1],['b09',4,7], ...DRINK_ROW,['f13',6,6],['f11',6,7]],
+  'Lunch': [['c01',1,1],['c02',1,2],['c03',1,3],['c04',1,4],['c05',1,5],['c06',1,6],
+    ['c07',2,1],['c08',2,2],['c09',2,3],['c10',2,4],['c11',2,5],['c12',2,6],
+    ['c13',3,1],['c14',3,2],['c15',3,3],['c16',3,4],['c17',3,5],['c18',3,6],
+    ['c19',4,2],['c20',4,3],['c21',4,4],['c22',4,7],
+    ...DRINK_ROW,['f04',6,1],['f07',6,2],['f06',6,3],['f13',6,6],['f11',6,7]],
+  'Lunch 2': [['d01',1,1],['d02',1,2],['d03',1,3],['d04',1,4],['d05',1,5],
+    ['d06',2,1],['d07',2,2],['d08',2,3],['d09',2,5],['d10',2,6],['d11',2,7],
+    ['d12',3,1],['d13',3,2],['c22',3,8],
+    ...DRINK_ROW,['f04',6,1],['f07',6,2],['f14',6,5],['f13',6,6],['f11',6,7]],
+  'McValue': [['e11',1,1],['e12',1,2],['e13',1,3],
+    ['e09',2,1],['e10',2,2],['e08',2,3],['e05',2,5],['e06',2,6],['e07',2,7],
+    ['e03',3,3],['e04',3,4],['e01',4,1],['e02',4,2],['c22',4,7],['a21',4,8],
+    ...DRINK_ROW,['f13',6,6],['f11',6,7]],
+  'Salad': [['x01',1,1],['x02',2,1],['x03',3,1],...DRINK_ROW,['f13',6,6],['f11',6,7]],
+  'Drinks': [['f13',1,2],['f10',1,3],['f11',1,4],['f12',1,5],['f15',1,6],['f14',1,7],['f16',1,8],
+    ['f01',2,1],['f02',2,2],['f03',2,3],['f04',2,4],['f05',2,5],['f17',2,8],
+    ['f08',3,2],['f09',3,3],['f07',3,4],['g21',4,6],['g18',4,7],['g19',4,8]],
+  'McCafé': [['g01',1,1],['g20',1,2],['g02',1,3],['g03',1,4],['g04',1,5],['g08',1,8],
+    ['g05',2,1],['g06',2,2],['g07',2,3],['g09',3,1],['g10',3,2],['g11',3,3],['g17',4,2],
+    ['g12',5,2],['g13',5,3],['g14',5,4],['g15',5,5],['g16',5,6],['g21',6,1],['g18',6,2],['g19',6,3]],
+  'Dessert': [['h01',1,1],['h02',1,2],['h03',2,1],['h04',2,2],['h05',2,3],['h06',3,1],['h16',3,2],['h17',3,3],['h18',3,4],
+    ['h07',4,1],['h08',4,2],['h09',4,4],['h10',5,2],['h11',5,3],['h12',5,4],['h13',6,1],['h14',6,2]],
+  'Bakery': [['h15',1,4]],
+  'Happy Meal': [['i01',1,1],['i02',1,2],['i03',1,3],['i04',1,4],['i05',3,8],
+    ['i11',2,1],['f16',4,1],['f17',4,2],['f15',4,3],['i08',4,5],['i09',4,7],['i10',4,8],['i07',5,6],['f10',5,7],['i06',6,2],['f13',6,6],['f11',6,7]],
+  'LSM': [['c06',1,4],['j01',1,5],['j02',1,7],['d03',2,2],['d09',2,5],['j06',3,4],
+    ['d12',4,4],['d04',4,5],['j04',4,7],['g17',5,2],['j05',5,7],['g21',6,1],['g18',6,2],['g19',6,3]],
+  'Gifts': [['x10',1,1],['x11',1,2],['x12',1,3],['x13',1,4],['x14',1,5],['x15',2,1],['x16',2,2],['x17',2,3],['x18',2,4],['x19',2,5],
+    ['x20',3,1],['x21',4,4],['x22',4,7],['x23',5,6],['x24',5,7],['x25',6,1]],
+  'LSM 2': [['j02',1,1],['j03',2,1],['d04',1,7],['j04',2,7],['g21',5,2],['g18',5,3]],
+  'Condiments': [['k01',1,0],['k02',1,1],['k03',1,2],['k07',1,3],['k08',1,4],
+    ['k09',2,0],['k04',2,1],['k05',2,2],['k06',2,3],['k13',3,1],['k10',3,2],['k14',4,0],['k11',5,0],['k12',5,6]]
+};
+const PLACED = new Set(Object.values(LAYOUT).flat().map(x => x[0]));
+function allTabs(){
+  const fixed = TABS.flat();
+  const extra = categories().filter(c => !fixed.includes(c));
+  return extra.length ? TABS.concat([extra]) : TABS;
+}
+/* Photo positions first; a product the photos don't show goes in the first free cell of its own screen. */
+function screenCells(cat){
+  const cells = [], taken = new Set();
+  if (MEAL_KEY.has(cat)) taken.add('1:8');
+  taken.add('6:8');
+  for (const [id, r, c] of (LAYOUT[cat] || [])){
+    const it = S.menu.find(m => m.id === id); if (!it) continue;
+    cells.push({ it, r, c }); taken.add(r + ':' + c);
+  }
+  const rest = S.menu.filter(i => (i.category || 'Otros') === cat && !PLACED.has(i.id))
+    .sort((a,b) => (a.order ?? 999) - (b.order ?? 999) || (a.name||'').localeCompare(b.name||''));
+  let r = 1, c = 1;
+  for (const it of rest){
+    while (taken.has(r + ':' + c)){ c++; if (c > 8){ c = 1; r++; } }
+    cells.push({ it, r, c }); taken.add(r + ':' + c);
+  }
+  return cells;
+}
+function menuPanelHtml(){
+  const tabs = allTabs();
+  if (!tabs.flat().includes(S.cat)) S.cat = 'Breakfast';
+  const cat = S.cat;
+  const has = S.order.length > 0;
+  const col = catColor(cat);
+  const line = S.sel >= 0 ? S.order[S.sel] : null;
+  const lineItem = line ? S.menu.find(m => m.id === line.itemId) : null;
+  const canChange = !!(lineItem && lineItem.meal && lineItem.sizes);
+  const priceTag = it => {
+    if (!S.showPrices) return '';
+    if (S.size && !(it.sizes && it.sizes[S.size])) return '';
+    const pr = itemPrice(it, S.size).price;
+    return pr == null ? '' : `<span class="tp">${plain(pr)}</span>`;
+  };
+  /* label colours as on the NP6: food red, fountain drinks/juice/water blue, coffee orange, Happy Meal and shakes yellow */
+  const tileColor = it => {
+    const n = it.name || '', c = it.category || '';
+    if (/^drinks$/i.test(c)) return /coffee|decaf|hot tea/i.test(n) ? '#d9822b' : 'var(--k-blue)';
+    if (/happy meal/i.test(c) || /shake/i.test(n)) return '#f2c200';
+    if (/lemonade|tea lem/i.test(n)) return 'var(--k-blue)';
+    return 'var(--k-red)';
+  };
+  const textColor = it => /happy meal/i.test(it.category || '') || /shake/i.test(it.name || '') ? '#1a1a1a' : '#fff';
+  const cells = screenCells(cat);
+  const sizes = SIZE_ROWS[cat] === undefined ? SIZE_ROWS['Breakfast'] : SIZE_ROWS[cat];
+  const at = (r, c) => `grid-row:${r};grid-column:${c}`;
+  return `
+  <div class="np">
+    ${[0,1,2,3,4,5,6,7,8].map(n => `<button class="digit num" style="${at(1, n + 1)}" data-digit="${n}" aria-pressed="${S.qty !== '' && S.qty.endsWith(String(n))}" aria-label="Cantidad ${n}">${n}</button>`).join('')}
+    ${tabs.map((g, i) => `<div class="tab ${g.includes(cat) ? 'on' : ''}" style="${at(2, Math.min(i + 1, 10))}">${g.map(c => `<button data-cat="${esc(c)}" aria-pressed="${c === cat}">${esc(c)}</button>`).join('<hr>')}</div>`).join('')}
+    ${(sizes || []).map((k, i) => !k ? '' : ['S','M','L','Mini'].includes(k)
+      ? `<button class="key size" style="${at(i + 3, 1)}" data-size="${k}" aria-pressed="${S.size === k}">${k}<small>${SIZE_NAMES[k]}</small></button>`
+      : `<button class="key size" style="${at(i + 3, 1)}" disabled title="Ese tamaño no se usa en esta caja">${k}<small>${SIZE_NAMES[k] || ''}</small></button>`).join('')}
+    ${cells.map(({ it, r, c }) => `<button class="tile${it.off ? ' off' : ''}" style="${at(r + 2, c + 1)};--c:${tileColor(it)};--tc:${textColor(it)}" data-item="${esc(it.id)}"${it.off ? ' aria-disabled="true"' : ''}><span class="tn">${esc(it.name)}</span><span class="ti">${iconFor(it)}</span>${priceTag(it)}${it.off ? '<span class="ua">UNAVAILABLE</span>' : ''}</button>`).join('')}
+    ${MEAL_KEY.has(cat) ? `<button class="key black" style="${at(3, 9)}" data-act="changemeal" ${canChange ? '' : 'disabled'}>Make<br>Change<br>Meal</button>` : ''}
+    <button class="key round" style="${at(1, 10)};--c:#c8102e;max-width:60px;font-size:12px" data-act="manager" title="Activar o desactivar productos">Manager</button>
+    <button class="key black round" style="${at(8, 9)}" data-act="prices">Show<br>Prices<small>${S.showPrices ? 'ON' : 'OFF'}</small></button>
+    <button class="key mauve" style="${at(3, 10)}" data-act="promo" ${line && !line.promo ? '' : 'disabled'}>Promo<br>Item</button>
+    <button class="key mauve" style="${at(4, 10)}" data-act="clear" ${has || S.qty || S.size ? '' : 'disabled'}>Clear<br>Choice</button>
+    <button class="key mauve" style="${at(5, 10)}" disabled>Side<br>Choice</button>
+    <button class="key mauve" style="${at(6, 10)}" data-act="void" ${S.sel < 0 ? 'disabled' : ''}>Void<br>Line</button>
+    <button class="key round" style="${at(8, 10)};--c:var(--k-green)" data-act="total" ${has ? '' : 'disabled'}>Take Out<br>Total</button>
+  </div>`;
+}
+function openChangeMeal(){
+  const l = S.order[S.sel]; const it = l && S.menu.find(m => m.id === l.itemId);
+  if (!it || !it.meal || !it.sizes){ toast('Selecciona un combo en la orden.'); return; }
+  const opts = ['S','M','L'].filter(k => it.sizes[k] && (k !== 'S' || it.alwaysMeal));
+  $('#layer').innerHTML = `
+  <div class="overlay"><div class="dialog" role="dialog" aria-label="Make Change Meal">
+    <h3>Make Change Meal</h3>
+    <p style="margin:0">${esc(it.name)} · ${l.qty} ${l.qty > 1 ? 'unidades' : 'unidad'}</p>
+    <div class="row">${opts.map(k => `<button class="key" style="--c:var(--k-blue);min-height:70px;font-size:20px" data-meal="${k}">${({S:'Small',M:'Medium',L:'Large'})[k]} Meal<small>${money(it.sizes[k])}</small></button>`).join('')}</div>
+    <button class="btn" data-meal="cancel">Cancelar</button>
+  </div></div>`;
+  $('#layer').onclick = e => {
+    const b = e.target.closest('[data-meal]'); if (!b) return;
+    const k = b.dataset.meal;
+    $('#layer').onclick = null; $('#layer').innerHTML = '';
+    if (k === 'cancel'){ render(); return; }
+    const drink = l.drinkId && S.menu.find(m => m.id === l.drinkId);
+    Object.assign(l, buildMealLine(it, k, drink || null, l)); render();
+  };
+}
+/* ---- combos: side + drink, charging the difference for a pricier drink ---- */
+function mealKind(it){ return it.mealType || (/breakfast/i.test(it.category || '') ? 'breakfast' : 'lunch'); }
+function drinkOptions(){
+  return S.menu.filter(m => /^(drinks|mccaf)/i.test(m.category || '') && !m.off && m.price != null)
+    .sort((a,b) => (a.category > b.category ? 1 : a.category < b.category ? -1 : 0) || (a.order ?? 999) - (b.order ?? 999));
+}
+function drinkCost(d, size){ return d.sizes ? (d.sizes[size] || d.price) : d.price; }
+function includedDrinkCost(size){
+  const base = S.menu.find(m => /^coke$/i.test(m.name || '') && m.sizes);
+  return base ? (base.sizes[size] || base.price) : 199;
+}
+function drinkDiff(d, size){ return Math.max(0, drinkCost(d, size) - includedDrinkCost(size)); }
+const PENDING_DRINK = 'BEBIDA PENDIENTE';
+const PENDING_TOY = 'JUGUETE PENDIENTE';
+/* Happy Meal toy: Surprise Me / Under 3 Toy / No Toy, chosen by the cashier, never by default. */
+function toyIndex(){
+  if (S.sel >= 0 && S.order[S.sel] && S.order[S.sel].needsToy) return S.sel;
+  return S.order.findIndex(l => l.needsToy);
+}
+function setToy(idx, label){
+  const l = S.order[idx]; if (!l) return;
+  const d = l.drinkId && S.menu.find(m => m.id === l.drinkId);
+  changeOneUnit(idx, rebuildLine({ ...l, toy: label }, d || null, l.drinkSize));
+}
+function openToyPicker(idx){
+  const l = S.order[idx];
+  const toys = S.menu.filter(m => m.kind === 'toy').sort((a,b) => (a.order ?? 999) - (b.order ?? 999));
+  $('#layer').innerHTML = `
+  <div class="overlay"><div class="dialog" role="dialog" aria-label="Falta el juguete">
+    <h3>Falta el juguete · ${esc(l.name)}</h3>
+    <div class="row">${toys.map(t => `<button class="key" style="--c:#f2c200;color:#1a1a1a;text-shadow:none;min-height:64px;font-size:18px" data-toy="${esc(t.name)}">${esc(t.name)}</button>`).join('')}</div>
+    <button class="btn" data-toy="cancel">Volver a la orden</button>
+  </div></div>`;
+  $('#layer').onclick = e => {
+    const b = e.target.closest('[data-toy]'); if (!b) return;
+    $('#layer').onclick = null; $('#layer').innerHTML = '';
+    if (b.dataset.toy === 'cancel'){ render(); return; }
+    setToy(idx, b.dataset.toy.toUpperCase());
+    openPendingPicker();
+  };
+}
+const HAPPY_DRINK_INCLUDED = 179; /* Apple Juice / Milk / Choc Milk come with a Happy Meal; pricier drinks pay the difference */
+function drinkLabel(drink, size, diff){ return (drink.sizes && size ? SIZES[size] + ' ' : '') + drink.name + (diff ? ` (+${plain(diff)})` : ''); }
+/* A combo line: what it includes, its side, its drink (or pending), and anything the cashier removed with Clear Choice. */
+function buildMealLine(it, size, drink, prev){
+  const z = SIZES[size];
+  const removed = prev?.removed || [];
+  const side = mealKind(it) === 'breakfast' ? 'HASHBROWN' : z + ' FRIES';
+  const name = `${z} ${it.name}` + (/meal/i.test(it.name) ? '' : ' MEAL');
+  const diff = drink ? drinkDiff(drink, size) : 0;
+  const parts = [...(it.includes || []), side].filter(p => !removed.includes(p));
+  return { name, taxable: !!it.taxable, itemId: it.id, size, mealType: 'meal', removed,
+    price: it.sizes[size] + diff, drinkId: drink ? drink.id : null, drinkSize: size, needsDrink: !drink,
+    parts: [...parts, drink ? drinkLabel(drink, size, diff) : PENDING_DRINK] };
+}
+function buildHappyLine(it, drink, dsize, prev){
+  const removed = prev?.removed || [];
+  const sz = drink ? (drink.sizes ? (dsize && drink.sizes[dsize] ? dsize : (drink.defaultSize || 'S')) : null) : null;
+  const diff = drink ? Math.max(0, drinkCost(drink, sz) - HAPPY_DRINK_INCLUDED) : 0;
+  const extraFries = !!prev?.extraFries;
+  const parts = [...(it.includes || []), extraFries ? 'EXTRA KIDS FRIES' : 'APPLE SLICES', 'KIDS FRIES'].filter(p => !removed.includes(p));
+  const toy = prev?.toy || null;
+  return { name: it.name, taxable: !!it.taxable, itemId: it.id, size: null, mealType: 'happy', removed, toy, extraFries,
+    price: it.price + diff, drinkId: drink ? drink.id : null, drinkSize: sz, needsDrink: !drink, needsToy: !toy,
+    parts: [...parts, drink ? drinkLabel(drink, sz, diff) : PENDING_DRINK, toy || PENDING_TOY] };
+}
+function rebuildLine(l, drink, dsize){
+  const it = S.menu.find(m => m.id === l.itemId); if (!it) return null;
+  return l.mealType === 'happy' ? buildHappyLine(it, drink, dsize, l) : buildMealLine(it, l.size, drink, l);
+}
+function isDrink(it){ return /^(drinks|mccaf)/i.test(it.category || ''); }
+function pendingIndex(){
+  if (S.sel >= 0 && S.order[S.sel] && S.order[S.sel].needsDrink) return S.sel;
+  return S.order.findIndex(l => l.needsDrink);
+}
+function sameLine(a, b){ return a.name === b.name && a.price === b.price && JSON.stringify(a.parts || []) === JSON.stringify(b.parts || []); }
+/* Apply a change to one unit of a line, splitting it off when the line holds several. */
+function changeOneUnit(idx, next){
+  const l = S.order[idx]; if (!l || !next) return;
+  if (l.qty > 1){
+    l.qty--;
+    const same = S.order.findIndex(x => x !== l && sameLine(x, next));
+    if (same >= 0){ S.order[same].qty++; S.sel = same; }
+    else { S.order.splice(idx + 1, 0, { ...next, qty: 1, key: uid() }); S.sel = idx + 1; }
+  } else {
+    Object.assign(l, next);
+    const same = S.order.findIndex(x => x !== l && sameLine(x, l));
+    if (same >= 0){ S.order[same].qty += l.qty; S.order.splice(idx, 1); S.sel = same > idx ? same - 1 : same; } else S.sel = idx;
+  }
+}
+function assignDrink(idx, drink, dsize){ changeOneUnit(idx, rebuildLine(S.order[idx], drink, dsize)); }
+/* Asked only at Take Out Total, one waiting combo at a time. */
+function openPendingPicker(){
+  const idx = S.order.findIndex(l => l.needsDrink);
+  if (idx < 0){
+    const t = S.order.findIndex(l => l.needsToy);
+    if (t >= 0){ openToyPicker(t); return; }
+    S.tender = true; S.entry = ''; render(); return;
+  }
+  const l = S.order[idx]; const it = S.menu.find(m => m.id === l.itemId);
+  if (!it){ l.needsDrink = false; openPendingPicker(); return; }
+  const happy = l.mealType === 'happy';
+  const left = S.order.filter(x => x.needsDrink).reduce((n, x) => n + x.qty, 0);
+  const diffFor = d => happy ? Math.max(0, drinkCost(d, d.defaultSize || null) - HAPPY_DRINK_INCLUDED) : drinkDiff(d, l.size);
+  const opts = drinkOptions();
+  $('#layer').innerHTML = `
+  <div class="overlay"><div class="dialog" role="dialog" aria-label="Falta la bebida" style="width:min(680px,100%);max-height:92vh;overflow:auto">
+    <h3>Falta la bebida · ${esc(l.name)}</h3>
+    <p style="margin:0">${left} ${left > 1 ? 'combos esperan' : 'combo espera'} su bebida.${happy ? ' Apple Juice, Milk y Choc Milk van incluidas.' : ''} Si cuesta más, se cobra la diferencia.</p>
+    <div class="tiles">${opts.map(d => { const diff = diffFor(d); return `
+      <button class="tile" style="--c:${/coffee|decaf|hot tea/i.test(d.name) ? '#d9822b' : /^drinks$/i.test(d.category) ? 'var(--k-blue)' : 'var(--k-red)'}" data-drink="${esc(d.id)}">
+        <span class="tn">${esc(d.name)}</span><span class="ti">${iconFor(d)}</span>${diff ? `<span class="tp">+${plain(diff)}</span>` : ''}
+      </button>`; }).join('')}</div>
+    <button class="btn" data-drink="cancel">Volver a la orden</button>
+  </div></div>`;
+  $('#layer').onclick = e => {
+    const b = e.target.closest('[data-drink]'); if (!b) return;
+    $('#layer').onclick = null; $('#layer').innerHTML = '';
+    if (b.dataset.drink === 'cancel'){ render(); return; }
+    const d = S.menu.find(m => m.id === b.dataset.drink); if (!d) return;
+    assignDrink(idx, d, d.defaultSize || null);
+    openPendingPicker();
+  };
+}
+/* Clear Choice: remove one choice from the selected line (its drink, a removable side, or a sauce in the order).
+   With a single choice it is removed straight away; with several, the cashier picks which. */
+function choicesFor(l){
+  const out = [];
+  if (l.drinkId){ const d = S.menu.find(m => m.id === l.drinkId); out.push({ kind:'drink', label: d ? drinkLabel(d, l.drinkSize, 0) : 'Bebida' }); }
+  if (l.mealType === 'happy' && l.extraFries) out.push({ kind:'xfries', label:'EXTRA KIDS FRIES' });
+  else if (l.mealType === 'happy') for (const p of ['APPLE SLICES']) if (!(l.removed || []).includes(p)) out.push({ kind:'side', label:p });
+  if (l.mealType === 'happy' && l.toy) out.push({ kind:'toy', label:l.toy });
+  S.order.forEach((x, i) => { if (x.sauce && l.key && x.for === l.key) out.push({ kind:'sauce', idx:i, label: x.name + (x.qty > 1 ? ` (1 de ${x.qty})` : '') }); });
+  return out;
+}
+function removeChoice(ch){
+  const idx = S.sel, l = S.order[idx]; if (!l) return;
+  if (ch.kind === 'drink') changeOneUnit(idx, rebuildLine(l, null, null));
+  else if (ch.kind === 'side'){ const tmp = { ...l, removed: [...(l.removed || []), ch.label] };
+    const d = l.drinkId && S.menu.find(m => m.id === l.drinkId); changeOneUnit(idx, rebuildLine(tmp, d || null, l.drinkSize)); }
+  else if (ch.kind === 'xfries'){ const d = l.drinkId && S.menu.find(m => m.id === l.drinkId); changeOneUnit(idx, rebuildLine({ ...l, extraFries: false }, d || null, l.drinkSize)); }
+  else if (ch.kind === 'toy'){ const d = l.drinkId && S.menu.find(m => m.id === l.drinkId); changeOneUnit(idx, rebuildLine({ ...l, toy: null }, d || null, l.drinkSize)); }
+  else if (ch.kind === 'sauce'){ const s = S.order[ch.idx]; if (s){ if (--s.qty <= 0){ S.order.splice(ch.idx, 1); if (S.sel > ch.idx) S.sel--; } } }
+  render();
+}
+function clearChoice(btn){
+  if (S.qty || S.size){ S.qty = ''; S.size = null; render(); return; }
+  const l = S.sel >= 0 ? S.order[S.sel] : null;
+  if (l){
+    const opts = choicesFor(l);
+    if (!opts.length) return;
+    if (opts.length === 1){ removeChoice(opts[0]); toast('Quitado: ' + opts[0].label); return; }
+    $('#layer').innerHTML = `
+    <div class="overlay"><div class="dialog" role="dialog" aria-label="Clear Choice">
+      <h3>Clear Choice · ${esc(l.name)}</h3>
+      <p style="margin:0">¿Qué quieres quitar de la elección?</p>
+      <div style="display:grid;gap:6px">${opts.map((o, i) => `<button class="key" style="--c:var(--k-red);min-height:52px;font-size:18px" data-clear="${i}">${esc(o.label)}</button>`).join('')}</div>
+      <button class="btn" data-clear="cancel">Cancelar</button>
+    </div></div>`;
+    $('#layer').onclick = e => {
+      const b = e.target.closest('[data-clear]'); if (!b) return;
+      $('#layer').onclick = null; $('#layer').innerHTML = '';
+      if (b.dataset.clear === 'cancel'){ render(); return; }
+      removeChoice(opts[+b.dataset.clear]);
+    };
+    return;
+  }
+  if (btn.dataset.armed){ S.order = []; S.sel = -1; render(); }
+  else { btn.dataset.armed = '1'; btn.innerHTML = '¿Borrar<br>orden?'; }
+}
+
+/* ---- Promo Item: a manager PIN sets the selected line to $0 ---- */
+async function pinHash(p){
+  try { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('cm-pin:' + p));
+    return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+  catch(e){ return sha256Hex('cm-pin:' + p); }
+}
+/* Plain SHA-256 for pages that are not on a secure (https) connection, where crypto.subtle is missing. */
+function sha256Hex(str){
+  const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  const bytes = new TextEncoder().encode(str);
+  const len = bytes.length, bitLen = len * 8;
+  const total = ((len + 9 + 63) >> 6) << 6;
+  const m = new Uint8Array(total); m.set(bytes); m[len] = 0x80;
+  const dv = new DataView(m.buffer);
+  dv.setUint32(total - 8, Math.floor(bitLen / 0x100000000)); dv.setUint32(total - 4, bitLen >>> 0);
+  let h = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  const w = new Uint32Array(64), rotr = (x, n) => (x >>> n) | (x << (32 - n));
+  for (let off = 0; off < total; off += 64){
+    for (let i = 0; i < 16; i++) w[i] = dv.getUint32(off + i * 4);
+    for (let i = 16; i < 64; i++){
+      const s0 = rotr(w[i-15], 7) ^ rotr(w[i-15], 18) ^ (w[i-15] >>> 3);
+      const s1 = rotr(w[i-2], 17) ^ rotr(w[i-2], 19) ^ (w[i-2] >>> 10);
+      w[i] = (w[i-16] + s0 + w[i-7] + s1) >>> 0;
+    }
+    let [a, b, c, d, e, f, g, hh] = h;
+    for (let i = 0; i < 64; i++){
+      const t1 = (hh + (rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + w[i]) >>> 0;
+      const t2 = ((rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) >>> 0;
+      hh = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+    }
+    h = h.map((v, i) => (v + [a, b, c, d, e, f, g, hh][i]) >>> 0);
+  }
+  return h.map(v => v.toString(16).padStart(8, '0')).join('');
+}
+async function saveSettings(){
+  LS.set('taxRate', S.taxRate); LS.set('mgrPin', S.mgrPin || '');
+  if (S.db){ try { await S.db.doc('settings/config').set({ taxRate: S.taxRate, ...(S.mgrPin ? { mgrPin: S.mgrPin } : {}) }); return true; }
+    catch(e){ toast('No se pudo guardar la configuración.'); return false; } }
+  return true;
+}
+/* Manager key: PIN (when one is set), then the manager pages — sales log and products/prices/PIN. */
+function askPin(title, onOk){
+  $('#layer').innerHTML = `
+  <div class="overlay"><form class="dialog" id="pinAsk" autocomplete="off" aria-label="${esc(title)}">
+    <h3>${esc(title)}</h3>
+    <label>PIN de manager<input id="pinAskIn" type="password" inputmode="numeric" autocomplete="off" required></label>
+    <div class="row"><button class="btn" type="button" id="pinAskNo">Cancelar</button><button class="btn go" type="submit">Entrar</button></div>
+  </form></div>`;
+  $('#pinAskNo').onclick = () => { $('#layer').innerHTML = ''; };
+  $('#pinAsk').onsubmit = async e => {
+    e.preventDefault();
+    if ((await pinHash($('#pinAskIn').value.trim())) !== S.mgrPin){ toast('PIN incorrecto.'); $('#pinAskIn').value = ''; $('#pinAskIn').focus(); return; }
+    $('#layer').innerHTML = ''; onOk();
+  };
+  setTimeout(() => $('#pinAskIn')?.focus(), 30);
+}
+function openManagerMenu(){
+  $('#layer').innerHTML = `
+  <div class="overlay"><div class="dialog" role="dialog" aria-label="Manager">
+    <h3>Manager</h3>
+    <button class="key" style="--c:var(--k-blue);min-height:64px;font-size:20px" data-mgr="registro">Registro de ventas</button>
+    <button class="key" style="--c:var(--k-red);min-height:64px;font-size:20px" data-mgr="menu">Productos, precios, tax y PIN</button>
+    <button class="btn" data-mgr="cancel">Volver a la caja</button>
+  </div></div>`;
+  $('#layer').onclick = e => {
+    const b = e.target.closest('[data-mgr]'); if (!b) return;
+    $('#layer').onclick = null; $('#layer').innerHTML = '';
+    if (b.dataset.mgr !== 'cancel'){ S.view = b.dataset.mgr; S.editId = null; render(); window.scrollTo({ top: 0 }); }
+  };
+}
+function openManager(){
+  if (S.mgrPin) askPin('Manager', openManagerMenu);
+  else { openManagerMenu(); toast('Consejo: crea un PIN en Productos para proteger esta pantalla.'); }
+}
+function openPromo(){
+  const l = S.sel >= 0 ? S.order[S.sel] : null;
+  if (!l){ return; }
+  if (!S.mgrPin){ toast('Primero un manager debe crear su PIN en Menú → Manager.'); return; }
+  $('#layer').innerHTML = `
+  <div class="overlay"><form class="dialog" id="promoForm" autocomplete="off" aria-label="Promo Item">
+    <h3>Promo Item · ${esc(l.name)}</h3>
+    <p style="margin:0">Deja este producto en $0.00. Solo un manager puede autorizarlo.</p>
+    <label>PIN de manager<input id="promoPin" type="password" inputmode="numeric" autocomplete="off" required></label>
+    <div class="row"><button class="btn" type="button" id="promoCancel">Cancelar</button><button class="btn go" type="submit">Autorizar</button></div>
+  </form></div>`;
+  $('#promoCancel').onclick = () => { $('#layer').innerHTML = ''; };
+  $('#promoForm').onsubmit = async e => {
+    e.preventDefault();
+    const ok = (await pinHash($('#promoPin').value.trim())) === S.mgrPin;
+    if (!ok){ toast('PIN incorrecto.'); $('#promoPin').value = ''; $('#promoPin').focus(); return; }
+    $('#layer').innerHTML = '';
+    if (S.order[S.sel] === l){ l.promo = true; }
+    render(); toast('Promo aplicada: ' + l.name);
+  };
+  setTimeout(() => $('#promoPin')?.focus(), 30);
+}
+/* ---- Receipt shown to the customer until the real register can print one ---- */
+function openReceipt(sale){
+  if (!sale) return;
+  const when = new Date(sale.ts);
+  $('#layer').innerHTML = `
+  <div class="overlay"><div class="dialog receipt" role="dialog" aria-label="Recibo provisional">
+    <div class="rc-head"><b>RECIBO PROVISIONAL</b><span>Orden ${String(sale.num || '').padStart(3, '0') || '—'}</span><span>${when.toLocaleDateString()} ${esc(sale.time)}</span><span>Pago en efectivo</span></div>
+    <div class="rc-lines">${sale.lines.map(l => `
+      <div class="rc-line"><span>${l.qty}</span><span>${esc(l.name)}${(l.parts || []).map(p => `<small>${esc(p)}</small>`).join('')}${l.free ? `<small>${l.free} GRATIS</small>` : ''}${l.promo ? '<small>PROMO</small>' : ''}</span><span>${plain(lineAmt(l))}</span></div>`).join('')}</div>
+    <div class="rc-tot">
+      <div><span>Subtotal</span><span>${plain(sale.subtotal)}</span></div>
+      <div><span>Tax NJ ${sale.taxRate}%</span><span>${plain(sale.tax)}</span></div>
+      <div class="g"><span>Total</span><span>${plain(sale.total)}</span></div>
+      <div><span>Efectivo</span><span>${plain(sale.paid)}</span></div>
+      <div><span>Cambio</span><span>${plain(sale.change)}</span></div>
+    </div>
+    <p class="rc-note">Este es un recibo provisional. Su recibo oficial se imprime cuando se abra la caja.</p>
+    <button class="btn go" id="rcClose" style="font-size:18px;padding:12px">Cerrar</button>
+  </div></div>`;
+  $('#rcClose').onclick = () => { $('#layer').innerHTML = ''; };
+}
+/* ---- iPad version (no Claude account): access key at open, export of sales ---- */
+function lockScreen(){
+  try { if (sessionStorage.getItem('cm.unlocked') === '1') return; } catch(e){}
+  const fixed = window.CM_ACCESS_HASH || '';
+  const saved = fixed || LS.get('accessPin', '');
+  const creating = !saved;
+  $('#layer').innerHTML = `
+  <div class="overlay" style="background:#2b3036">
+    <form class="dialog" id="lockForm" autocomplete="off" aria-label="Iniciar sesión">
+      <h3>${creating ? 'Crea tu clave de acceso' : 'Iniciar sesión'}</h3>
+      ${fixed ? '<label>Usuario<input id="lockUser" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required></label>' : ''}
+      <label>${fixed ? 'Contraseña' : 'Clave (4 a 8 números)'}<input id="lockPin" type="password" inputmode="numeric" autocomplete="${fixed ? 'current-password' : 'off'}" required></label>
+      ${creating ? '<label>Repite la clave<input id="lockPin2" type="password" inputmode="numeric" autocomplete="off" required></label>' : ''}
+      <button class="btn go" type="submit" style="font-size:18px;padding:12px">Entrar</button>
+    </form>
+  </div>`;
+  $('#lockForm').onsubmit = async e => {
+    e.preventDefault();
+    const p = $('#lockPin').value.trim();
+    if (fixed){
+      const u = ($('#lockUser').value || '').trim().toLowerCase();
+      if ((await pinHash('acc:' + u + ':' + p)) !== fixed){ toast('Usuario o contraseña incorrectos.'); $('#lockPin').value = ''; $('#lockPin').focus(); return; }
+    } else if (creating){
+      if (!/^\d{4,8}$/.test(p)){ toast('La clave debe tener de 4 a 8 números.'); return; }
+      if (p !== $('#lockPin2').value.trim()){ toast('Las claves no coinciden.'); return; }
+      LS.set('accessPin', await pinHash('acc:' + p));
+    } else if ((await pinHash('acc:' + p)) !== saved){ toast('Clave incorrecta.'); $('#lockPin').value = ''; $('#lockPin').focus(); return; }
+    try { sessionStorage.setItem('cm.unlocked', '1'); } catch(e){}
+    $('#layer').innerHTML = '';
+  };
+  setTimeout(() => ($('#lockUser') || $('#lockPin'))?.focus(), 50);
+}
+/* Wipe every saved sale (all dates) once they are in the real register. Two confirmations. */
+function openWipe(){
+  const all = mergedSales(); if (!all.length) return;
+  const notIn = all.filter(s => !s.voided && !s.entered).length;
+  const step = n => {
+    $('#layer').innerHTML = n === 1 ? `
+    <div class="overlay"><div class="dialog" role="dialog" aria-label="Borrar todo el registro">
+      <h3>Borrar todo el registro</h3>
+      <p style="margin:0">Se borrarán <b>${all.length}</b> ventas de todos los días.${notIn ? ` <b style="color:var(--warn)">${notIn} todavía no están marcadas como pasadas a la caja.</b>` : ' Todas están marcadas como pasadas a la caja.'}</p>
+      <div class="row"><button class="btn" data-wipe="no">Cancelar</button><button class="btn no" data-wipe="1">Sí, borrar</button></div>
+    </div></div>` : `
+    <div class="overlay"><div class="dialog" role="dialog" aria-label="Confirmación final">
+      <h3>¿Seguro? Última confirmación</h3>
+      <p style="margin:0">Esto deja el registro en blanco y <b>no se puede deshacer</b>. Los productos, precios y el PIN no se borran.</p>
+      <div class="row"><button class="btn" data-wipe="no">No, volver</button><button class="key" style="--c:var(--k-red);min-height:52px" data-wipe="2">Borrar todo definitivamente</button></div>
+    </div></div>`;
+  };
+  step(1);
+  $('#layer').onclick = async e => {
+    const b = e.target.closest('[data-wipe]'); if (!b) return;
+    if (b.dataset.wipe === 'no'){ $('#layer').onclick = null; $('#layer').innerHTML = ''; return; }
+    if (b.dataset.wipe === '1'){ step(2); return; }
+    $('#layer').onclick = null; $('#layer').innerHTML = '';
+    S.pending = []; LS.set('pending', []); S.done = null;
+    if (S.db){
+      let failed = 0;
+      for (const sale of S.sales.slice()){ try { await S.db.collection('sales').doc(sale.id).delete(); } catch(err){ failed++; } }
+      if (failed) toast(`No se pudieron borrar ${failed} ventas. Revisa la conexión e inténtalo otra vez.`); else toast('Registro borrado.');
+    } else { S.sales = []; LS.set('sales', []); toast('Registro borrado.'); }
+    setSync(); render();
+  };
+}
+function saveFile(name, text, type){
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1500);
+}
+function exportCsv(){
+  const q = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+  const rows = [['fecha','hora','orden','cantidad','producto','detalle','importe','subtotal_venta','tax_venta','total_venta','efectivo','cambio','pasada_a_caja','anulada'].join(',')];
+  for (const s of mergedSales().slice().reverse()) for (const l of s.lines)
+    rows.push([s.date, s.time, s.num || '', l.qty, l.name, (l.parts || []).join(' / ') + (l.free ? ` / ${l.free} gratis` : '') + (l.promo ? ' / PROMO' : ''),
+      plain(lineAmt(l)), plain(s.subtotal), plain(s.tax), plain(s.total), plain(s.paid), plain(s.change), s.entered ? 'si' : 'no', s.voided ? 'si' : 'no'].map(q).join(','));
+  saveFile(`ventas-${today()}.csv`, '﻿' + rows.join('\n'), 'text/csv');
+}
+function exportBackup(){
+  saveFile(`respaldo-caja-${today()}.json`, JSON.stringify({ sales: mergedSales(), menu: S.menu, taxRate: S.taxRate }, null, 1), 'application/json');
+}
+function tenderHtml(){
+  const t = calc(S.order, S.taxRate);
+  const entered = S.entry ? parseInt(S.entry,10) : 0;
+  return `
+    <div class="tender">
+      <h2>Cobro</h2>
+      <div class="tgrid">
+        <div style="display:grid;gap:6px">
+          <div class="due num"><div><span>Subtotal</span><span>${plain(t.sub)}</span></div><div><span>NJ Tax ${S.taxRate}%</span><span>${plain(t.tax)}</span></div><div><span>Total a cobrar (con tax)</span><span class="big">${plain(t.total)}</span></div><div><span>Número</span><span class="big">${plain(entered)}</span></div></div>
+          <div class="pad">
+            ${[7,8,9,4,5,6,1,2,3].map(n => `<button class="pk" data-pad="${n}">${n}</button>`).join('')}
+            <button class="pk sm" data-pad="clear">CLEAR</button><button class="pk" data-pad="0">0</button><button class="pk" data-pad="00">.00</button>
+          </div>
+        </div>
+        <div class="tside">
+          <button class="key wide" data-cash="${t.total}" style="min-height:70px">EXACT CASH</button>
+          ${[2000,5000,10000,1000,500,100].map(c => `<button class="key num" data-cash="${c}" ${c < t.total ? 'disabled' : ''}>$${c/100}<small>billete</small></button>`).join('')}
+          <button class="key wide" data-cash="entry" ${entered >= t.total ? '' : 'disabled'}>Cash amount tendered</button>
+          <button class="key wide back" data-act="modify">Modificar orden</button>
+        </div>
+      </div>
+    </div>`;
+}
+function viewRegistro(){
+  const all = mergedSales().filter(s => s.date === S.regDate);
+  const live = all.filter(s => !s.voided);
+  const sum = live.reduce((a,s) => ({ sub:a.sub+s.subtotal, tax:a.tax+s.tax, total:a.total+s.total }), { sub:0, tax:0, total:0 });
+  const entered = live.filter(s => s.entered).length;
+  const items = itemSummary(live);
+  const pendingIds = new Set(S.pending.map(p => p.id));
+  return `
+  <div class="page">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <h2>Ventas del día</h2>
+        <label>Fecha<input type="date" id="regDate" value="${S.regDate}"></label>
+      </div>
+      <div class="stats">
+        <div class="stat"><small>Ventas</small><b class="num">${live.length}</b></div>
+        <div class="stat"><small>Subtotal</small><b class="num">${money(sum.sub)}</b></div>
+        <div class="stat"><small>Tax cobrado</small><b class="num">${money(sum.tax)}</b></div>
+        <div class="stat"><small>Efectivo total</small><b class="num">${money(sum.total)}</b></div>
+      </div>
+      <div class="row" style="justify-content:space-between">
+        <span>${entered} de ${live.length} pasadas a la caja</span>
+        <span style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" data-act="copy" ${live.length ? '' : 'disabled'}>Copiar resumen</button>${STANDALONE ? '<button class="btn" data-act="csv">Exportar ventas (Excel)</button><button class="btn" data-act="backup">Respaldo</button>' : ''}<button class="btn no" data-act="wipe" ${mergedSales().length ? '' : 'disabled'}>Borrar todo el registro</button></span>
+      </div>
+    </div>
+    <div class="two">
+      <div class="card">
+        <h2>Cada venta</h2>
+        ${all.length ? `<div class="tbl"><table>
+          <thead><tr><th>Hora</th><th>Productos</th><th class="r">Total</th><th>En caja</th></tr></thead>
+          <tbody>${all.map(s => `
+            <tr class="${s.voided ? 'void' : ''}">
+              <td class="num">${esc(s.time)}${pendingIds.has(s.id) ? '<br><span class="tag">por subir</span>' : ''}</td>
+              <td>${s.lines.map(l => `${l.qty} ${esc(lineLabel(l))}`).join('<br>')}<br><small style="color:var(--muted)">Recibido ${money(s.paid)} · cambio ${money(s.change)}</small></td>
+              <td class="r num">${money(s.total)}<br><small style="color:var(--muted)">tax ${money(s.tax)}</small></td>
+              <td>${s.voided ? '<span class="tag">anulada</span>' : `
+                <label class="chk"><input type="checkbox" data-entered="${esc(s.id)}" ${s.entered ? 'checked' : ''}> Pasada</label>
+                <button class="btn no" style="margin-top:6px;padding:3px 8px;font-size:13px" data-void="${esc(s.id)}">Anular</button>`}<button class="btn" style="margin-top:6px;padding:3px 8px;font-size:13px;display:block" data-receipt="${esc(s.id)}">Recibo</button></td>
+            </tr>`).join('')}</tbody></table></div>`
+        : `<p class="empty-p">No hay ventas registradas el ${esc(S.regDate)}.</p>`}
+      </div>
+      <div class="card" style="align-content:start">
+        <h2>Para marcar en la caja</h2>
+        <p class="hint">Total de cada producto vendido ese día (sin las anuladas). Márcalos así en la caja cuando vuelva.</p>
+        ${items.length ? `<div class="tbl"><table>
+          <thead><tr><th class="r">Cant.</th><th>Producto</th><th class="r">Precio</th><th class="r">Importe</th></tr></thead>
+          <tbody>${items.map(i => `<tr><td class="r num"><b>${i.qty}</b></td><td>${esc(i.name)}</td><td class="r num">${money(i.price)}</td><td class="r num">${money(i.amt)}</td></tr>`).join('')}</tbody>
+        </table></div>` : `<p class="empty-p">Nada que marcar.</p>`}
+      </div>
+    </div>
+  </div>`;
+}
+function itemSummary(sales){
+  const by = {};
+  for (const s of sales) for (const l of s.lines){
+    const nm = l.name + (l.parts && l.parts.length ? ' (' + l.parts.join(', ') + ')' : '') + (l.promo ? ' (PROMO)' : ''); const k = nm+'|'+l.price;
+    const e = (by[k] ||= { name:nm, price:l.price, qty:0, amt:0 }); e.qty += l.qty; e.amt += lineAmt(l);
+  }
+  return Object.values(by).sort((a,b) => b.qty - a.qty);
+}
+function viewMenu(){
+  const e = S.menu.find(m => m.id === S.editId);
+  const cats = categories();
+  const sz = k => e?.sizes?.[k] ? plain(e.sizes[k]) : '';
+  return `
+  <div class="page">
+    <div class="card">
+      <h2>${e ? 'Editar producto' : 'Añadir producto'}</h2>
+      <form id="itemForm" class="form" autocomplete="off">
+        <label class="wide">Nombre (como sale en el ticket)<input id="f-name" required value="${esc(e?.name || '')}" placeholder="Ej. Café"></label>
+        <label class="wide">Pantalla / categoría<input id="f-cat" list="catlist" value="${esc(e?.category || S.cat || '')}" placeholder="Ej. Desayuno"></label>
+        <label>Precio normal<input id="f-price" inputmode="decimal" value="${e ? plain(e.price) : ''}" placeholder="0.00"></label>
+        <label>o Small<input id="f-S" inputmode="decimal" value="${sz('S')}" placeholder="—"></label>
+        <label>Medium<input id="f-M" inputmode="decimal" value="${sz('M')}" placeholder="—"></label>
+        <label>Large<input id="f-L" inputmode="decimal" value="${sz('L')}" placeholder="—"></label>
+        <div class="row" style="flex-wrap:nowrap">
+          <label class="chk" style="color:var(--ink)"><input type="checkbox" id="f-tax" ${e ? (e.taxable ? 'checked' : '') : 'checked'}> Tax</label>
+          <button class="btn go" type="submit">${e ? 'Guardar' : 'Añadir'}</button>
+          ${e ? '<button class="btn" type="button" data-act="canceledit">Cancelar</button>' : ''}
+        </div>
+        <datalist id="catlist">${cats.map(c => `<option value="${esc(c)}">`).join('')}</datalist>
+      </form>
+      <p class="hint">El precio normal es el que se cobra si no tocas tamaño. Si el producto viene en Small / Medium / Large, pon esos precios también; en la venta toca S, M o L antes del producto, como en el NP6.</p>
+    </div>
+    <div class="two">
+      <div class="card" style="align-content:start">
+        <h2>Productos (${S.menu.length})</h2>
+        <p class="hint">Quita la marca de <b>Disponible</b> para desactivar un producto: en la venta sale en gris con "UNAVAILABLE" y no se puede marcar.</p>
+        ${S.menu.length ? `<div class="tbl"><table><thead><tr><th>Disponible</th><th>Producto</th><th class="r">Precio</th><th>Tax</th><th></th></tr></thead><tbody>
+          ${cats.map(c => `<tr><th colspan="5">${esc(c)}</th></tr>` + S.menu.filter(i => (i.category||'Otros') === c).sort((a,b) => (a.name||'').localeCompare(b.name||'')).map(i => `
+            <tr${i.off ? ' style="opacity:.6"' : ''}><td><label class="chk"><input type="checkbox" data-avail="${esc(i.id)}" ${i.off ? '' : 'checked'} aria-label="${esc(i.name)} disponible"></label></td><td>${esc(i.name)}${i.off ? ' <span class="tag">desactivado</span>' : ''}</td>
+            <td class="r num">${i.price == null ? '—' : money(i.price)}${i.sizes ? '<br><small style="color:var(--muted)">' + Object.entries(i.sizes).filter(([,v]) => v).map(([k,v]) => `${k} ${money(v)}`).join(' · ') + '</small>' : ''}</td>
+            <td>${i.taxable ? 'Sí' : '<span class="tag">No</span>'}</td>
+            <td class="r" style="white-space:nowrap"><button class="btn" style="padding:3px 8px" data-edit="${esc(i.id)}">Editar</button>
+            ${S.confirmDel === i.id ? `<button class="btn no" style="padding:3px 8px" data-del="${esc(i.id)}">¿Borrar?</button>` : `<button class="btn no" style="padding:3px 8px" data-askdel="${esc(i.id)}">Borrar</button>`}</td></tr>`).join('')).join('')}
+        </tbody></table></div>` : '<p class="empty-p">Añade el primer producto arriba.</p>'}
+      </div>
+      <div class="card" style="align-content:start">
+        <h2>Tax</h2>
+        <form id="taxForm" class="row" autocomplete="off">
+          <label>Tasa (%)<input id="f-rate" inputmode="decimal" value="${S.taxRate}"></label>
+          <button class="btn go" type="submit" style="align-self:end">Guardar</button>
+        </form>
+        <p class="hint">New Jersey cobra 6.625% de sales tax sobre comida preparada y bebidas. Si un producto no lleva tax, desmárcalo. Confirma la tasa con tu gerente (algunas zonas UEZ cobran menos).</p>
+      </div>
+      <div class="card" style="align-content:start">
+        <h2>Manager</h2>
+        <p class="hint">PIN para autorizar <b>Promo Item</b> (deja un producto en $0). ${S.mgrPin ? 'Ya hay un PIN guardado; escribe uno nuevo para cambiarlo.' : 'Todavía no hay PIN.'}</p>
+        <form id="pinForm" class="row" autocomplete="off">
+          <label>PIN nuevo (4 a 8 números)<input id="f-pin" type="password" inputmode="numeric" autocomplete="new-password"></label>
+          <button class="btn go" type="submit" style="align-self:end">Guardar PIN</button>
+        </form>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- actions ---------- */
+function addItem(it){
+  if (it.kind === 'dummy'){ toast(`${it.name}: este botón no se usa sin caja.`); return; }
+  if (it.off){ toast(`${it.name} está desactivado. Actívalo en Menú si ya hay.`); return; }
+  const qty = Math.max(1, parseInt(S.qty || '1', 10));
+  if (S.size && (it.sizes || S.size === 'Mini') && !(it.sizes && it.sizes[S.size])){ toast(`${it.name} no tiene tamaño ${SIZES[S.size]}.`); return; }
+  const p = itemPrice(it, S.size);
+  if (p.price == null){ toast('Ese producto no tiene precio.'); return; }
+  if (it.kind === 'happy'){ addLine(buildHappyLine(it, null, null, null), qty); return; }
+  if (it.kind === 'hmside'){
+    const sel = S.sel >= 0 ? S.order[S.sel] : null;
+    const idx = sel && sel.mealType === 'happy' && !sel.extraFries ? S.sel : S.order.findIndex(l => l.mealType === 'happy' && !l.extraFries);
+    if (idx < 0){ toast('Primero pon un Happy Meal.'); return; }
+    const l = S.order[idx]; const d = l.drinkId && S.menu.find(m => m.id === l.drinkId);
+    changeOneUnit(idx, rebuildLine({ ...l, extraFries: true, removed: (l.removed || []).filter(p => p !== 'APPLE SLICES') }, d || null, l.drinkSize));
+    S.done = null; S.qty = ''; S.size = null; render(); return;
+  }
+  if (it.kind === 'toy'){
+    for (let n = 0; n < qty; n++){ const idx = toyIndex(); if (idx < 0){ if (!n) toast('Primero pon un Happy Meal.'); break; } setToy(idx, it.name.toUpperCase()); }
+    S.done = null; S.qty = ''; S.size = null; render(); return;
+  }
+  if (it.meal && p.size && it.sizes && it.sizes[p.size] && (S.size || it.alwaysMeal)){ addLine(buildMealLine(it, p.size, null), qty); return; }
+  if (isDrink(it) && pendingIndex() >= 0){
+    for (let n = 0; n < qty; n++){ const idx = pendingIndex(); if (idx < 0){ addLine({ name: (p.size ? SIZES[p.size] + ' ' : '') + it.name, price: p.price, taxable: !!it.taxable, itemId: it.id, size: p.size }, qty - n); return; } assignDrink(idx, it, p.size); }
+    S.done = null; S.qty = ''; S.size = null; render(); return;
+  }
+  const name = (p.size ? SIZES[p.size] + ' ' : '') + it.name;
+  const sauce = /^condiments$/i.test(it.category || '') && SAUCE_RE.test(it.name || '');
+  let owner = null;
+  if (sauce){
+    const sel = S.sel >= 0 ? S.order[S.sel] : null;
+    const target = sel && !sel.sauce && freeSaucesFor(sel) > 0 ? sel : [...S.order].reverse().find(l => !l.sauce && freeSaucesFor(l) > 0);
+    owner = target ? target.key : null;
+  }
+  const keepSel = S.sel;
+  addLine({ name, price: p.price, taxable: !!it.taxable, itemId: it.id, size: p.size, ...(sauce ? { sauce: true, for: owner } : {}) }, qty);
+  if (sauce && owner){ const oi = S.order.findIndex(l => l.key === owner); if (oi >= 0){ S.sel = oi; render(); } }
+}
+function addLine(it, qty = 1){
+  S.done = null;
+  const pk = JSON.stringify(it.parts || []);
+  const i = S.order.findIndex(l => l.name === it.name && l.price === it.price && l.taxable === it.taxable && JSON.stringify(l.parts || []) === pk && (l.for || null) === (it.for || null) && !l.promo);
+  if (i >= 0){ S.order[i].qty += qty; S.sel = i; } else { S.order.push({ ...it, qty, key: uid() }); S.sel = S.order.length - 1; }
+  S.qty = ''; S.size = null; render();
+}
+async function finishSale(paid){
+  normalizeSauces();
+  const t = calc(S.order, S.taxRate);
+  if (paid < t.total) return;
+  const now = new Date();
+  const sale = { id: uid(), ts: now.getTime(), date: today(now), time: now.toTimeString().slice(0,5),
+    lines: S.order.map(l => ({ name:l.name, price:l.price, qty:l.qty, taxable:!!l.taxable, ...(l.parts ? { parts:l.parts } : {}), ...(l.free ? { free:l.free } : {}), ...(l.promo ? { promo:true } : {}) })),
+    num: mergedSales().filter(s => s.date === today(now)).length + 1,
+    subtotal: t.sub, tax: t.tax, total: t.total, paid, change: paid - t.total, taxRate: S.taxRate, entered:false, voided:false };
+  S.done = sale; S.order = []; S.sel = -1; S.tender = false; S.entry = '';
+  render();
+  await saveSale(sale);
+}
+document.querySelector('nav').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b){ S.view = b.dataset.view; S.editId = null; S.confirmDel = null; render(); } });
+$('#main').addEventListener('click', async e => {
+  const t = e.target;
+  const g = sel => t.closest(sel);
+  let b;
+  if ((b = g('[data-line]'))){ const i = +b.dataset.line; S.sel = S.sel === i ? -1 : i; render(); return; }
+  if ((b = g('[data-digit]'))){ S.done = null; S.qty = (S.qty + b.dataset.digit).replace(/^0+/, '').slice(0,2); render(); return; }
+  if ((b = g('[data-size]'))){ S.size = S.size === b.dataset.size ? null : b.dataset.size; render(); return; }
+  if ((b = g('[data-cat]'))){ S.cat = b.dataset.cat; render(); return; }
+  if ((b = g('[data-item]'))){ const it = S.menu.find(m => m.id === b.dataset.item); if (it) addItem(it); return; }
+  if ((b = g('[data-pad]'))){ const v = b.dataset.pad; S.entry = v === 'clear' ? '' : (S.entry + v).replace(/^0+/, '').slice(0,7); render(); return; }
+  if ((b = g('[data-cash]'))){ const v = b.dataset.cash; await finishSale(v === 'entry' ? parseInt(S.entry || '0', 10) : Number(v)); return; }
+  if ((b = g('[data-edit]'))){ S.editId = b.dataset.edit; S.confirmDel = null; render(); window.scrollTo({ top:0 }); return; }
+  if ((b = g('[data-askdel]'))){ S.confirmDel = b.dataset.askdel; render(); return; }
+  if ((b = g('[data-del]'))){ const id = b.dataset.del; S.confirmDel = null; if (S.editId === id) S.editId = null; await deleteMenuItem(id); return; }
+  if ((b = g('[data-receipt]'))){ openReceipt(mergedSales().find(s => s.id === b.dataset.receipt)); return; }
+  if ((b = g('[data-void]'))){ if (b.dataset.armed){ await patchSale(b.dataset.void, { voided:true }); } else { b.dataset.armed = '1'; b.textContent = '¿Anular? toca otra vez'; } return; }
+  if (!(b = g('[data-act]'))) return;
+  const act = b.dataset.act;
+  if (act === 'void' && S.sel >= 0){ S.order.splice(S.sel,1); S.sel = -1; render(); }
+  if (act === 'clear') clearChoice(b);
+  if (act === 'prices'){ S.showPrices = !S.showPrices; LS.set('showPrices', S.showPrices); render(); }
+  if (act === 'total' && S.order.length){ openPendingPicker(); }
+  if (act === 'modify'){ S.tender = false; render(); }
+  if (act === 'changemeal') openChangeMeal();
+  if (act === 'promo') openPromo();
+  if (act === 'csv') exportCsv();
+  if (act === 'wipe') openWipe();
+  if (act === 'backup') exportBackup();
+  if (act === 'receipt') openReceipt(S.done);
+  if (act === 'manager') openManager();
+  if (act === 'canceledit'){ S.editId = null; render(); }
+  if (act === 'copy'){
+    const live = mergedSales().filter(s => s.date === S.regDate && !s.voided);
+    const tot = live.reduce((x,s) => x + s.total, 0), tax = live.reduce((x,s) => x + s.tax, 0);
+    const txt = `Ventas en efectivo sin caja ${S.regDate}\n` + itemSummary(live).map(i => `${i.qty} x ${i.name} (${money(i.price)})`).join('\n') +
+      `\nVentas: ${live.length}\nTax: ${money(tax)}\nTotal efectivo: ${money(tot)}`;
+    try { await navigator.clipboard.writeText(txt); toast('Resumen copiado'); } catch(err){ toast('No se pudo copiar automáticamente.'); }
+  }
+});
+$('#main').addEventListener('change', e => {
+  if (e.target.id === 'regDate'){ S.regDate = e.target.value || today(); render(); }
+  if (e.target.dataset.entered) patchSale(e.target.dataset.entered, { entered: e.target.checked });
+  if (e.target.dataset.avail){
+    const it = S.menu.find(m => m.id === e.target.dataset.avail);
+    if (it){ const next = { ...it, off: !e.target.checked };
+      saveMenuItem(next).then(ok => { if (ok){ if (!S.db){ render(); } toast(next.off ? `${it.name} desactivado` : `${it.name} activado`); } }); }
+  }
+});
+$('#main').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (e.target.id === 'itemForm'){
+    const name = $('#f-name').value.trim();
+    const sizes = {}; for (const k of ['S','M','L']){ const c = toCents($('#f-'+k).value); if (c) sizes[k] = c; }
+    const price = toCents($('#f-price').value);
+    if (!name || (!price && !Object.keys(sizes).length)){ toast('Escribe el nombre y al menos un precio.'); return; }
+    const old = S.menu.find(m => m.id === S.editId);
+    const item = { ...(old || {}), id: S.editId || uid(), name, category: $('#f-cat').value.trim() || 'Otros', taxable: $('#f-tax').checked };
+    if (/lunch|combo|mcvalue|breakfast/i.test(item.category) && (sizes.M || sizes.L)) item.meal = true;
+    if (Object.keys(sizes).length){
+      item.sizes = sizes; item.price = price || sizes.M || Object.values(sizes)[0];
+      item.defaultSize = Object.keys(sizes).find(k => sizes[k] === item.price) || null;
+    } else { delete item.sizes; delete item.defaultSize; item.price = price; }
+    const wasEdit = !!S.editId;
+    if (await saveMenuItem(item)){ toast(wasEdit ? 'Producto guardado' : 'Producto añadido'); S.editId = null; S.cat = item.category; render(); $('#f-name')?.focus(); }
+  }
+  if (e.target.id === 'pinForm'){
+    const p = $('#f-pin').value.trim();
+    if (!/^\d{4,8}$/.test(p)){ toast('El PIN debe tener de 4 a 8 números.'); return; }
+    S.mgrPin = await pinHash(p); if (await saveSettings()){ toast('PIN guardado'); render(); }
+  }
+  if (e.target.id === 'taxForm'){
+    const r = parseFloat($('#f-rate').value); if (!(r >= 0 && r < 30)){ toast('Escribe una tasa entre 0 y 30.'); return; }
+    await saveTax(r); toast('Tax guardado');
+  }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#layer').innerHTML && !$('#lockForm')) $('#layer').innerHTML = ''; });
+
+function tick(){ const d = new Date(); $('#clock').textContent = d.toTimeString().slice(0,5); }
+tick(); setInterval(tick, 15000);
+setSync(); render(); connect();
+if (STANDALONE) lockScreen();
+})();
+</script>
+</body></html>

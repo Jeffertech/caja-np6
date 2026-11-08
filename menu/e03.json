@@ -1,0 +1,20 @@
+{
+  "alwaysMeal": true,
+  "category": "McValue",
+  "defaultSize": "S",
+  "includes": [
+    "MCCHICKEN",
+    "4 NUGGETS"
+  ],
+  "meal": true,
+  "name": "$6 McChicken Meal Deal",
+  "nuggets": 4,
+  "order": 3,
+  "price": 600,
+  "sizes": {
+    "L": 929,
+    "M": 829,
+    "S": 600
+  },
+  "taxable": true
+}

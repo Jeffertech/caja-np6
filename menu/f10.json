@@ -1,0 +1,13 @@
+{
+  "category": "Drinks",
+  "defaultSize": "S",
+  "name": "Coffee",
+  "order": 10,
+  "price": 159,
+  "sizes": {
+    "L": 239,
+    "M": 199,
+    "S": 159
+  },
+  "taxable": true
+}

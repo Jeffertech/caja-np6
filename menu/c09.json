@@ -1,0 +1,12 @@
+{
+  "category": "Lunch",
+  "meal": true,
+  "name": "Dlx McCrispy",
+  "order": 9,
+  "price": 739,
+  "sizes": {
+    "L": 1299,
+    "M": 1199
+  },
+  "taxable": true
+}

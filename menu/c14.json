@@ -1,0 +1,15 @@
+{
+  "category": "Lunch",
+  "includes": [
+    "2 SNACK WRAP SPICY"
+  ],
+  "meal": true,
+  "name": "Snack Wrap Spicy",
+  "order": 14,
+  "price": 299,
+  "sizes": {
+    "L": 1269,
+    "M": 1149
+  },
+  "taxable": true
+}

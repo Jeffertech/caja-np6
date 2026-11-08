@@ -1,0 +1,12 @@
+{
+  "category": "McValue",
+  "meal": true,
+  "mealType": "breakfast",
+  "name": "Saus Burrito",
+  "order": 13,
+  "price": 199,
+  "sizes": {
+    "M": 749
+  },
+  "taxable": true
+}

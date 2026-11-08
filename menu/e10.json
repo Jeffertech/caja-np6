@@ -1,0 +1,7 @@
+{
+  "category": "McValue",
+  "name": "McChicken",
+  "order": 10,
+  "price": 269,
+  "taxable": true
+}

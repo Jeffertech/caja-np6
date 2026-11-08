@@ -1,0 +1,12 @@
+{
+  "category": "McValue",
+  "meal": true,
+  "mealType": "breakfast",
+  "name": "Saus Biscuit",
+  "order": 11,
+  "price": 189,
+  "sizes": {
+    "M": 400
+  },
+  "taxable": true
+}

@@ -1,0 +1,12 @@
+{
+  "category": "Lunch",
+  "meal": true,
+  "name": "Triple Chs",
+  "order": 21,
+  "price": 599,
+  "sizes": {
+    "L": 1279,
+    "M": 1129
+  },
+  "taxable": true
+}

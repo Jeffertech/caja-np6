@@ -1,0 +1,13 @@
+{
+  "category": "Drinks",
+  "defaultSize": "S",
+  "name": "Dr. Pepper",
+  "order": 4,
+  "price": 199,
+  "sizes": {
+    "L": 249,
+    "M": 199,
+    "S": 199
+  },
+  "taxable": true
+}

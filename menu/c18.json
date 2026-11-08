@@ -1,0 +1,12 @@
+{
+  "category": "Lunch",
+  "meal": true,
+  "name": "Chs Burger",
+  "order": 18,
+  "price": 279,
+  "sizes": {
+    "L": 1199,
+    "M": 1019
+  },
+  "taxable": true
+}

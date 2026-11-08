@@ -1,0 +1,8 @@
+{
+  "category": "Happy Meal",
+  "kind": "toy",
+  "name": "No Toy",
+  "order": 10,
+  "price": 0,
+  "taxable": true
+}

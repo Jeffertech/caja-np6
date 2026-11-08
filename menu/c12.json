@@ -1,0 +1,12 @@
+{
+  "category": "Lunch",
+  "meal": true,
+  "name": "3 McCrispy Strips",
+  "order": 12,
+  "price": 619,
+  "sizes": {
+    "L": 1159,
+    "M": 1089
+  },
+  "taxable": true
+}

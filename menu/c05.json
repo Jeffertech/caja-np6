@@ -1,0 +1,12 @@
+{
+  "category": "Lunch",
+  "meal": true,
+  "name": "Dbl QPC",
+  "order": 5,
+  "price": 1049,
+  "sizes": {
+    "L": 1748,
+    "M": 1598
+  },
+  "taxable": true
+}

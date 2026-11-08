@@ -1,0 +1,9 @@
+{
+  "category": "Drinks",
+  "id": "f12",
+  "name": "Hot Tea",
+  "off": true,
+  "order": 12,
+  "price": 150,
+  "taxable": true
+}

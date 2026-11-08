@@ -1,0 +1,12 @@
+{
+  "category": "Lunch",
+  "meal": true,
+  "name": "QP Deluxe",
+  "order": 4,
+  "price": 719,
+  "sizes": {
+    "L": 1329,
+    "M": 1249
+  },
+  "taxable": true
+}

@@ -1,0 +1,12 @@
+{
+  "category": "Lunch",
+  "meal": true,
+  "name": "Filet-O-Fish",
+  "order": 17,
+  "price": 679,
+  "sizes": {
+    "L": 1259,
+    "M": 1079
+  },
+  "taxable": true
+}

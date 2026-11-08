@@ -1,0 +1,12 @@
+{
+  "category": "Happy Meal",
+  "includes": [
+    "6 NUGGETS"
+  ],
+  "kind": "happy",
+  "name": "6 Nuggets Happy Meal",
+  "nuggets": 6,
+  "order": 4,
+  "price": 659,
+  "taxable": true
+}

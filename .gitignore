@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+_export/
+_prueba.html
+.DS_Store
+Thumbs.db
+desktop.ini

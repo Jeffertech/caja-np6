@@ -1,0 +1,13 @@
+{
+  "category": "Lunch",
+  "defaultSize": "S",
+  "name": "Fries",
+  "order": 22,
+  "price": 279,
+  "sizes": {
+    "L": 499,
+    "M": 399,
+    "S": 279
+  },
+  "taxable": true
+}

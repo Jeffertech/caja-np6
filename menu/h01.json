@@ -1,0 +1,7 @@
+{
+  "category": "Dessert",
+  "name": "Apple Pie",
+  "order": 1,
+  "price": 299,
+  "taxable": true
+}

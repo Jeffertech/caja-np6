@@ -1,0 +1,12 @@
+{
+  "category": "Lunch",
+  "meal": true,
+  "name": "Spicy McCrispy",
+  "order": 8,
+  "price": 699,
+  "sizes": {
+    "L": 1279,
+    "M": 1179
+  },
+  "taxable": true
+}

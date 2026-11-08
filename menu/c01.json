@@ -1,0 +1,12 @@
+{
+  "category": "Lunch",
+  "meal": true,
+  "name": "Big Mac",
+  "order": 1,
+  "price": 699,
+  "sizes": {
+    "L": 1299,
+    "M": 1239
+  },
+  "taxable": true
+}

@@ -1,0 +1,20 @@
+{
+  "alwaysMeal": true,
+  "category": "McValue",
+  "defaultSize": "S",
+  "includes": [
+    "MCDOUBLE",
+    "4 NUGGETS"
+  ],
+  "meal": true,
+  "name": "$7 McDouble Meal Deal",
+  "nuggets": 4,
+  "order": 4,
+  "price": 700,
+  "sizes": {
+    "L": 1029,
+    "M": 929,
+    "S": 700
+  },
+  "taxable": true
+}
