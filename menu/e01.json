@@ -3,5 +3,15 @@
   "name": "$4 Saus McMuffin Meal Deal",
   "order": 1,
   "price": 400,
-  "taxable": true
+  "taxable": true,
+  "sizes": {
+    "S": 400
+  },
+  "defaultSize": "S",
+  "alwaysMeal": true,
+  "meal": true,
+  "mealType": "breakfast",
+  "includes": [
+    "SAUS MCMUFFIN"
+  ]
 }

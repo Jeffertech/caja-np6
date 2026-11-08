@@ -741,7 +741,7 @@ function menuPanelHtml(){
   const col = catColor(cat);
   const line = S.sel >= 0 ? S.order[S.sel] : null;
   const lineItem = line ? S.menu.find(m => m.id === line.itemId) : null;
-  const canChange = !!(lineItem && lineItem.meal && lineItem.sizes);
+  const canChange = !!(lineItem && lineItem.meal && lineItem.sizes && mealKind(lineItem) !== 'breakfast'); /* breakfast combos only come in M */
   const priceTag = it => {
     if (!S.showPrices) return '';
     if (S.size && !(it.sizes && it.sizes[S.size])) return '';
@@ -811,6 +811,9 @@ function includedDrinkCost(size){
   return base ? (base.sizes[size] || base.price) : 199;
 }
 function drinkDiff(d, size){ return Math.max(0, drinkCost(d, size) - includedDrinkCost(size)); }
+/* A cheaper drink never lowers a combo; a pricier one adds the difference. Breakfast combos are priced against a small coffee. */
+function breakfastBase(){ const c = S.menu.find(m => /^coffee$/i.test(m.name || '') && m.sizes); return c ? (c.sizes.S || c.price) : 159; }
+function mealDrinkDiff(it, size, d){ return mealKind(it) === 'breakfast' ? Math.max(0, drinkCost(d, 'S') - breakfastBase()) : drinkDiff(d, size); }
 const PENDING_DRINK = 'BEBIDA PENDIENTE';
 const PENDING_TOY = 'JUGUETE PENDIENTE';
 /* Happy Meal toy: Surprise Me / Under 3 Toy / No Toy, chosen by the cashier, never by default. */
@@ -846,13 +849,15 @@ function drinkLabel(drink, size, diff){ return (drink.sizes && size ? SIZES[size
 function buildMealLine(it, size, drink, prev){
   const z = SIZES[size];
   const removed = prev?.removed || [];
-  const side = mealKind(it) === 'breakfast' ? 'HASHBROWN' : z + ' FRIES';
+  const bk = mealKind(it) === 'breakfast';
+  const side = bk ? 'HASHBROWN' : z + ' FRIES';
   const name = `${z} ${it.name}` + (/meal/i.test(it.name) ? '' : ' MEAL');
-  const diff = drink ? drinkDiff(drink, size) : 0;
+  const dsz = bk ? 'S' : size; /* breakfast combos always come with a small drink (small coffee as the base price) */
+  const diff = drink ? mealDrinkDiff(it, size, drink) : 0;
   const parts = [...(it.includes || []), side].filter(p => !removed.includes(p));
   return { name, taxable: !!it.taxable, itemId: it.id, size, mealType: 'meal', removed,
-    price: it.sizes[size] + diff, drinkId: drink ? drink.id : null, drinkSize: size, needsDrink: !drink,
-    parts: [...parts, drink ? drinkLabel(drink, size, diff) : PENDING_DRINK] };
+    price: it.sizes[size] + diff, drinkId: drink ? drink.id : null, drinkSize: dsz, needsDrink: !drink,
+    parts: [...parts, drink ? drinkLabel(drink, dsz, diff) : PENDING_DRINK] };
 }
 function buildHappyLine(it, drink, dsize, prev){
   const removed = prev?.removed || [];
@@ -902,7 +907,7 @@ function openPendingPicker(){
   if (!it){ l.needsDrink = false; openPendingPicker(); return; }
   const happy = l.mealType === 'happy';
   const left = S.order.filter(x => x.needsDrink).reduce((n, x) => n + x.qty, 0);
-  const diffFor = d => happy ? Math.max(0, drinkCost(d, d.defaultSize || null) - HAPPY_DRINK_INCLUDED) : drinkDiff(d, l.size);
+  const diffFor = d => happy ? Math.max(0, drinkCost(d, d.defaultSize || null) - HAPPY_DRINK_INCLUDED) : mealDrinkDiff(it, l.size, d);
   const opts = drinkOptions();
   $('#layer').innerHTML = `
   <div class="overlay"><div class="dialog" role="dialog" aria-label="Falta la bebida" style="width:min(680px,100%);max-height:92vh;overflow:auto">

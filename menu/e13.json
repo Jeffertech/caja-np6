@@ -8,5 +8,8 @@
   "sizes": {
     "M": 749
   },
-  "taxable": true
+  "taxable": true,
+  "includes": [
+    "2 SAUS BURRITO"
+  ]
 }
