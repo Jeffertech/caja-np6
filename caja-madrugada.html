@@ -246,7 +246,7 @@ const LS = {
   get(k, d){ try{ const v = localStorage.getItem('cm.'+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
   set(k, v){ try{ localStorage.setItem('cm.'+k, JSON.stringify(v)); }catch(e){} }
 };
-const SIZES = { S:'SM', M:'MED', L:'LG', Mini:'MINI' };
+const SIZES = { XS:'XS', S:'SM', M:'MED', L:'LG', Mini:'MINI' };
 const PALETTE = ['--k-red','--k-blue','--k-green','--k-gold','--k-maroon','--k-grey','--k-teal'];
 const S = {
   view:'venta', db:null, mode:'loading',
@@ -700,7 +700,7 @@ const LAYOUT = {
     ['h07',4,1],['h08',4,2],['h09',4,4],['h10',5,2],['h11',5,3],['h12',5,4],['h13',6,1],['h14',6,2]],
   'Bakery': [['h15',1,4]],
   'Happy Meal': [['i01',1,1],['i02',1,2],['i03',1,3],['i04',1,4],['i05',3,8],
-    ['i11',2,1],['f16',4,1],['f17',4,2],['f15',4,3],['i08',4,5],['i09',4,7],['i10',4,8],['i07',5,6],['f10',5,7],['i06',6,2],['f13',6,6],['f11',6,7]],
+    ['i11',2,1],['f16',4,1],['f17',4,2],['f15',4,3],['i08',4,5],['i09',4,7],['i10',4,8],['f09',5,6,'XS'],['f10',5,7],['f07',6,2,'XS'],['f13',6,6],['f11',6,7]],
   'LSM': [['c06',1,4],['j01',1,5],['j02',1,7],['d03',2,2],['d09',2,5],['a11',3,4],
     ['d12',4,4],['d04',4,5],['j04',4,7],['g17',5,2],['j05',5,7],['g21',6,1],['g18',6,2],['g19',6,3]],
   'Gifts': [['x10',1,1],['x11',1,2],['x12',1,3],['x13',1,4],['x14',1,5],['x15',2,1],['x16',2,2],['x17',2,3],['x18',2,4],['x19',2,5],
@@ -720,9 +720,9 @@ function screenCells(cat){
   const cells = [], taken = new Set();
   if (MEAL_KEY.has(cat)) taken.add('1:8');
   taken.add('6:8');
-  for (const [id, r, c] of (LAYOUT[cat] || [])){
+  for (const [id, r, c, fs] of (LAYOUT[cat] || [])){
     const it = S.menu.find(m => m.id === id); if (!it) continue;
-    cells.push({ it, r, c }); taken.add(r + ':' + c);
+    cells.push({ it, r, c, fs }); taken.add(r + ':' + c);
   }
   const rest = S.menu.filter(i => (i.category || 'Otros') === cat && !PLACED.has(i.id))
     .sort((a,b) => (a.order ?? 999) - (b.order ?? 999) || (a.name||'').localeCompare(b.name||''));
@@ -742,10 +742,11 @@ function menuPanelHtml(){
   const line = S.sel >= 0 ? S.order[S.sel] : null;
   const lineItem = line ? S.menu.find(m => m.id === line.itemId) : null;
   const canChange = !!(lineItem && lineItem.meal && lineItem.sizes && mealKind(lineItem) !== 'breakfast'); /* breakfast combos only come in M */
-  const priceTag = it => {
+  const priceTag = (it, fs) => {
     if (!S.showPrices) return '';
-    if (S.size && !(it.sizes && it.sizes[S.size])) return '';
-    const pr = itemPrice(it, S.size).price;
+    const sz = S.size || fs || null;
+    if (sz && !(it.sizes && it.sizes[sz])) return '';
+    const pr = itemPrice(it, sz).price;
     return pr == null ? '' : `<span class="tp">${plain(pr)}</span>`;
   };
   /* label colours as on the NP6: food red, fountain drinks/juice/water blue, coffee orange, Happy Meal and shakes yellow */
@@ -764,10 +765,10 @@ function menuPanelHtml(){
   <div class="np">
     ${[0,1,2,3,4,5,6,7,8].map(n => `<button class="digit num" style="${at(1, n + 1)}" data-digit="${n}" aria-pressed="${S.qty !== '' && S.qty.endsWith(String(n))}" aria-label="Cantidad ${n}">${n}</button>`).join('')}
     ${tabs.map((g, i) => `<div class="tab ${g.includes(cat) ? 'on' : ''}" style="${at(2, Math.min(i + 1, 10))}">${g.map(c => `<button data-cat="${esc(c)}" aria-pressed="${c === cat}">${esc(c)}</button>`).join('<hr>')}</div>`).join('')}
-    ${(sizes || []).map((k, i) => !k ? '' : ['S','M','L','Mini'].includes(k)
+    ${(sizes || []).map((k, i) => !k ? '' : ['XS','S','M','L','Mini'].includes(k)
       ? `<button class="key size" style="${at(i + 3, 1)}" data-size="${k}" aria-pressed="${S.size === k}">${k}<small>${SIZE_NAMES[k]}</small></button>`
       : `<button class="key size" style="${at(i + 3, 1)}" disabled title="Ese tamaño no se usa en esta caja">${k}<small>${SIZE_NAMES[k] || ''}</small></button>`).join('')}
-    ${cells.map(({ it, r, c }) => `<button class="tile${it.off ? ' off' : ''}" style="${at(r + 2, c + 1)};--c:${tileColor(it)};--tc:${textColor(it)}" data-item="${esc(it.id)}"${it.off ? ' aria-disabled="true"' : ''}><span class="tn">${esc(it.name)}</span><span class="ti">${iconFor(it)}</span>${priceTag(it)}${it.combo ? `<span class="cn">${esc(it.combo)}</span>` : ''}${it.off ? '<span class="ua">UNAVAILABLE</span>' : ''}</button>`).join('')}
+    ${cells.map(({ it, r, c, fs }) => `<button class="tile${it.off ? ' off' : ''}" style="${at(r + 2, c + 1)};--c:${tileColor(it)};--tc:${textColor(it)}" data-item="${esc(it.id)}"${fs ? ` data-fsize="${fs}"` : ''}${it.off ? ' aria-disabled="true"' : ''}><span class="tn">${esc(it.name)}</span><span class="ti">${iconFor(it)}</span>${priceTag(it, fs)}${it.combo ? `<span class="cn">${esc(it.combo)}</span>` : ''}${it.off ? '<span class="ua">UNAVAILABLE</span>' : ''}</button>`).join('')}
     ${MEAL_KEY.has(cat) ? `<button class="key black" style="${at(3, 9)}" data-act="changemeal" ${canChange ? '' : 'disabled'}>Make<br>Change<br>Meal</button>` : ''}
     ${STANDALONE ? `<button class="key" style="${at(2, 10)};--c:var(--k-green);min-height:46px;font-size:15px" data-act="toprod" title="Ir a la pantalla de producción">Producción</button>` : ''}
     <button class="key round" style="${at(1, 10)};--c:#c8102e;max-width:60px;font-size:12px" data-act="manager" title="Activar o desactivar productos">Manager</button>
@@ -1467,7 +1468,7 @@ $('#main').addEventListener('click', async e => {
   if ((b = g('[data-digit]'))){ S.done = null; S.qty = (S.qty + b.dataset.digit).replace(/^0+/, '').slice(0,2); render(); return; }
   if ((b = g('[data-size]'))){ S.size = S.size === b.dataset.size ? null : b.dataset.size; render(); return; }
   if ((b = g('[data-cat]'))){ S.cat = b.dataset.cat; render(); return; }
-  if ((b = g('[data-item]'))){ const it = S.menu.find(m => m.id === b.dataset.item); if (it) addItem(it); return; }
+  if ((b = g('[data-item]'))){ const it = S.menu.find(m => m.id === b.dataset.item); if (it){ if (b.dataset.fsize && !S.size) S.size = b.dataset.fsize; addItem(it); } return; }
   if ((b = g('[data-pad]'))){ const v = b.dataset.pad; S.entry = v === 'clear' ? '' : (S.entry + v).replace(/^0+/, '').slice(0,7); render(); return; }
   if ((b = g('[data-cash]'))){ const v = b.dataset.cash; await finishSale(v === 'entry' ? parseInt(S.entry || '0', 10) : Number(v)); return; }
   if ((b = g('[data-edit]'))){ S.editId = b.dataset.edit; S.confirmDel = null; render(); window.scrollTo({ top:0 }); return; }
