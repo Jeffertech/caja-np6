@@ -11,6 +11,10 @@ and asks for an access key when it opens.
 import hashlib, json, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+# Safari on iPad ignores user-scalable=no, so block its pinch gestures and double-tap zoom directly.
+NO_ZOOM_JS = ("['gesturestart','gesturechange','gestureend'].forEach(function(t){document.addEventListener(t,function(e){e.preventDefault();},{passive:false});});"
+              "document.addEventListener('touchmove',function(e){if(e.touches.length>1||(e.scale&&e.scale!==1))e.preventDefault();},{passive:false});"
+              "document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:false});")
 SRC = os.path.join(HERE, 'caja-madrugada.html')
 
 def load_menu(folder):
@@ -61,15 +65,20 @@ def main():
         print('Aviso: sin acceso.hash ni CM_USER/CM_PASS, el iPad pedirá crear una clave la primera vez.')
     head = (
         '<!doctype html><html lang="es"><head><meta charset="utf-8">'
-        '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
+        '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">'
         '<meta name="apple-mobile-web-app-capable" content="yes">'
         '<meta name="mobile-web-app-capable" content="yes">'
         '<meta name="apple-mobile-web-app-title" content="NP6">'
         '<meta name="robots" content="noindex,nofollow">'
         '<title>NP6</title>'
         '<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}'
-        'body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>'
-        '<script>window.CM_STANDALONE = true;' + access_js + '</script>'
+        'body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}'
+        # iPad: no pinch or double-tap zoom, every tap counts, no text selection or callout on long press,
+        # and inputs at 16px so Safari does not zoom in when one gets focus.
+        'html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;overscroll-behavior:none}'
+        'button,.tile,.key,.digit,.tab,nav{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}'
+        'input,select,textarea{font-size:16px!important}</style>'
+        '<script>window.CM_STANDALONE = true;' + access_js + NO_ZOOM_JS + '</script>'
         '</head><body>'
     )
     os.makedirs(out_dir, exist_ok=True)
