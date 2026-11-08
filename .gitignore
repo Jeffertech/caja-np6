@@ -5,3 +5,4 @@ _prueba.html
 .DS_Store
 Thumbs.db
 desktop.ini
+.claude/settings.local.json
