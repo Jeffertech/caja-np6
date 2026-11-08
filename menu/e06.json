@@ -3,5 +3,9 @@
   "name": "McCkn & SFry Bdl",
   "order": 6,
   "price": 400,
-  "taxable": true
+  "taxable": true,
+  "includes": [
+    "MCCHICKEN",
+    "SM FRIES"
+  ]
 }

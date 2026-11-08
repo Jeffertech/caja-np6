@@ -1428,7 +1428,7 @@ function addItem(it){
     owner = target ? target.key : null;
   }
   const keepSel = S.sel;
-  addLine({ name, price: p.price, taxable: !!it.taxable, itemId: it.id, size: p.size, ...(sauce ? { sauce: true, for: owner } : {}) }, qty);
+  addLine({ name, price: p.price, taxable: !!it.taxable, itemId: it.id, size: p.size, ...(it.includes && it.includes.length ? { parts: it.includes.slice() } : {}), ...(sauce ? { sauce: true, for: owner } : {}) }, qty);
   if (sauce && owner){ const oi = S.order.findIndex(l => l.key === owner); if (oi >= 0){ S.sel = oi; render(); } }
 }
 function addLine(it, qty = 1){

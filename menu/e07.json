@@ -3,5 +3,10 @@
   "name": "6Ngg SFry Bdl",
   "order": 7,
   "price": 400,
-  "taxable": true
+  "taxable": true,
+  "includes": [
+    "6 NUGGETS",
+    "SM FRIES"
+  ],
+  "nuggets": 6
 }
