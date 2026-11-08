@@ -3,5 +3,10 @@
   "name": "Saus Biscuit",
   "order": 14,
   "price": 189,
-  "taxable": true
+  "taxable": true,
+  "sizes": {
+    "M": 400
+  },
+  "meal": true,
+  "mealType": "breakfast"
 }

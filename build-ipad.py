@@ -45,7 +45,8 @@ def main():
              "const saved = LS.get('menu', null); if (saved && LS.get('menuV', '') === V) return saved; "
              "const out = E.map(e => { const o = saved && saved.find(s => s.id === e.id); "
              "return o && typeof o.off === 'boolean' ? { ...e, off: o.off } : e; }); "
-             "if (saved) for (const s of saved) if (!E.some(e => e.id === s.id)) out.push(s); "
+             # keep only products added on the iPad itself (random ids); built-in ids like a07 that a build removed stay removed
+             "if (saved) for (const s of saved) if (!/^[a-z]\\d{2}$/.test(s.id) && !E.some(e => e.id === s.id)) out.push(s); "
              "LS.set('menu', out); LS.set('menuV', V); return out; })()")
     page = page.replace(marker, merge)
     page = page.replace('<title>Caja de Madrugada</title>', '', 1)

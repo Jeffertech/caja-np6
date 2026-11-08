@@ -4,5 +4,13 @@
   "order": 7,
   "price": 199,
   "taxable": true,
-  "combo": "7"
+  "combo": "7",
+  "sizes": {
+    "M": 749
+  },
+  "meal": true,
+  "mealType": "breakfast",
+  "includes": [
+    "2 SAUS BURRITO"
+  ]
 }

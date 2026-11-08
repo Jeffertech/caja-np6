@@ -3,5 +3,10 @@
   "name": "6 Nuggets",
   "order": 2,
   "price": 379,
-  "taxable": true
+  "taxable": true,
+  "sizes": {
+    "M": 919,
+    "L": 1059
+  },
+  "meal": true
 }

@@ -3,5 +3,10 @@
   "name": "Saus McMuffin",
   "order": 20,
   "price": 199,
-  "taxable": true
+  "taxable": true,
+  "sizes": {
+    "M": 400
+  },
+  "meal": true,
+  "mealType": "breakfast"
 }
