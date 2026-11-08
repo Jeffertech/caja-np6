@@ -138,12 +138,6 @@ nav button[aria-selected="true"]{background:var(--k-gold);color:var(--ink)}
 .rlist{display:grid;gap:4px}
 .rrow{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:8px;align-items:center;background:var(--paper);border:1px solid var(--steel-lo);border-radius:6px;padding:6px 10px;font-family:var(--mono);font-size:14px}
 .rrow.done{opacity:.6}
-.ask-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;max-height:44vh;overflow:auto;padding:2px}
-.ask-tiles .tile{min-height:92px}
-.ask-tiles .ti svg{width:100%;height:100%;max-width:64px;max-height:44px}
-.ask-sel{display:grid;gap:4px}
-.ask-row{display:flex;align-items:center;gap:8px;font-family:var(--mono);text-transform:uppercase}
-.ask-row b{min-width:26px;text-align:center;font-size:18px}
 .key.mauve{--c:#9a6a90}
 .receipt{width:min(380px,100%);background:#fff;font-family:var(--mono);font-size:14px;gap:8px}
 .rc-head{display:grid;text-align:center;gap:2px;border-bottom:1px dashed #999;padding-bottom:8px}
@@ -359,7 +353,7 @@ function render(){
   document.querySelectorAll('nav button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.view === S.view)));
   document.querySelector('nav').hidden = S.view === 'venta';
   const m = $('#main');
-  if (S.screen){ document.querySelector('nav').hidden = true; m.innerHTML = S.screen === 'prod' ? viewProd() : viewKitchen(); return; }
+  if (S.screen){ document.querySelector('nav').hidden = true; m.innerHTML = viewProd(); return; }
   const keep = document.activeElement?.id;
   m.innerHTML = S.view === 'venta' ? viewVenta() : S.view === 'registro' ? viewRegistro() : viewMenu();
   if (keep && document.getElementById(keep) && S.view !== 'venta') document.getElementById(keep).focus();
@@ -1041,13 +1035,13 @@ function openManagerMenu(){
     <h3>Manager</h3>
     <button class="key" style="--c:var(--k-blue);min-height:64px;font-size:20px" data-mgr="registro">Registro de ventas</button>
     <button class="key" style="--c:var(--k-red);min-height:64px;font-size:20px" data-mgr="menu">Productos, precios, tax y PIN</button>
-    ${STANDALONE ? '<button class="key" style="--c:var(--k-green);min-height:64px;font-size:20px" data-mgr="prod">Pantalla de producción (frente)</button><button class="key" style="--c:var(--k-maroon);min-height:64px;font-size:20px" data-mgr="kitchen">Pantalla de cocina</button>' : ''}
+    ${STANDALONE ? '<button class="key" style="--c:var(--k-green);min-height:64px;font-size:20px" data-mgr="prod">Pantalla de producción</button>' : ''}
     <button class="btn" data-mgr="cancel">Volver a la caja</button>
   </div></div>`;
   $('#layer').onclick = e => {
     const b = e.target.closest('[data-mgr]'); if (!b) return;
     $('#layer').onclick = null; $('#layer').innerHTML = '';
-    if (b.dataset.mgr === 'prod' || b.dataset.mgr === 'kitchen'){ goScreen(b.dataset.mgr); return; }
+    if (b.dataset.mgr === 'prod'){ goScreen('prod'); return; }
     if (b.dataset.mgr !== 'cancel'){ S.view = b.dataset.mgr; S.editId = null; render(); window.scrollTo({ top: 0 }); }
   };
 }
@@ -1178,9 +1172,9 @@ function exportCsv(){
 function exportBackup(){
   saveFile(`respaldo-caja-${today()}.json`, JSON.stringify({ sales: mergedSales(), menu: S.menu, taxRate: S.taxRate }, null, 1), 'application/json');
 }
-/* ---------- Cloud (iPad version on Cloudflare): orders and kitchen requests shared through /api ---------- */
+/* ---------- Cloud (iPad version on Cloudflare): orders shared through /api ---------- */
 const CLOUD = STANDALONE && /^https?:$/.test(location.protocol);
-S.cloud = []; S.reqs = []; S.cloudOk = null; S.screen = null;
+S.cloud = []; S.cloudOk = null; S.screen = null;
 let cloudQ = LS.get('cloudq', []), flushing = false;
 async function api(path, method = 'GET', body){
   const r = await fetch('/api' + path, { method, credentials: 'same-origin', cache: 'no-store',
@@ -1217,23 +1211,22 @@ async function refreshCloud(){
   if (!CLOUD) return;
   try {
     const since = S.screen ? startOfShift() : Date.now() - 31 * 864e5;
-    const [orders, reqs] = await Promise.all([api('/orders?since=' + since), S.screen ? api('/requests?since=' + startOfShift()) : Promise.resolve(S.reqs)]);
-    S.cloud = orders; S.reqs = reqs; S.cloudOk = true;
+    S.cloud = await api('/orders?since=' + since); S.cloudOk = true;
   } catch(e){ S.cloudOk = false; }
   updateCloudPill();
   if (S.screen || S.view === 'registro') render();
 }
 function goScreen(screen){
   S.screen = screen;
-  try { history.replaceState(null, '', screen ? '#' + (screen === 'prod' ? 'produccion' : 'cocina') : location.pathname); } catch(e){}
+  try { history.replaceState(null, '', screen ? '#produccion' : location.pathname); } catch(e){}
   render(); refreshCloud(); window.scrollTo({ top: 0 });
 }
 function route(){
   const h = location.hash.replace('#', '');
-  S.screen = STANDALONE ? (h === 'produccion' ? 'prod' : h === 'cocina' ? 'kitchen' : null) : null;
+  S.screen = STANDALONE && h === 'produccion' ? 'prod' : null;
   render(); refreshCloud();
 }
-/* ---- production screen (front) and kitchen screen ---- */
+/* ---- production screen (front) ---- */
 function ageClass(ts){ const m = (Date.now() - ts) / 60000; return m >= 5 ? 'late' : m >= 3 ? 'warn' : ''; }
 function ago(ts){ const s = Math.max(0, Math.floor((Date.now() - ts) / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; }
 function hhmm(ts){ return new Date(ts).toTimeString().slice(0, 5); }
@@ -1245,80 +1238,20 @@ function viewProd(){
   const today = S.cloud.filter(o => !o.voided);
   const open = today.filter(o => o.status !== 'ready').sort((a, b) => a.ts - b.ts);
   const done = today.filter(o => o.status === 'ready').sort((a, b) => (b.ready_ts || 0) - (a.ready_ts || 0)).slice(0, 8);
-  const reqs = S.reqs.slice().sort((a, b) => b.ts - a.ts).slice(0, 10);
   const num = o => '#' + String(o.num || '').padStart(3, '0');
   return `<div class="screen">
     <div class="sc-head"><h2>Producción</h2><span class="pill-n">${open.length} en espera</span>${offlineTag()}<span class="spacer"></span>
-      <button class="key" style="--c:var(--k-red);min-height:48px;padding:0 18px;font-size:18px" data-act="askkitchen">Pedir a cocina</button>
       <button class="btn" data-act="tocaja">Caja</button></div>
     ${open.length ? `<div class="ocards">${open.map(o => `<article class="ocard ${ageClass(o.ts)}"><header><b>${num(o)}</b><span>${esc(o.time || hhmm(o.ts))}</span><span class="age">${ago(o.ts)}</span></header><ul>${orderLinesHtml(o)}</ul><button class="key" style="--c:var(--k-green)" data-ready="${esc(o.id)}">✓ Lista</button></article>`).join('')}</div>`
       : `<p class="empty-p sc-empty">No hay órdenes en espera. Las órdenes que se cobran en la caja aparecen aquí solas.</p>`}
-    <h3>Pedidos a cocina</h3>
-    ${reqs.length ? `<div class="rlist">${reqs.map(r => `<div class="rrow ${r.status === 'done' ? 'done' : ''}"><span>${hhmm(r.ts)}</span><span>${r.lines.map(l => `${l.qty} ${esc(l.name)}`).join(', ')}${r.note ? ` · ${esc(r.note)}` : ''}</span><span class="tag">${r.status === 'done' ? 'Hecho' : 'Pendiente'}</span></div>`).join('')}</div>`
-      : '<p class="empty-p">Todavía no le pediste nada a cocina.</p>'}
     <h3>Listas</h3>
     ${done.length ? `<div class="ocards small">${done.map(o => `<article class="ocard done"><header><b>${num(o)}</b><span>${esc(o.time || hhmm(o.ts))}</span><span class="age">lista ${o.ready_ts ? hhmm(o.ready_ts) : ''}</span></header><ul>${orderLinesHtml(o)}</ul><button class="btn" data-unready="${esc(o.id)}">Deshacer</button></article>`).join('')}</div>`
       : '<p class="empty-p">Aún no hay órdenes listas.</p>'}
   </div>`;
 }
-function viewKitchen(){
-  const pend = S.reqs.filter(r => r.status !== 'done').sort((a, b) => a.ts - b.ts);
-  const done = S.reqs.filter(r => r.status === 'done').sort((a, b) => (b.done_ts || 0) - (a.done_ts || 0)).slice(0, 8);
-  const open = S.cloud.filter(o => !o.voided && o.status !== 'ready').sort((a, b) => a.ts - b.ts);
-  return `<div class="screen">
-    <div class="sc-head"><h2>Cocina</h2><span class="pill-n">${pend.length} pedidos</span>${offlineTag()}<span class="spacer"></span><button class="btn" data-act="tocaja">Caja</button></div>
-    ${pend.length ? `<div class="ocards">${pend.map(r => `<article class="ocard ${ageClass(r.ts)}"><header><b>Pedido</b><span>${hhmm(r.ts)}</span><span class="age">${ago(r.ts)}</span></header><ul>${r.lines.map(l => `<li><b>${l.qty}</b> ${esc(l.name)}</li>`).join('')}${r.note ? `<li><small>${esc(r.note)}</small></li>` : ''}</ul><button class="key" style="--c:var(--k-green)" data-done="${esc(r.id)}">✓ Hecho</button></article>`).join('')}</div>`
-      : '<p class="empty-p sc-empty">Sin pedidos del frente. Cuando el frente pida algo, aparece aquí.</p>'}
-    <h3>Órdenes en espera en el frente (${open.length})</h3>
-    ${open.length ? `<div class="ocards small">${open.map(o => `<article class="ocard ${ageClass(o.ts)}"><header><b>#${String(o.num || '').padStart(3, '0')}</b><span>${esc(o.time || '')}</span><span class="age">${ago(o.ts)}</span></header><ul>${orderLinesHtml(o)}</ul></article>`).join('')}</div>` : '<p class="empty-p">No hay órdenes en espera.</p>'}
-    <h3>Hechos</h3>
-    ${done.length ? `<div class="rlist">${done.map(r => `<div class="rrow done"><span>${hhmm(r.ts)}</span><span>${r.lines.map(l => `${l.qty} ${esc(l.name)}`).join(', ')}</span><button class="btn" style="padding:2px 8px" data-undone="${esc(r.id)}">Deshacer</button></div>`).join('')}</div>` : '<p class="empty-p">Nada hecho todavía.</p>'}
-  </div>`;
-}
 function setOrderStatus(id, status){
   const o = S.cloud.find(x => x.id === id); if (o){ o.status = status; o.ready_ts = status === 'ready' ? Date.now() : null; }
   cloudPush('PATCH', '/orders/' + id, { status }); render();
-}
-function setReqStatus(id, status){
-  const r = S.reqs.find(x => x.id === id); if (r){ r.status = status; r.done_ts = status === 'done' ? Date.now() : null; }
-  cloudPush('PATCH', '/requests/' + id, { status }); render();
-}
-/* Front asks the kitchen for products: pick, set quantities, add a note, send. */
-function openAskKitchen(){
-  const seen = new Set();
-  const pick = (cats, extra = () => true) => S.menu.filter(m => cats.includes(m.category) && !m.off && m.kind !== 'dummy' && m.kind !== 'toy' && extra(m) && !seen.has(m.name) && seen.add(m.name))
-    .sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
-  const groups = [['Desayuno', pick(['Breakfast', 'Breakfast 2'])], ['Almuerzo', pick(['Lunch', 'Lunch 2', 'McValue'], m => !/deal|bdl/i.test(m.name))],
-    ['Postres', pick(['Dessert', 'Bakery'], m => /pie|cookie|cone|sundae|mcflurry/i.test(m.name))]];
-  const sel = new Map(); let tab = /breakfast/i.test(S.cat || '') ? 0 : 1, note = '';
-  const draw = () => {
-    note = $('#kNote')?.value ?? note;
-    const items = [...sel.entries()];
-    $('#layer').innerHTML = `
-    <div class="overlay"><div class="dialog" role="dialog" aria-label="Pedir a cocina" style="width:min(820px,100%);max-height:94vh;overflow:auto">
-      <h3>Pedir a cocina</h3>
-      <div class="row" style="flex:0 0 auto">${groups.map(([g], i) => `<button class="key" style="--c:${i === tab ? 'var(--k-gold)' : 'var(--k-blue)'};${i === tab ? 'color:#111;text-shadow:none;' : ''}min-height:42px" data-ktab="${i}">${g}</button>`).join('')}</div>
-      <div class="ask-tiles">${groups[tab][1].map(m => `<button class="tile" style="--c:var(--k-red)" data-kadd="${esc(m.name)}"><span class="tn">${esc(m.name)}</span><span class="ti">${iconFor(m)}</span>${sel.get(m.name) ? `<span class="tp">${sel.get(m.name)}</span>` : ''}</button>`).join('')}</div>
-      <div class="ask-sel">${items.length ? items.map(([n, q]) => `<div class="ask-row"><button class="btn" data-kminus="${esc(n)}">−</button><b>${q}</b><button class="btn" data-kadd="${esc(n)}">+</button><span>${esc(n)}</span></div>`).join('') : '<p class="empty-p">Toca los productos que necesitas. Cada toque suma 1.</p>'}</div>
-      <label>Nota para cocina (opcional)<input id="kNote" maxlength="200" value="${esc(note)}" placeholder="Ej. sin cebolla, para el drive"></label>
-      <div class="row"><button class="btn" data-ksend="cancel">Cancelar</button><button class="key" style="--c:var(--k-green);min-height:52px;font-size:18px" data-ksend="go" ${items.length ? '' : 'disabled'}>Enviar a cocina</button></div>
-    </div></div>`;
-  };
-  draw();
-  $('#layer').onclick = e => {
-    const b = e.target.closest('[data-ktab],[data-kadd],[data-kminus],[data-ksend]'); if (!b) return;
-    if (b.dataset.ktab){ tab = +b.dataset.ktab; draw(); return; }
-    if (b.dataset.kadd){ sel.set(b.dataset.kadd, Math.min(99, (sel.get(b.dataset.kadd) || 0) + 1)); draw(); return; }
-    if (b.dataset.kminus){ const q = (sel.get(b.dataset.kminus) || 0) - 1; if (q > 0) sel.set(b.dataset.kminus, q); else sel.delete(b.dataset.kminus); draw(); return; }
-    if (b.dataset.ksend === 'cancel'){ $('#layer').onclick = null; $('#layer').innerHTML = ''; return; }
-    if (b.dataset.ksend === 'go' && sel.size){
-      note = ($('#kNote')?.value || '').trim();
-      const req = { id: uid(), ts: Date.now(), lines: [...sel.entries()].map(([name, qty]) => ({ name, qty })), note };
-      S.reqs.unshift({ ...req, status: 'new' });
-      cloudPush('PUT', '/requests/' + req.id, req);
-      $('#layer').onclick = null; $('#layer').innerHTML = ''; render(); toast('Enviado a cocina');
-    }
-  };
 }
 function tenderHtml(){
   const t = calc(S.order, S.taxRate);
@@ -1525,8 +1458,6 @@ $('#main').addEventListener('click', async e => {
   let b;
   if ((b = g('[data-ready]'))){ setOrderStatus(b.dataset.ready, 'ready'); return; }
   if ((b = g('[data-unready]'))){ setOrderStatus(b.dataset.unready, 'new'); return; }
-  if ((b = g('[data-done]'))){ setReqStatus(b.dataset.done, 'done'); return; }
-  if ((b = g('[data-undone]'))){ setReqStatus(b.dataset.undone, 'new'); return; }
   if ((b = g('[data-line]'))){ const i = +b.dataset.line; S.sel = S.sel === i ? -1 : i; render(); return; }
   if ((b = g('[data-digit]'))){ S.done = null; S.qty = (S.qty + b.dataset.digit).replace(/^0+/, '').slice(0,2); render(); return; }
   if ((b = g('[data-size]'))){ S.size = S.size === b.dataset.size ? null : b.dataset.size; render(); return; }
@@ -1548,7 +1479,6 @@ $('#main').addEventListener('click', async e => {
   if (act === 'modify'){ S.tender = false; render(); }
   if (act === 'changemeal') openChangeMeal();
   if (act === 'promo') openPromo();
-  if (act === 'askkitchen') openAskKitchen();
   if (act === 'toprod') goScreen('prod');
   if (act === 'tocaja'){ S.view = 'venta'; goScreen(null); }
   if (act === 'csv') exportCsv();

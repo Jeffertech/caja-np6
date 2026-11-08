@@ -1,4 +1,4 @@
-// Cloudflare Pages Function: shared orders and kitchen requests for Caja NP6.
+// Cloudflare Pages Function: shared orders for Caja NP6 (production screen).
 // Bound D1 database: env.DB (Pages project → Settings → Bindings → D1 database, variable name "DB").
 // The whole site, /api included, sits behind Cloudflare Access, so only the owner's email reaches this.
 
@@ -10,9 +10,7 @@ async function ensure(db) {
   if (ready) return;
   await db.batch([
     db.prepare('CREATE TABLE IF NOT EXISTS orders (id TEXT PRIMARY KEY, ts INTEGER NOT NULL, status TEXT NOT NULL DEFAULT \'new\', ready_ts INTEGER, data TEXT NOT NULL)'),
-    db.prepare('CREATE INDEX IF NOT EXISTS orders_ts ON orders (ts)'),
-    db.prepare('CREATE TABLE IF NOT EXISTS requests (id TEXT PRIMARY KEY, ts INTEGER NOT NULL, status TEXT NOT NULL DEFAULT \'new\', done_ts INTEGER, data TEXT NOT NULL)'),
-    db.prepare('CREATE INDEX IF NOT EXISTS requests_ts ON requests (ts)')
+    db.prepare('CREATE INDEX IF NOT EXISTS orders_ts ON orders (ts)')
   ]);
   ready = true;
 }
@@ -69,26 +67,6 @@ export async function onRequest({ request, env, params }) {
       }
     }
 
-    if (resource === 'requests') {
-      if (method === 'GET') {
-        const { results } = await db.prepare('SELECT status, done_ts, data FROM requests WHERE ts >= ? ORDER BY ts DESC LIMIT 400').bind(since).all();
-        return json(results.map(r => ({ ...JSON.parse(r.data), status: r.status, done_ts: r.done_ts })));
-      }
-      if (method === 'PUT' && id) {
-        const body = await readBody(request);
-        const lines = Array.isArray(body.lines) ? body.lines.slice(0, 40).map(l => ({ name: String(l.name || '').slice(0, 80), qty: Math.max(1, Math.min(99, parseInt(l.qty, 10) || 1)) })) : [];
-        if (!lines.length) return json({ error: 'sin productos' }, 400);
-        const data = { id, ts: Number(body.ts) || Date.now(), lines, note: String(body.note || '').slice(0, 200) };
-        await db.prepare('INSERT INTO requests (id, ts, status, data) VALUES (?, ?, \'new\', ?) ON CONFLICT(id) DO NOTHING').bind(id, data.ts, JSON.stringify(data)).run();
-        return json({ ok: true });
-      }
-      if (method === 'PATCH' && id) {
-        const body = await readBody(request);
-        const status = body.status === 'done' ? 'done' : 'new';
-        await db.prepare('UPDATE requests SET status = ?, done_ts = ? WHERE id = ?').bind(status, status === 'done' ? Date.now() : null, id).run();
-        return json({ ok: true });
-      }
-    }
     return json({ error: 'no encontrado' }, 404);
   } catch (e) {
     const msg = String(e && e.message || e);
