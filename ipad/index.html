@@ -775,6 +775,7 @@ function menuPanelHtml(){
       : `<button class="key size" style="${at(i + 3, 1)}" disabled title="Ese tamaño no se usa en esta caja">${k}<small>${SIZE_NAMES[k] || ''}</small></button>`).join('')}
     ${cells.map(({ it, r, c }) => `<button class="tile${it.off ? ' off' : ''}" style="${at(r + 2, c + 1)};--c:${tileColor(it)};--tc:${textColor(it)}" data-item="${esc(it.id)}"${it.off ? ' aria-disabled="true"' : ''}><span class="tn">${esc(it.name)}</span><span class="ti">${iconFor(it)}</span>${priceTag(it)}${it.combo ? `<span class="cn">${esc(it.combo)}</span>` : ''}${it.off ? '<span class="ua">UNAVAILABLE</span>' : ''}</button>`).join('')}
     ${MEAL_KEY.has(cat) ? `<button class="key black" style="${at(3, 9)}" data-act="changemeal" ${canChange ? '' : 'disabled'}>Make<br>Change<br>Meal</button>` : ''}
+    ${STANDALONE ? `<button class="key" style="${at(2, 10)};--c:var(--k-green);min-height:46px;font-size:15px" data-act="toprod" title="Ir a la pantalla de producción">Producción</button>` : ''}
     <button class="key round" style="${at(1, 10)};--c:#c8102e;max-width:60px;font-size:12px" data-act="manager" title="Activar o desactivar productos">Manager</button>
     <button class="key black round" style="${at(8, 9)}" data-act="prices">Show<br>Prices<small>${S.showPrices ? 'ON' : 'OFF'}</small></button>
     <button class="key mauve" style="${at(3, 10)}" data-act="promo" ${line && !line.promo ? '' : 'disabled'}>Promo<br>Item</button>
@@ -1548,6 +1549,7 @@ $('#main').addEventListener('click', async e => {
   if (act === 'changemeal') openChangeMeal();
   if (act === 'promo') openPromo();
   if (act === 'askkitchen') openAskKitchen();
+  if (act === 'toprod') goScreen('prod');
   if (act === 'tocaja'){ S.view = 'venta'; goScreen(null); }
   if (act === 'csv') exportCsv();
   if (act === 'wipe') openWipe();
