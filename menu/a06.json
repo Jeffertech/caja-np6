@@ -3,5 +3,6 @@
   "name": "SEC McGriddle",
   "order": 6,
   "price": 579,
-  "taxable": true
+  "taxable": true,
+  "combo": "6"
 }

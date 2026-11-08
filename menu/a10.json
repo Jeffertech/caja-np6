@@ -3,5 +3,6 @@
   "name": "SEC Bagel",
   "order": 10,
   "price": 699,
-  "taxable": true
+  "taxable": true,
+  "combo": "10"
 }

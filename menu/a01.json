@@ -3,5 +3,6 @@
   "name": "Egg McMuffin",
   "order": 1,
   "price": 569,
-  "taxable": true
+  "taxable": true,
+  "combo": "1"
 }

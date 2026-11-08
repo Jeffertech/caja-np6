@@ -3,5 +3,6 @@
   "name": "Saus Burrito",
   "order": 7,
   "price": 199,
-  "taxable": true
+  "taxable": true,
+  "combo": "7"
 }

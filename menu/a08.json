@@ -3,5 +3,6 @@
   "name": "BEC Bagel",
   "order": 8,
   "price": 669,
-  "taxable": true
+  "taxable": true,
+  "combo": "8"
 }

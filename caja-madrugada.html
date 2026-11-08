@@ -93,8 +93,9 @@ nav button[aria-selected="true"]{background:var(--k-gold);color:var(--ink)}
 .tile{position:relative;display:flex;flex-direction:column;border:1px solid #7d848b;border-radius:3px;background:#fff;padding:0;min-height:82px;overflow:hidden;box-shadow:0 2px 0 rgb(0 0 0/.25)}
 .tile:active{transform:translateY(1px)}
 .tn{background:var(--c);color:var(--tc,#fff);font-family:var(--display);font-weight:600;font-size:12px;line-height:1.05;padding:2px 3px;min-height:2.3em;display:flex;align-items:center;justify-content:center;text-align:center;overflow-wrap:anywhere}
-.ti{flex:1;display:flex;align-items:center;justify-content:center;padding:3px 3px 14px}
+.ti{flex:1;display:flex;align-items:center;justify-content:center;padding:2px 2px 13px;min-height:0}
 .ti svg{width:48px;height:36px}
+.np .ti svg{width:100%;height:100%;max-width:72px;max-height:52px;min-height:28px}
 .tp{position:absolute;left:2px;bottom:2px;background:#ffe500;color:#111;font-family:var(--mono);font-weight:600;font-size:12px;padding:0 3px;line-height:1.3}
 .np{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));grid-template-rows:auto auto repeat(6,minmax(64px,auto));gap:5px;min-width:0}
 .np .digit{max-width:58px}
@@ -113,6 +114,7 @@ nav button[aria-selected="true"]{background:var(--k-gold);color:var(--ink)}
 .npgrid .key.size{min-height:0}
 .npgrid .tile{min-height:0}
 .tile.off{filter:grayscale(1);opacity:.75;cursor:not-allowed}
+.tile .cn{position:absolute;right:0;bottom:0;width:24px;height:20px;background:#fff;clip-path:polygon(100% 0,100% 100%,0 100%);color:#111;font-family:var(--display);font-weight:700;font-size:12px;line-height:1;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 2px 2px 0;box-sizing:border-box}
 .tile .ua{position:absolute;right:2px;bottom:2px;background:#2b2b2b;color:#fff;font-family:var(--mono);font-size:8px;padding:0 3px;line-height:1.5}
 .key.mauve{--c:#9a6a90}
 .receipt{width:min(380px,100%);background:#fff;font-family:var(--mono);font-size:14px;gap:8px}
@@ -394,7 +396,183 @@ const DRINK_COLORS = [[/diet/,'#b9bcc0'],[/zero/,'#222'],[/coke/,'#c8102e'],[/sp
   [/lemonade/,'#f2d64b'],[/tea/,'#a0522d'],[/water|dasani/,'#8ecae6'],[/apple/,'#e9c46a'],[/choc/,'#7b4a2a'],[/milk/,'#f4f4f4'],[/strawb|strwb/,'#f48fb1'],
   [/vanilla/,'#f3e5ab'],[/mango/,'#ffb347'],[/peach/,'#ffcba4'],[/blu/,'#3fa9f5'],[/cherry/,'#b0002a'],[/frozen/,'#c8102e'],[/mocha|frappe|coffee/,'#8b5a2b']];
 function drinkColor(n){ for (const [re,c] of DRINK_COLORS) if (re.test(n)) return c; return '#5b8fd1'; }
+/* ---------- Product drawings: each sandwich stacked with its real layers, drinks and sides drawn by type ---------- */
+const PC = { bun:'#E2A057', bunHi:'#F4C887', bunCut:'#F6DDB0', seed:'#FFF6DC', patty:'#5A321F', pattyHi:'#7C4A2D', cheese:'#F8C421',
+  lettuce:'#5EAE34', lettuceDk:'#3D8A21', tomato:'#DE3F2B', onion:'#F7F0DF', pickle:'#7C9A35', bacon:'#B3382A', baconFat:'#F2B8A5',
+  eggW:'#FFFDF4', yolk:'#F6B415', fegg:'#F9D25B', ham:'#E88A8F', hamDk:'#C8636B', saus:'#8C5631', sausDk:'#6A3E1F',
+  muffin:'#EFD5A2', muffinTop:'#C99A5C', biscuit:'#D99F57', biscuitHi:'#F1C887', griddle:'#A9682E', griddleHi:'#C98A4A',
+  bagel:'#C88A48', bagelHi:'#E3AE6C', crispy:'#D9993C', crispyDk:'#A86E22', chick:'#E5AA55', fish:'#F4E6C2', fishEdge:'#D49A4C',
+  steamed:'#F2DCAE', steamedHi:'#FBEBC8', potato:'#EFBF7E', potatoHi:'#FBDDAE', steak:'#6B3A22', sauce:'#F1A35C', spicy:'#E2471F', mayo:'#FFFFFF' };
+const LAYER = {
+  /* breads: [height, draw(y,h)] */
+  st:  [9, (y,h) => `<path d="M6 ${y+h} C6 ${y-1} 42 ${y-1} 42 ${y+h} Z" fill="${PC.bun}"/><ellipse cx="18" cy="${y+h*.42}" rx="7" ry="1.7" fill="${PC.bunHi}"/>`
+        + [[13,.55],[19,.32],[25,.5],[31,.3],[35,.62],[22,.72],[29,.75]].map(([x,f]) => `<ellipse cx="${x}" cy="${y+h*f}" rx="1" ry=".55" fill="${PC.seed}"/>`).join('')],
+  pt:  [8, (y,h) => `<path d="M7 ${y+h} C7 ${y} 41 ${y} 41 ${y+h} Z" fill="${PC.bun}"/><ellipse cx="18" cy="${y+h*.45}" rx="6" ry="1.4" fill="${PC.bunHi}"/>`],
+  pot: [9, (y,h) => `<path d="M6 ${y+h} C6 ${y-1} 42 ${y-1} 42 ${y+h} Z" fill="${PC.potato}"/><ellipse cx="19" cy="${y+h*.4}" rx="8" ry="1.8" fill="${PC.potatoHi}"/>`],
+  sm:  [8, (y,h) => `<path d="M7 ${y+h} C7 ${y+1} 41 ${y+1} 41 ${y+h} Z" fill="${PC.steamed}"/><ellipse cx="19" cy="${y+h*.5}" rx="7" ry="1.4" fill="${PC.steamedHi}"/>`],
+  bb:  [5, (y,h) => `<rect x="7" y="${y}" width="34" height="${h}" rx="2.5" fill="${PC.bun}"/><rect x="7" y="${y}" width="34" height="1.3" rx=".6" fill="${PC.bunCut}"/>`],
+  smb: [4, (y,h) => `<rect x="7" y="${y}" width="34" height="${h}" rx="2" fill="${PC.steamed}"/>`],
+  mid: [4, (y,h) => `<rect x="7" y="${y}" width="34" height="${h}" rx="1.5" fill="${PC.bun}"/><rect x="7" y="${y}" width="34" height="1" fill="${PC.bunCut}"/><rect x="7" y="${y+h-1}" width="34" height="1" fill="${PC.bunCut}"/>`],
+  mt:  [6, (y,h) => `<rect x="7" y="${y}" width="34" height="${h}" rx="2.5" fill="${PC.muffin}"/><rect x="7" y="${y}" width="34" height="2.2" rx="1.1" fill="${PC.muffinTop}"/>`
+        + [11,17,23,29,35].map(x => `<circle cx="${x}" cy="${y+h-1.6}" r=".5" fill="${PC.muffinTop}"/>`).join('')],
+  mb:  [5, (y,h) => `<rect x="7" y="${y}" width="34" height="${h}" rx="2.5" fill="${PC.muffin}"/><rect x="7" y="${y+h-2}" width="34" height="2" rx="1" fill="${PC.muffinTop}"/>`],
+  bt:  [8, (y,h) => `<path d="M8 ${y+h} L8 ${y+2.5} Q8 ${y} 11 ${y} L37 ${y} Q40 ${y} 40 ${y+2.5} L40 ${y+h} Z" fill="${PC.biscuit}"/><rect x="10" y="${y+1}" width="28" height="2" rx="1" fill="${PC.biscuitHi}"/><path d="M11 ${y+h-2.5} h26" stroke="${PC.biscuitHi}" stroke-width=".6"/>`],
+  bbt: [7, (y,h) => `<rect x="8" y="${y}" width="32" height="${h}" rx="2" fill="${PC.biscuit}"/><rect x="8" y="${y}" width="32" height="1.6" fill="#F5DCA9"/><path d="M11 ${y+h-2.5} h26" stroke="${PC.biscuitHi}" stroke-width=".6"/>`],
+  gt:  [6, (y,h) => `<rect x="7" y="${y}" width="34" height="${h}" rx="3" fill="${PC.griddle}"/>` + [12,18,24,30,36].map(x => `<circle cx="${x}" cy="${y+h/2}" r=".9" fill="${PC.griddleHi}"/>`).join('')],
+  gb:  [5, (y,h) => `<rect x="7" y="${y}" width="34" height="${h}" rx="2.5" fill="${PC.griddle}"/><rect x="7" y="${y}" width="34" height="1.2" fill="${PC.griddleHi}"/>`],
+  agt: [7, (y,h) => `<path d="M7 ${y+h} C7 ${y} 41 ${y} 41 ${y+h} Z" fill="${PC.bagel}"/><ellipse cx="18" cy="${y+h*.45}" rx="7" ry="1.4" fill="${PC.bagelHi}"/>`],
+  agb: [5, (y,h) => `<rect x="7" y="${y}" width="34" height="${h}" rx="2.5" fill="${PC.bagel}"/><rect x="7" y="${y}" width="34" height="1.3" fill="#F2D3A2"/>`],
+  /* fillings */
+  pa:  [4, (y,h) => `<rect x="6" y="${y}" width="36" height="${h}" rx="2" fill="${PC.patty}"/><rect x="8" y="${y+.6}" width="32" height=".9" rx=".45" fill="${PC.pattyHi}"/>`],
+  pq:  [5.5, (y,h) => `<rect x="5.5" y="${y}" width="37" height="${h}" rx="2.4" fill="${PC.patty}"/><rect x="8" y="${y+.8}" width="32" height="1" rx=".5" fill="${PC.pattyHi}"/>`],
+  ch:  [1.8, (y,h) => `<rect x="6" y="${y}" width="36" height="${h}" fill="${PC.cheese}"/><path d="M10 ${y+h} l3 0 l-1.5 3 Z M23 ${y+h} l3 0 l-1.5 3.5 Z M35 ${y+h} l3 0 l-1.5 2.6 Z" fill="${PC.cheese}"/>`],
+  hc:  [1.8, (y,h) => `<rect x="9" y="${y}" width="20" height="${h}" fill="${PC.cheese}"/><path d="M14 ${y+h} l3 0 l-1.5 3 Z" fill="${PC.cheese}"/>`],
+  le:  [2.6, (y,h) => `<path d="M5 ${y+h} L5 ${y+1} q2 -1.6 4 0 t4 0 t4 0 t4 0 t4 0 t4 0 t4 0 t4 0 t4 0 L43 ${y+h} Z" fill="${PC.lettuce}"/><path d="M8 ${y+h-.6} h32" stroke="${PC.lettuceDk}" stroke-width=".6"/>`],
+  to:  [2, (y,h) => `<ellipse cx="16" cy="${y+h/2}" rx="9" ry="${h/2}" fill="${PC.tomato}"/><ellipse cx="32" cy="${y+h/2}" rx="9" ry="${h/2}" fill="${PC.tomato}"/>`],
+  on:  [1.2, (y,h) => [10,15,21,27,33,38].map(x => `<rect x="${x}" y="${y}" width="2.4" height="${h}" rx=".5" fill="${PC.onion}"/>`).join('')],
+  pk:  [1.4, (y,h) => [13,24,34].map(x => `<ellipse cx="${x}" cy="${y+h/2}" rx="3.2" ry="${h/2+.2}" fill="${PC.pickle}"/>`).join('')],
+  ba:  [2.6, (y,h) => `<path d="M5 ${y+1} q4 -1.6 8 0 t8 0 t8 0 t8 0 t6 0 L43 ${y+h} q-4 -1.4 -8 0 t-8 0 t-8 0 t-8 0 t-6 0 Z" fill="${PC.bacon}"/><path d="M6 ${y+h/2+.3} q4 -1.4 8 0 t8 0 t8 0 t8 0" stroke="${PC.baconFat}" stroke-width=".7" fill="none"/>`],
+  eg:  [4, (y,h) => `<rect x="7.5" y="${y}" width="33" height="${h}" rx="2" fill="${PC.eggW}" stroke="#EDE3C8" stroke-width=".4"/><rect x="17" y="${y+1}" width="14" height="${h-2}" rx="1.2" fill="${PC.yolk}" opacity=".55"/>`],
+  fe:  [3.4, (y,h) => `<rect x="7" y="${y}" width="34" height="${h}" rx="1.4" fill="${PC.fegg}"/><rect x="7" y="${y}" width="34" height="1" fill="#FCE79A"/>`],
+  hm:  [2.6, (y,h) => `<rect x="6" y="${y}" width="36" height="${h}" rx="1.3" fill="${PC.ham}"/><rect x="6" y="${y+h-.8}" width="36" height=".8" fill="${PC.hamDk}"/>`],
+  sa:  [4, (y,h) => `<rect x="6" y="${y}" width="36" height="${h}" rx="2" fill="${PC.saus}"/>` + [10,16,21,27,33,38].map((x,i) => `<circle cx="${x}" cy="${y+1.2+(i%2)*1.5}" r=".5" fill="${PC.sausDk}"/>`).join('')],
+  cr:  [5.5, (y,h) => `<path d="M3 ${y+1.5} q2 -2 4 -1 q3 -1.5 6 -.4 q4 -1 7 0 q4 -1.2 7 0 q4 -1 7 0 q3 -1 6 .4 q3 .6 3 2 L44 ${y+h-1} q-1 2 -4 1.4 q-4 1 -8 0 q-4 1 -8 0 q-4 1 -8 0 q-4 1 -8 0 q-4 .8 -5 -1.4 Z" fill="${PC.crispy}"/>`
+        + [9,15,22,29,35,40].map((x,i) => `<circle cx="${x}" cy="${y+2+(i%3)}" r=".55" fill="${PC.crispyDk}"/>`).join('')],
+  mc:  [4, (y,h) => `<rect x="5" y="${y}" width="38" height="${h}" rx="2" fill="${PC.chick}"/>` + [10,17,24,31,38].map((x,i) => `<circle cx="${x}" cy="${y+1.3+(i%2)*1.4}" r=".45" fill="${PC.crispyDk}"/>`).join('')],
+  fi:  [5, (y,h) => `<rect x="9" y="${y}" width="30" height="${h}" rx="1.2" fill="${PC.fish}" stroke="${PC.fishEdge}" stroke-width="1.2"/>`],
+  tt:  [1.2, (y,h) => `<path d="M9 ${y+h/2} q2.5 -1.4 5 0 t5 0 t5 0 t5 0 t5 0 t4 0" stroke="${PC.mayo}" stroke-width="1.4" fill="none"/>`],
+  my:  [1, (y,h) => `<path d="M9 ${y+h/2} q2.5 -1.2 5 0 t5 0 t5 0 t5 0 t5 0 t4 0" stroke="${PC.mayo}" stroke-width="1.1" fill="none"/>`],
+  ss:  [1.2, (y,h) => `<path d="M9 ${y+h/2} q2.5 -1.4 5 0 t5 0 t5 0 t5 0 t5 0 t4 0" stroke="${PC.sauce}" stroke-width="1.4" fill="none"/>`],
+  sp:  [1.2, (y,h) => `<path d="M9 ${y+h/2} q2.5 -1.4 5 0 t5 0 t5 0 t5 0 t5 0 t4 0" stroke="${PC.spicy}" stroke-width="1.4" fill="none"/>`],
+  sk:  [3, (y,h) => `<path d="M6 ${y+1} q5 -1.5 9 .4 q5 -1.2 9 0 q5 -1.4 9 .2 q4 -1 7 .4 L42 ${y+h} q-6 1 -12 -.2 q-6 1 -12 0 q-6 .8 -12 -.2 Z" fill="${PC.steak}"/>`]
+};
+/* Recipes, top to bottom, by product id (codes from LAYER above). */
+const STACKS = {
+  a01:'mt ch hm eg mb', a02:'mt ch sa eg mb', a03:'bt ba fe ch bbt', a04:'bt sa fe bbt', a05:'gt ba fe ch gb', a06:'gt sa fe ch gb',
+  a08:'agt ba fe ch agb', a09:'agt sk on fe ch agb', a10:'agt sa fe ch agb', a11:'mt ba eg mb', a12:'bt mc bbt', a13:'gt mc gb', a14:'bt sa bbt', a20:'mt sa mb',
+  b01:'bt fe bbt', b02:'bt fe ch bbt', b03:'bt sa fe ch bbt', b04:'gt sa gb', b05:'bt sa bbt', b06:'agt fe ch agb', b07:'agt sa fe ch agb',
+  c01:'st ss le ch pa mid ss le pa bb', c02:'st on pk ch pq bb', c03:'st ba ch pq bb', c04:'st le to ch pq bb', c05:'st on ch pq ch pq bb', c06:'st ba ch pq ch pq bb',
+  c07:'pot pk cr bb', c08:'pot sp pk cr bb', c09:'pot to le cr bb', c10:'pot sp to le cr bb', c17:'sm tt hc fi smb', c18:'pt on pk ch pa bb',
+  c19:'pt to le on ch pa ch pa bb', c20:'pt on ch pa ch pa bb', c21:'pt on ch pa ch pa pa bb',
+  d05:'sm tt hc fi fi smb', d06:'pt on pk pa bb', d07:'pt on pk pa pa bb', d08:'st on pk pq bb', d09:'pt on pk ch pa pa bb', d10:'pt le my mc bb',
+  d11:'pt to le on ch pa ch pa bb', d12:'pt ba on ch pa pa bb', d13:'pt on ch pa ch pa pa bb',
+  e09:'pt on pk ch pa pa bb', e10:'pt le my mc bb', e11:'bt sa bbt', e12:'mt sa mb', j01:'st le to ch pq ch pq bb', j06:'mt ba eg mb'
+};
+function stackSvg(code, scale = 1, dx = 0, dy = 0){
+  const layers = code.split(' ').filter(Boolean).map(k => LAYER[k]).filter(Boolean);
+  const total = layers.reduce((s, l) => s + l[0], 0);
+  /* draw from y=0, then stretch the stack so every sandwich fills the tile with thick, readable layers */
+  let y = 0, out = '';
+  for (const [h, draw] of layers){ out += draw(y, h); y += h; }
+  const sy = Math.min(1.7, 33 / total), top = (36 - total * sy) / 2;
+  const tall = `<g transform="translate(0 ${top}) scale(1 ${sy})">${out}</g>`;
+  return scale === 1 && !dx && !dy ? tall : `<g transform="translate(${dx} ${dy}) scale(${scale})">${tall}</g>`;
+}
+/* Small pieces reused by other drawings */
+const PIECE = {
+  fries: (x = 24, s = 1) => `<g transform="translate(${x - 24*s} ${36 - 36*s}) scale(${s})"><g fill="#F7C93A" stroke="#E0A91E" stroke-width=".5"><rect x="15" y="4" width="3.2" height="18" rx=".8"/><rect x="19" y="2" width="3.2" height="20" rx=".8"/><rect x="23" y="1.5" width="3.2" height="20" rx=".8"/><rect x="27" y="3" width="3.2" height="19" rx=".8"/><rect x="31" y="5" width="3.2" height="17" rx=".8"/></g><path d="M12 14 L36 14 L33 34 L15 34 Z" fill="#DA291C"/><path d="M12 14 Q24 20 36 14 L35.4 18 Q24 24 12.6 18 Z" fill="#B71E14"/><path d="M19 24 q5 4 10 0" stroke="#FFC72C" stroke-width="2" fill="none" stroke-linecap="round"/></g>`,
+  cup: (fill, band = fill) => `<path d="M13 9 L35 9 L32 34 L16 34 Z" fill="#fff" stroke="#D5D5D5" stroke-width=".6"/><path d="M14 16 L34 16 L33 25 L15 25 Z" fill="${band}"/><rect x="11.5" y="6" width="25" height="3.6" rx="1.8" fill="#EDEDED" stroke="#CFCFCF" stroke-width=".5"/><rect x="26" y="0" width="2.4" height="8" rx="1" fill="${fill}" transform="rotate(10 27 4)"/>`,
+  clear: (liquid, top = '') => `<path d="M13 9 L35 9 L32 34 L16 34 Z" fill="#EAF6FB" stroke="#B9D4DE" stroke-width=".6"/><path d="M13.8 15 L34.2 15 L32 34 L16 34 Z" fill="${liquid}"/>${top}<rect x="11.5" y="6" width="25" height="3.6" rx="1.8" fill="#F4FAFC" stroke="#B9D4DE" stroke-width=".5"/>`,
+  dome: (liquid, cream = '#FFFDF6', drizzle = '') => `<path d="M14 14 L34 14 L31.5 34 L16.5 34 Z" fill="${liquid}" stroke="#C9C9C9" stroke-width=".5"/><path d="M12 14 Q24 1 36 14 Z" fill="${cream}" stroke="#E5E5E5" stroke-width=".5"/>${drizzle}<path d="M12 14 Q24 -1 36 14" stroke="#CFE3EA" stroke-width=".8" fill="none"/><rect x="26" y="0" width="2.4" height="9" rx="1" fill="#C8102E" transform="rotate(12 27 4)"/>`,
+  coffee: (sleeve = '#7A4A26') => `<path d="M13.5 9 L34.5 9 L32 34 L16 34 Z" fill="#FFFFFF" stroke="#D4D4D4" stroke-width=".6"/><path d="M14.4 17 L33.6 17 L32.6 26 L15.4 26 Z" fill="${sleeve}"/><path d="M12 6.5 Q24 3 36 6.5 L36 9.5 L12 9.5 Z" fill="#3B2A20"/><rect x="21" y="4.6" width="6" height="1.4" rx=".7" fill="#5A463A"/>`,
+  bottle: (fill, cap = '#2A6FDB', label = '#fff') => `<path d="M19 4 h10 v4 q4 3 4 7 v17 q0 2 -2 2 h-14 q-2 0 -2 -2 v-17 q0 -4 4 -7 Z" fill="${fill}" stroke="rgba(0,0,0,.18)" stroke-width=".6"/><rect x="18.5" y="1.5" width="11" height="4" rx="1" fill="${cap}"/><rect x="15" y="18" width="18" height="8" rx="1" fill="${label}" opacity=".85"/>`,
+  sauceCup: (lid) => `<path d="M12 15 L36 15 L33.5 30 L14.5 30 Z" fill="#F1F1F1" stroke="#CFCFCF" stroke-width=".6"/><rect x="10" y="11" width="28" height="5" rx="2.5" fill="${lid}"/><rect x="14" y="12.4" width="12" height="1.4" rx=".7" fill="rgba(255,255,255,.55)"/>`,
+  packet: (fill) => `<path d="M12 9 h24 l-1 2 l1 2 l-1 2 l1 2 l-1 2 l1 2 l-1 2 l1 2 l-1 2 l1 2 h-24 l1 -2 l-1 -2 l1 -2 l-1 -2 l1 -2 l-1 -2 l1 -2 l-1 -2 l1 -2 Z" fill="${fill}"/><rect x="17" y="15" width="14" height="6" rx="1" fill="rgba(255,255,255,.7)"/>`,
+  nugget: (x, y, r = 0) => `<path transform="translate(${x} ${y}) rotate(${r})" d="M-6 -1 q0 -5 6 -5 q6 0 6.5 4 q.8 5 -5 6 q-7 1 -7.5 -5 Z" fill="#D99A3E" stroke="#B37625" stroke-width=".6"/>`,
+  strip: (x, y, r = 0) => `<path transform="translate(${x} ${y}) rotate(${r})" d="M-10 -2 q2 -3 10 -3 q9 0 10 3 q1 3 -9 4 q-10 1 -11 -4 Z" fill="#D99A3E" stroke="#A86E22" stroke-width=".6"/>`,
+  hotcakes: () => `<ellipse cx="24" cy="30" rx="19" ry="4" fill="#FFFFFF" stroke="#DDD" stroke-width=".6"/><ellipse cx="24" cy="27" rx="15" ry="3.6" fill="#B8783A"/><ellipse cx="24" cy="23.5" rx="15" ry="3.6" fill="#C98A48"/><ellipse cx="24" cy="20" rx="15" ry="3.6" fill="#DDA25E"/><ellipse cx="24" cy="19" rx="13" ry="2.6" fill="#E9B676"/><rect x="21" y="15.5" width="6" height="3.4" rx=".6" fill="#FFF0A0"/><path d="M30 19 q2 4 1 8" stroke="#8A4A12" stroke-width="1.4" fill="none" opacity=".75"/>`,
+  sausagePatty: (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="0" rx="7" ry="3.2" fill="#8C5631"/><circle cx="-2.5" cy="-.6" r=".55" fill="#6A3E1F"/><circle cx="2" cy=".6" r=".55" fill="#6A3E1F"/></g>`,
+  bacon: (x, y) => `<path transform="translate(${x} ${y})" d="M-8 0 q2 -2 4 0 t4 0 t4 0 t4 0 l0 2.4 q-2 -2 -4 0 t-4 0 t-4 0 t-4 0 Z" fill="#B3382A"/>`,
+  hashbrown: (x = 24, y = 18, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-13" y="-7" width="26" height="14" rx="7" fill="#E5B048"/><rect x="-11" y="-5" width="22" height="10" rx="5" fill="#F0C460"/>${[-7,-2,3,8].map(x => `<path d="M${x} -4 l-2 8" stroke="#D49A30" stroke-width=".7"/>`).join('')}</g>`,
+  plate: () => `<ellipse cx="24" cy="22" rx="22" ry="11" fill="#FFFFFF" stroke="#D7D7D7" stroke-width=".7"/><ellipse cx="24" cy="22" rx="17" ry="8" fill="#F7F7F7"/>`
+};
+function drinkFill(n){
+  if (/diet/.test(n)) return '#9EA3A8'; if (/zero/.test(n)) return '#1E1E1E'; if (/coke|frozen/.test(n)) return '#C8102E';
+  if (/sprite/.test(n)) return '#2E9E4F'; if (/strawberry|straw/.test(n)) return '#E5427A'; if (/fanta|orange|hi-c/.test(n)) return '#F28C28';
+  if (/pepper/.test(n)) return '#7A1F2B'; if (/cherry/.test(n)) return '#9E0F2E'; if (/blu/.test(n)) return '#2D8FE0'; if (/peach/.test(n)) return '#F7A97A';
+  return '#5B8FD1';
+}
+function drawingFor(it){
+  const id = it.id || '', n = (it.name || '').toLowerCase(), c = (it.category || '').toLowerCase();
+  if (STACKS[id]) return stackSvg(STACKS[id]);
+  /* breakfast specials */
+  if (id === 'a07' || id === 'e13') return `<g transform="rotate(-14 24 18)"><rect x="5" y="11" width="38" height="14" rx="7" fill="#F1DFB7" stroke="#D8BE86" stroke-width=".7"/><path d="M8 13 q2 2 0 4 M14 12 q2 3 0 5 M20 12 q2 3 0 5" stroke="#E0C995" stroke-width=".6" fill="none"/><ellipse cx="40" cy="18" rx="4.2" ry="6.4" fill="#F7D255"/><circle cx="39" cy="16" r="1.2" fill="#8C5631"/><circle cx="41" cy="20" r="1" fill="#DE3F2B"/><circle cx="38.5" cy="20.4" r=".9" fill="#5EAE34"/></g>`;
+  if (/^a15$/.test(id)) return PIECE.hotcakes();
+  if (id === 'a16') return PIECE.hotcakes() + PIECE.sausagePatty(39, 29, .9);
+  if (id === 'b09') return PIECE.hotcakes() + PIECE.bacon(39, 29);
+  if (id === 'a17' || id === 'a18') return PIECE.plate() + `<path d="M8 21 q3 -6 9 -4 q5 -2 6 3 q1 5 -6 6 q-8 1 -9 -5 Z" fill="#F9D86A"/>` + PIECE.sausagePatty(31, 17, .8)
+    + `<rect x="27" y="22" width="12" height="7" rx="2" fill="#D99F57"/><rect x="27" y="22" width="12" height="1.4" fill="#F5DCA9"/>` + PIECE.hashbrown(16, 28, .45)
+    + (id === 'a18' ? `<ellipse cx="38" cy="13" rx="7" ry="2.4" fill="#C98A48"/><ellipse cx="38" cy="11.6" rx="7" ry="2.2" fill="#DDA25E"/>` : '');
+  if (id === 'a19') return `<path d="M7 16 h34 a17 14 0 0 1 -34 0 Z" fill="#FFFFFF" stroke="#CCC" stroke-width=".7"/><ellipse cx="24" cy="16" rx="17" ry="4.5" fill="#E6CFA0"/><circle cx="18" cy="15" r="2" fill="#DE3F2B"/><circle cx="27" cy="16" r="2" fill="#8DC63F"/><circle cx="23" cy="14" r="1.2" fill="#5A2E1A"/><circle cx="31" cy="15" r="1.2" fill="#5A2E1A"/>`;
+  if (id === 'b08') return `<circle cx="24" cy="18" r="14" fill="#C88A48"/><circle cx="24" cy="18" r="14" fill="none" stroke="#A86E2F" stroke-width="1"/><circle cx="24" cy="18" r="4.5" fill="#F7F3EA"/><path d="M14 11 q10 -6 20 0" stroke="#E3AE6C" stroke-width="2" fill="none"/>`;
+  if (/hashbrown/.test(n)) return PIECE.hashbrown();
+  /* lunch specials */
+  if (/fries/.test(n) && !/bdl|deal/.test(n)) return PIECE.fries(24, 1);
+  if (/strips/.test(n)){ const k = /4/.test(n) ? 4 : 3; return [...Array(k)].map((_, i) => PIECE.strip(24 + (i - (k - 1) / 2) * 3, 10 + i * 6, -8 + i * 6)).join(''); }
+  if (/snack wrap/.test(n)){ const spicy = /spicy/.test(n), mix = /mix/.test(n);
+    const one = (x, y, r, sp) => `<g transform="translate(${x} ${y}) rotate(${r})"><rect x="-15" y="-5.5" width="30" height="11" rx="5.5" fill="#F3E3BE" stroke="#D9C08A" stroke-width=".6"/><ellipse cx="13" cy="0" rx="3.6" ry="5" fill="#D9993C"/><path d="M11 -4 q3 2 0 4 q3 2 0 4" stroke="#5EAE34" stroke-width="1.6" fill="none"/><path d="M10 -2 l4 4" stroke="${sp ? '#E2471F' : '#FFFFFF'}" stroke-width="1.2"/></g>`;
+    return mix ? one(22, 12, -10, false) + one(26, 25, 8, true) : one(24, 18, -12, spicy); }
+  if (/nugget/.test(n) && !/happy|bdl|deal|2l/.test(n)){ const k = (n.match(/\d+/) || [6])[0] >= 10 ? 6 : 4;
+    const pos = [[16,14,-10],[30,13,15],[22,23,5],[36,24,-20],[12,26,20],[28,30,0]]; return `<path d="M6 30 h36 l-2 4 h-32 Z" fill="#DA291C"/>` + pos.slice(0, k).map(p => PIECE.nugget(...p)).join(''); }
+  if (/sfry bdl|bdl/.test(n)){ const main = /mcdbl/.test(n) ? 'pt on pk ch pa pa bb' : /mcckn/.test(n) ? 'pt le my mc bb' : '';
+    const left = main ? stackSvg(main, .62, 1, 7) : PIECE.nugget(12, 18) + PIECE.nugget(18, 25, 20) + PIECE.nugget(10, 27, -15);
+    return left + PIECE.fries(37, .62); }
+  if (/meal deal/.test(n)){ const main = /mcdouble|mcdble|\$7/.test(n) ? 'pt on pk ch pa pa bb' : /mcchicken|mcchkn|\$6/.test(n) ? 'pt le my mc bb' : /muffin|mcmfn/.test(n) ? 'mt sa mb' : 'bt sa bbt';
+    return stackSvg(main, .6, 0, 6) + PIECE.fries(36, .58) + (/\$[67]/.test(n) ? PIECE.nugget(30, 30, 10) : PIECE.hashbrown(34, 30, .35)); }
+  /* happy meal */
+  if (/happy meal/.test(n)) return `<path d="M10 14 h28 l-2 20 h-24 Z" fill="#DA291C"/><path d="M15 14 q9 -12 18 0" stroke="#DA291C" stroke-width="3" fill="none"/><path d="M17 22 q7 6 14 0" stroke="#FFC72C" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="18" cy="19" r="1.4" fill="#FFC72C"/><circle cx="30" cy="19" r="1.4" fill="#FFC72C"/>`;
+  if (/toy|surprise/.test(n)) return `<rect x="12" y="14" width="24" height="18" rx="2" fill="${/no toy/.test(n) ? '#9AA0A6' : '#2A7DE1'}"/><rect x="10" y="10" width="28" height="6" rx="1.5" fill="${/no toy/.test(n) ? '#B7BCC1' : '#4C9BF0'}"/><rect x="22" y="10" width="4" height="22" fill="#FFC72C"/><path d="M24 10 q-6 -7 -9 -3 q-1 3 9 3 q10 0 9 -3 q-3 -4 -9 3" fill="#FFC72C"/>${/no toy/.test(n) ? '<path d="M10 8 L38 34" stroke="#C8102E" stroke-width="3"/>' : ''}`;
+  if (/extra kids fries/.test(n)) return PIECE.fries(24, .85);
+  if (/slices/.test(n)) return `<path d="M13 8 h22 l2 26 h-26 Z" fill="#FFFFFF" stroke="#CCC" stroke-width=".6"/><path d="M16 22 q8 -9 16 0 q-8 5 -16 0 Z" fill="#8DC63F"/><path d="M18 22 q6 -5 12 0" fill="#F6F1D3"/><path d="M20 28 q6 -6 12 0 q-6 3 -12 0 Z" fill="#B5D86A"/>`;
+  /* drinks */
+  if (/dasani|water/.test(n)) return PIECE.bottle('#CDE9F6', '#2A6FDB', '#3B8FD9');
+  if (/orange juice/.test(n)) return PIECE.bottle('#F7A21B', '#F28C28', '#FFFFFF');
+  if (/apple juice/.test(n)) return PIECE.bottle('#F3C847', '#7BB342', '#FFFFFF');
+  if (/choc milk/.test(n)) return PIECE.bottle('#7B4A2A', '#5A3018', '#F3E3D3');
+  if (/milk/.test(n)) return PIECE.bottle('#FFFFFF', '#2A6FDB', '#D9ECFA');
+  if (/^(coffee|decaf)$/.test(n)) return PIECE.coffee(/decaf/.test(n) ? '#E07A1F' : '#7A4A26');
+  if (/hot tea/.test(n)) return PIECE.coffee('#3A7D44');
+  if (/hot chocolate|cappuccino|macchiato|americano|mocha|latte/.test(n)) return PIECE.coffee(/chocolate|mocha/.test(n) ? '#5A2E1A' : '#9B6A44') + `<path d="M20 2 q2 2 0 4 M26 1 q2 2 0 4" stroke="#BBB" stroke-width=".8" fill="none"/>`;
+  if (/espresso/.test(n)) return `<path d="M15 16 h18 l-2 12 h-14 Z" fill="#FFFFFF" stroke="#CCC" stroke-width=".6"/><ellipse cx="24" cy="16" rx="9" ry="2" fill="#5A2E1A"/><path d="M33 19 q5 0 4 5 q-1 3 -5 3" stroke="#CCC" stroke-width="1.4" fill="none"/><ellipse cx="24" cy="30" rx="13" ry="2.4" fill="#EEE"/>`;
+  if (/iced coffee/.test(n)) return PIECE.clear('#8A5A35', `<path d="M15 15 q9 5 18 0 q-4 6 -9 2 q-5 4 -9 -2" fill="#F4E4CB"/><rect x="17" y="21" width="4" height="4" rx=".6" fill="rgba(255,255,255,.6)"/><rect x="25" y="25" width="4" height="4" rx=".6" fill="rgba(255,255,255,.6)"/>`) + `<rect x="26" y="0" width="2.4" height="8" rx="1" fill="#3A2A20" transform="rotate(10 27 4)"/>`;
+  if (/lemonade|tea lem/.test(n)) return PIECE.clear(/swt tea|unswt|tea/.test(n) ? '#C98A3A' : '#FBE38A', `<circle cx="32" cy="12" r="4" fill="#FFE45C" stroke="#E8C400" stroke-width=".7"/><path d="M32 8 v8 M28 12 h8" stroke="#E8C400" stroke-width=".5"/>`) + `<rect x="25" y="0" width="2.4" height="8" rx="1" fill="#2E9E4F" transform="rotate(10 26 4)"/>`;
+  if (/iced tea|swt tea|tea glass/.test(n)) return PIECE.clear(/swt|sweet/.test(n) ? '#A85A1C' : '#8F4E1E', `<rect x="17" y="18" width="4.2" height="4.2" rx=".6" fill="rgba(255,255,255,.55)"/><rect x="24" y="22" width="4.2" height="4.2" rx=".6" fill="rgba(255,255,255,.55)"/><circle cx="31" cy="13" r="3.4" fill="#FFE45C" stroke="#E8C400" stroke-width=".6"/>`) + `<rect x="26" y="0" width="2.4" height="8" rx="1" fill="#C8102E" transform="rotate(10 27 4)"/>`;
+  if (/shake/.test(n)) return PIECE.dome(/choc/.test(n) ? '#7B4A2A' : /straw/.test(n) ? '#F59BB8' : '#F6EBC8', '#FFFDF6', /choc/.test(n) ? '<path d="M16 11 q4 3 8 0 q4 3 8 0" stroke="#5A2E1A" stroke-width="1" fill="none"/>' : '');
+  if (/frappe/.test(n)) return PIECE.dome('#B98A5E', '#FFFDF6', '<path d="M16 11 q4 3 8 0 q4 3 8 0" stroke="#8A4A12" stroke-width="1" fill="none"/>');
+  if (/smoothie/.test(n)) return PIECE.dome(/mango|mngo/.test(n) ? '#F9A93C' : '#EE6A8A', '#FFE7EF');
+  if (/frozen|blu|peach|cherry|sprt|spirit/.test(n)) return PIECE.dome(drinkFill(n), drinkFill(n));
+  if (c === 'drinks' || /coke|sprite|fanta|pepper|hi-c/.test(n)) return PIECE.cup(drinkFill(n));
+  /* desserts */
+  if (/pie/.test(n)){
+    const kind = t => /holiday/.test(t) ? 'h' : /pumpkin|pmpk/.test(t) ? 'p' : 'a';
+    const pie = (x, y, k) => `<g transform="translate(${x} ${y})"><rect x="-10" y="-6" width="20" height="12" rx="2.5" fill="${k === 'p' ? '#D9832F' : '#D99A45'}"/>${k === 'h' ? '<rect x="-10" y="-6" width="20" height="5" rx="2" fill="#FFFFFF"/><circle cx="-5" cy="-4" r=".8" fill="#E5427A"/><circle cx="0" cy="-3" r=".8" fill="#2E9E4F"/><circle cx="5" cy="-4.4" r=".8" fill="#2D8FE0"/>' : [-6,-1,4].map(xx => `<path d="M${xx} -3 l3 3" stroke="#A86E22" stroke-width="1"/>`).join('')}</g>`;
+    if (/^1 apple 1 /.test(n)) return pie(17, 14, 'a') + pie(31, 23, kind(n.replace('1 apple', '')));
+    if (/^2 /.test(n)){ const k = kind(n); return pie(17, 14, k) + pie(31, 23, k); }
+    return pie(24, 18, kind(n)); }
+  if (/cone/.test(n)) return `<path d="M17 17 h14 l-7 17 Z" fill="#D9A35B"/><path d="M19 20 l8 0 M20 24 l6 0" stroke="#B37A35" stroke-width=".6"/><path d="M15 17 q-2 -6 4 -7 q0 -6 5 -6 q5 0 5 6 q6 1 4 7 Z" fill="#FFFCF2" stroke="#E5DCC8" stroke-width=".6"/>`;
+  if (/sundae|plain/.test(n)) return `<path d="M13 16 h22 l-3 16 h-16 Z" fill="#FFFFFF" stroke="#CCC" stroke-width=".6"/><path d="M12 16 q2 -9 12 -10 q10 1 12 10 Z" fill="#FFFCF2"/>${/fudge/.test(n) ? '<path d="M14 15 q5 -6 10 -3 q5 -3 10 3 q-3 4 -5 0 q-4 4 -6 0 q-4 4 -6 0 q-2 4 -3 0" fill="#4A2412"/>' : /caramel/.test(n) ? '<path d="M14 15 q5 -6 10 -3 q5 -3 10 3 q-3 4 -5 0 q-4 4 -6 0 q-4 4 -6 0 q-2 4 -3 0" fill="#C77D2B"/>' : ''}`;
+  if (/mcflurry/.test(n)){ const oreo = /oreo/.test(n);
+    return `<path d="M13 10 h22 l-3 24 h-16 Z" fill="#FFFFFF" stroke="#CCC" stroke-width=".6"/><path d="M14 10 h20 l-.8 6 h-18.4 Z" fill="#FFFCF2"/>` + (oreo ? [16,20,25,29,18,27].map((x,i) => `<rect x="${x}" y="${11+(i%3)*1.4}" width="2" height="1.4" fill="#2B1B12"/>`).join('')
+      : [['#E5242B',16],['#2D8FE0',20],['#FFC72C',24],['#2E9E4F',28],['#F28C28',31]].map(([col,x],i) => `<circle cx="${x}" cy="${12+(i%2)*1.6}" r="1.1" fill="${col}"/>`).join('')) + `<rect x="29" y="0" width="2" height="15" rx="1" fill="#C8C8C8" transform="rotate(12 30 7)"/>`; }
+  if (/cookie tote/.test(n)) return `<path d="M12 12 h24 l2 22 h-28 Z" fill="#F4E4C4" stroke="#D8C49A" stroke-width=".6"/><path d="M18 12 q6 -9 12 0" stroke="#C9A86A" stroke-width="1.6" fill="none"/><circle cx="24" cy="23" r="6" fill="#C98B45"/><circle cx="22" cy="21" r=".9" fill="#4A2C17"/><circle cx="26" cy="24" r=".9" fill="#4A2C17"/>`;
+  if (/cookie/.test(n)){ const one = (x, y) => `<circle cx="${x}" cy="${y}" r="8" fill="#C98B45"/><circle cx="${x-3}" cy="${y-2}" r="1.1" fill="#4A2C17"/><circle cx="${x+2}" cy="${y-1}" r="1.1" fill="#4A2C17"/><circle cx="${x}" cy="${y+3}" r="1.1" fill="#4A2C17"/>`;
+    return /3/.test(n) ? one(16, 22) + one(32, 22) + one(24, 13) : one(24, 18); }
+  /* condiments */
+  if (/ketchup/.test(n)) return PIECE.packet('#C8102E');
+  if (/no sauce/.test(n)) return PIECE.sauceCup('#BBBBBB') + '<path d="M10 8 L38 32" stroke="#C8102E" stroke-width="3"/>';
+  if (/honey$/.test(n)) return PIECE.packet('#E3A21A');
+  if (/syrup/.test(n)) return PIECE.packet('#8A4A12');
+  if (/jam/.test(n)) return PIECE.sauceCup('#6B2C7A');
+  const LID = [[/bbq/,'#6B2E12'],[/sour/,'#F07C1A'],[/hot mustard/,'#B88A1A'],[/honey mustard/,'#F2C21B'],[/ranch/,'#2E7D32'],[/buffalo/,'#E0491E'],[/tartar/,'#2B6CB0'],[/spicy pepper/,'#C8102E'],[/extra sauce/,'#888888']];
+  for (const [re, col] of LID) if (re.test(n)) return PIECE.sauceCup(col);
+  return '';
+}
 function iconFor(it){
+  const art = drawingFor(it);
+  if (art) return `<svg viewBox="0 0 48 36" aria-hidden="true">${art}</svg>`;
+  return iconForBasic(it);
+}
+function iconForBasic(it){
   const n = (it.name || '').toLowerCase(), cat = (it.category || '').toLowerCase();
   const BUN = '#d9993f';
   const bun = (patty, h = 5) => `<path d="M8 16a16 10 0 0 1 32 0z" fill="${BUN}"/><rect x="7" y="17" width="34" height="3" rx="1.5" fill="#5aa832"/><rect x="7" y="20" width="34" height="${h}" rx="2.5" fill="${patty}"/><path d="M8 ${21+h}h32a3 3 0 0 1-3 4H11a3 3 0 0 1-3-4z" fill="${BUN}"/>`;
@@ -562,7 +740,7 @@ function menuPanelHtml(){
     ${(sizes || []).map((k, i) => !k ? '' : ['S','M','L','Mini'].includes(k)
       ? `<button class="key size" style="${at(i + 3, 1)}" data-size="${k}" aria-pressed="${S.size === k}">${k}<small>${SIZE_NAMES[k]}</small></button>`
       : `<button class="key size" style="${at(i + 3, 1)}" disabled title="Ese tamaño no se usa en esta caja">${k}<small>${SIZE_NAMES[k] || ''}</small></button>`).join('')}
-    ${cells.map(({ it, r, c }) => `<button class="tile${it.off ? ' off' : ''}" style="${at(r + 2, c + 1)};--c:${tileColor(it)};--tc:${textColor(it)}" data-item="${esc(it.id)}"${it.off ? ' aria-disabled="true"' : ''}><span class="tn">${esc(it.name)}</span><span class="ti">${iconFor(it)}</span>${priceTag(it)}${it.off ? '<span class="ua">UNAVAILABLE</span>' : ''}</button>`).join('')}
+    ${cells.map(({ it, r, c }) => `<button class="tile${it.off ? ' off' : ''}" style="${at(r + 2, c + 1)};--c:${tileColor(it)};--tc:${textColor(it)}" data-item="${esc(it.id)}"${it.off ? ' aria-disabled="true"' : ''}><span class="tn">${esc(it.name)}</span><span class="ti">${iconFor(it)}</span>${priceTag(it)}${it.combo ? `<span class="cn">${esc(it.combo)}</span>` : ''}${it.off ? '<span class="ua">UNAVAILABLE</span>' : ''}</button>`).join('')}
     ${MEAL_KEY.has(cat) ? `<button class="key black" style="${at(3, 9)}" data-act="changemeal" ${canChange ? '' : 'disabled'}>Make<br>Change<br>Meal</button>` : ''}
     <button class="key round" style="${at(1, 10)};--c:#c8102e;max-width:60px;font-size:12px" data-act="manager" title="Activar o desactivar productos">Manager</button>
     <button class="key black round" style="${at(8, 9)}" data-act="prices">Show<br>Prices<small>${S.showPrices ? 'ON' : 'OFF'}</small></button>

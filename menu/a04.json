@@ -3,5 +3,6 @@
   "name": "SE Biscuit",
   "order": 4,
   "price": 489,
-  "taxable": true
+  "taxable": true,
+  "combo": "4"
 }

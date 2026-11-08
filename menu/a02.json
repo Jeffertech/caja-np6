@@ -3,5 +3,6 @@
   "name": "SE McMuffin",
   "order": 2,
   "price": 499,
-  "taxable": true
+  "taxable": true,
+  "combo": "2"
 }
