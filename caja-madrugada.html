@@ -198,6 +198,8 @@ nav button[aria-selected="true"]{background:var(--k-gold);color:var(--ink)}
 .mgr-dlg{width:min(640px,100%)}
 .mrow{grid-template-columns:52px minmax(0,1fr) auto}
 .mbtns{display:flex;gap:4px}
+.regbtn{border:0;cursor:pointer;background:var(--k-gold);color:var(--ink);font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.05em;text-transform:uppercase}
+.regbtn[hidden]{display:none}
 .np-first{display:block;text-align:center;color:#8a5a00;font-size:13px}
 .np-x{position:absolute;right:8px;top:6px;border:0;background:none;font-size:26px;color:#444}
 .np-field{border:1px solid #bbb;height:52px;display:flex;align-items:center;justify-content:center;font-size:26px;letter-spacing:.2em}
@@ -411,6 +413,7 @@ label{display:grid;gap:3px;font-size:12px;color:var(--muted)}
     <span class="cell">EFECTIVO</span>
     <span class="cell" id="sync">Conectando…</span>
     <span class="spacer"></span>
+    <button class="cell regbtn" id="toReg" type="button">Registro</button>
     <nav role="tablist" hidden>
       <button role="tab" aria-selected="true" data-view="venta">← Volver a la caja</button>
       <button role="tab" aria-selected="false" data-view="registro">Registro</button>
@@ -538,8 +541,11 @@ async function connect(){
 function render(){
   document.querySelectorAll('nav button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.view === S.view)));
   document.querySelector('nav').hidden = S.view === 'venta';
+  /* Registro is one tap away from the register; the Menú page (prices, products) still needs a manager */
+  $('#toReg').hidden = S.view !== 'venta' || !!S.screen;
+  document.querySelector('nav [data-view="menu"]').hidden = !S.mgrOk;
   const m = $('#main');
-  if (S.screen){ document.querySelector('nav').hidden = true; m.innerHTML = viewProd(); return; }
+  if (S.screen){ document.querySelector('nav').hidden = true; $('#toReg').hidden = true; m.innerHTML = viewProd(); return; }
   const keep = document.activeElement?.id;
   m.innerHTML = S.view === 'venta' ? viewVenta() : S.view === 'registro' ? viewRegistro() : viewMenu();
   if (keep && document.getElementById(keep) && S.view !== 'venta') document.getElementById(keep).focus();
@@ -1523,7 +1529,9 @@ function outageHtml(){
 }
 
 /* Manager: number, then password, on the NP6 keypad. Without managers set up yet, it lets you in and says so. */
-/* Number keypad like the NP6 one. Resolves with what was typed, or null when closed. */
+/* Number keypad like the NP6 one. Resolves with what was typed, null when closed (×),
+   or BACK when < is pressed on an empty field (go back one step, or close on the first one). */
+const BACK = '←';
 function npPrompt(text, masked){
   return new Promise(res => {
     let val = '';
@@ -1542,26 +1550,29 @@ function npPrompt(text, masked){
       const b = e.target.closest('[data-k]'); if (!b) return;
       const k = b.dataset.k;
       if (k === 'x') return close(null);
-      if (k === 'b'){ val = val.slice(0, -1); draw(); return; }
+      if (k === 'b'){ if (!val) return close(BACK); val = val.slice(0, -1); draw(); return; }
       if (k === 'e'){ if (val) close(val); return; }
       if (val.length < 10){ val += k; draw(); }
     };
   });
 }
-/* Manager Number, then Manager Password; wrong entries ask again. */
+/* Manager Number, then Manager Password; wrong entries ask again. < on an empty password goes back to the number. */
 async function askManager(onOk){
   let m = null;
-  while (!m){
-    const num = await npPrompt('Please enter Manager Number to authorize this operation.', false);
-    if (num === null) return;
-    m = S.mgrs.find(x => x.num === num);
-    if (!m) toast('Ese número de manager no existe.');
-  }
   while (true){
-    const pw = await npPrompt('Please enter Manager Password to authorize this operation.', true);
-    if (pw === null) return;
-    if ((await pinHash('mgr:' + m.num + ':' + pw)) === m.hash) break;
-    toast('Contraseña incorrecta.');
+    const num = await npPrompt('Please enter Manager Number to authorize this operation.', false);
+    if (num === null || num === BACK) return;
+    m = S.mgrs.find(x => x.num === num);
+    if (!m){ toast('Ese número de manager no existe.'); continue; }
+    let ok = false, back = false;
+    while (!ok){
+      const pw = await npPrompt('Please enter Manager Password to authorize this operation.', true);
+      if (pw === null) return;
+      if (pw === BACK){ back = true; break; }
+      ok = (await pinHash('mgr:' + m.num + ':' + pw)) === m.hash;
+      if (!ok) toast('Contraseña incorrecta.');
+    }
+    if (!back) break;
   }
   onOk(m);
 }
@@ -1594,15 +1605,18 @@ async function refreshManagers(){
   } catch(e){}
 }
 async function askNewPassword(m){
-  const p1 = await npPrompt(`Nueva contraseña para el manager #${m.num} (4 a 8 números).`, true);
-  if (p1 === null) return false;
-  if (!/^\d{4,8}$/.test(p1)){ toast('La contraseña debe tener de 4 a 8 números.'); return false; }
-  const p2 = await npPrompt('Escribe otra vez la nueva contraseña.', true);
-  if (p2 === null) return false;
-  if (p1 !== p2){ toast('Las contraseñas no coinciden. No se cambió nada.'); return false; }
-  await saveManager({ ...m, hash: await pinHash('mgr:' + m.num + ':' + p1) });
-  toast(`Contraseña del manager #${m.num} cambiada.`);
-  return true;
+  while (true){
+    const p1 = await npPrompt(`Nueva contraseña para el manager #${m.num} (4 a 8 números).`, true);
+    if (p1 === null || p1 === BACK) return false;
+    if (!/^\d{4,8}$/.test(p1)){ toast('La contraseña debe tener de 4 a 8 números.'); continue; }
+    const p2 = await npPrompt('Escribe otra vez la nueva contraseña.', true);
+    if (p2 === null) return false;
+    if (p2 === BACK) continue;
+    if (p1 !== p2){ toast('Las contraseñas no coinciden. No se cambió nada.'); return false; }
+    await saveManager({ ...m, hash: await pinHash('mgr:' + m.num + ':' + p1) });
+    toast(`Contraseña del manager #${m.num} cambiada.`);
+    return true;
+  }
 }
 /* Special Functions → Change Password: any manager changes their own. */
 function openChangePassword(){ askManager(m => askNewPassword(m)); }
@@ -1796,7 +1810,7 @@ function specialPanelHtml(){
     ${npBtn(8, 7, 'RETURN', 'black', 'return')}
   </div>`;
 }
-function openManagerMenu(){ S.panel = 'manager'; S.tender = false; render(); }
+function openManagerMenu(){ S.mgrOk = true; S.panel = 'manager'; S.tender = false; render(); }
 function openSpecial(){ S.panel = 'special'; S.tender = false; render(); }
 function npAction(b){
   const a = b.dataset.np;
@@ -2007,7 +2021,8 @@ async function finishSale(paid){
   render();
   await saveSale(sale);
 }
-document.querySelector('nav').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b){ S.view = b.dataset.view; S.editId = null; S.confirmDel = null; render(); } });
+$('#toReg').addEventListener('click', () => { S.view = 'registro'; S.panel = null; S.mgrOk = false; render(); window.scrollTo({ top: 0 }); });
+document.querySelector('nav').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b){ if (b.dataset.view === 'venta') S.mgrOk = false; S.view = b.dataset.view; S.editId = null; S.confirmDel = null; render(); } });
 $('#main').addEventListener('click', async e => {
   const t = e.target;
   const g = sel => t.closest(sel);
@@ -2056,7 +2071,7 @@ $('#main').addEventListener('click', async e => {
   if (act === 'changemeal') openChangeMeal();
   if (act === 'promo') openPromo();
   if (act === 'toprod') goScreen('prod');
-  if (act === 'tocaja'){ S.view = 'venta'; goScreen(null); }
+  if (act === 'tocaja'){ S.view = 'venta'; S.mgrOk = false; goScreen(null); }
   if (act === 'csv') exportCsv();
   if (act === 'wipe') openWipe();
   if (act === 'backup') exportBackup();
