@@ -138,6 +138,77 @@ nav button[aria-selected="true"]{background:var(--k-gold);color:var(--ink)}
 .rlist{display:grid;gap:4px}
 .rrow{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:8px;align-items:center;background:var(--paper);border:1px solid var(--steel-lo);border-radius:6px;padding:6px 10px;font-family:var(--mono);font-size:14px}
 .rrow.done{opacity:.6}
+.ticket .cur{flex:1;display:flex;flex-direction:column;min-height:0}
+.ticket .hd{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;background:#e4e6e2;font-family:var(--mono);font-size:12px;padding:3px 8px;border-bottom:1px solid var(--steel-lo)}
+.ticket .hd span:nth-child(2){text-align:center}
+.ticket .hd span:last-child{text-align:right}
+.lines li[aria-selected="true"]{background:#000;color:#fff}
+.lines li.child{padding-left:26px}
+.lines .nt{opacity:.85}
+.lines.small{font-size:12px}
+.tot .chg2{color:#1f4fd8;font-size:18px;font-weight:600}
+.tot .eos{justify-content:flex-start;color:var(--muted)}
+.last{display:grid;grid-template-columns:minmax(0,1fr) 48px;border-top:2px solid var(--steel-lo);height:210px;background:#f2f3f1}
+.last-body{overflow:auto;border-right:1px solid var(--steel-lo)}
+.last-nav{display:flex;flex-direction:column;align-items:stretch;gap:4px;padding:4px;background:#d6d9dc;font-family:var(--mono);font-size:12px;text-align:center}
+.last-nav .navb{border:1px solid #9aa0a7;background:linear-gradient(#fff,#d9dce0);border-radius:4px;font-size:20px;color:#1f3f8f;padding:4px 0}
+.last-nav .navb:disabled{opacity:.4}
+.last-nav .served{flex:1;border:1px solid #9aa0a7;background:linear-gradient(#fff,#d9dce0);border-radius:4px;color:#1f3f8f;font-family:var(--display);font-weight:700;font-size:16px;writing-mode:vertical-rl;letter-spacing:.06em}
+.last-nav .served.on{background:var(--k-green);color:#fff}
+.hidelast{border:0;border-top:1px solid var(--steel-lo);background:#e4e6e2;font-size:12px;text-align:left;padding:4px 8px;color:var(--muted)}
+.outlist{flex:1;overflow:auto;padding:6px 10px;font-family:var(--mono);font-size:13px}
+.outlist b{display:block;margin-top:6px;font-family:var(--body)}
+.outlist ul{list-style:none;margin:2px 0 0;padding:0}
+.muted{color:var(--muted)}
+.sauce-row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;margin-bottom:5px}
+.sauce-row .tile{min-height:46px}
+.sauce-row .tn{font-size:10px;min-height:0;padding:1px}
+.np.compact{grid-template-rows:auto auto repeat(6,minmax(48px,auto))}
+.np.compact .tile .ti svg{max-height:34px}
+.np.compact .tab{min-height:38px}
+.np.compact .digit{max-height:46px;max-width:46px}
+.sauce-row .sn{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-family:var(--display);font-weight:600;font-size:12px;line-height:1.05;padding:2px;color:#222}
+.np.outage .tile{cursor:pointer}
+.key.eqkey{--c:#f2b632;color:#111;text-shadow:none;font-size:12px;min-height:0}
+.key.exitout{--c:#f4f4f4;color:#333;text-shadow:none;font-size:13px;min-height:0;border:1px solid #bbb}
+.key.round.sf{max-width:66px;font-size:11px;line-height:1}
+.overlay.steel{background:linear-gradient(180deg,#d7dbdf,#aeb4ba)}
+.overlay.light{background:rgb(0 0 0/.15);align-items:flex-start}
+.np-auth{position:relative;background:#fff;border-top:8px solid #ffbc0d;border-radius:6px;width:min(340px,100%);padding:22px 18px 18px;display:grid;gap:12px;box-shadow:0 10px 30px rgb(0 0 0/.3)}
+.np-auth p{margin:0;text-align:center;font-weight:600;font-size:17px}
+.np-x{position:absolute;right:8px;top:6px;border:0;background:none;font-size:26px;color:#444}
+.np-field{border:1px solid #bbb;height:52px;display:flex;align-items:center;justify-content:center;font-size:26px;letter-spacing:.2em}
+.np-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.np-keys button{height:62px;border:1px solid #ddd;border-radius:4px;background:#f7f7f7;font-family:var(--display);font-size:30px;font-weight:700}
+.np-keys .g{background:#dcdcdc}
+.np-keys .y{background:#ffbc0d;font-size:18px}
+.np-menu{width:min(860px,100%);display:grid;gap:18px;justify-items:center}
+.np-plate{margin:0;padding:6px 40px;background:linear-gradient(180deg,#f0f2f4,#9ea5ac);color:#5b636b;font-family:var(--display);font-size:clamp(26px,4vw,40px);text-shadow:0 1px 0 #fff;border-radius:4px}
+.np-menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;width:100%}
+.nb{min-height:76px;border:2px solid rgb(0 0 0/.25);border-radius:4px;font-family:var(--display);font-weight:700;font-size:18px;color:#fff;text-shadow:0 1px 1px rgb(0 0 0/.4);box-shadow:inset 0 1px 0 rgb(255 255 255/.3)}
+.nb.red{background:linear-gradient(#e0484e,#b5121b)}
+.nb.grey{background:linear-gradient(#9aa0a7,#6c737b)}
+.nb.green{background:linear-gradient(#4caf50,#2c7a2c)}
+.nb.blue{background:linear-gradient(#3d73c4,#1f4f97)}
+.nb.black{background:linear-gradient(#333,#000)}
+.np-restore{background:#c9ced3;border:1px solid #9aa0a7;width:min(1000px,100%);max-height:96vh;overflow:auto;padding:12px;display:grid;gap:10px}
+.np-bar{margin:0;background:#9ea5ac;color:#fff;text-align:center;font-family:var(--body);font-size:18px;padding:6px}
+.np-lbl{background:#eef0f2;border:1px solid #bbb;padding:6px 10px;font-size:13px;white-space:nowrap}
+.np-cap{margin:0;text-align:center;font-size:13px;font-weight:600}
+.rs-grid{display:grid;grid-template-columns:minmax(0,1fr) 110px minmax(0,1fr) 90px;gap:8px;align-items:start}
+.rs-box{background:#fff;border:1px solid #888;height:300px;overflow:auto}
+.rs-box table{font-size:13px}
+.rs-box th{background:#eee;position:sticky;top:0}
+.rs-box tr[data-pick],.rs-box tr[data-unstage]{cursor:pointer}
+.rs-box tr.pk td{background:#1f4f97;color:#fff}
+.rs-mid{display:grid;gap:8px;padding-top:28px}
+.np-equip{background:#fff;width:min(820px,100%);margin-top:40px;padding:16px;display:grid;gap:12px;border-radius:6px}
+.np-equip h3{margin:0;font-family:var(--body);font-size:22px}
+.eq-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.eq{position:relative;min-height:60px;border:1px solid #bbb;border-radius:6px;background:#f6f6f6;font-weight:600;font-size:17px}
+.eq.on{border:3px solid #f2a900;background:#fff7e0}
+.eq.on::after{content:"✓";position:absolute;right:4px;top:0;background:#f2a900;color:#fff;font-size:13px;padding:0 4px;border-radius:0 3px 0 4px}
+@media (max-width:700px){.rs-grid{grid-template-columns:minmax(0,1fr)}.rs-mid{grid-auto-flow:column;padding:0}.eq-row{grid-template-columns:1fr 1fr}}
 .key.mauve{--c:#9a6a90}
 .receipt{width:min(380px,100%);background:#fff;font-family:var(--mono);font-size:14px;gap:8px}
 .rc-head{display:grid;text-align:center;gap:2px;border-bottom:1px dashed #999;padding-bottom:8px}
@@ -246,12 +317,13 @@ const LS = {
   get(k, d){ try{ const v = localStorage.getItem('cm.'+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
   set(k, v){ try{ localStorage.setItem('cm.'+k, JSON.stringify(v)); }catch(e){} }
 };
-const SIZES = { XS:'XS', S:'SM', M:'MED', L:'LG', Mini:'MINI' };
+const SIZES = { XS:'XS', S:'S', M:'M', L:'L', Mini:'Mini' };
+const SZW = { S:'Sm', M:'Md', L:'Lg' };
 const PALETTE = ['--k-red','--k-blue','--k-green','--k-gold','--k-maroon','--k-grey','--k-teal'];
 const S = {
   view:'venta', db:null, mode:'loading',
   menu: (function(){ const E = [{"category": "Breakfast", "combo": "1", "id": "a01", "name": "Egg McMuffin", "order": 1, "price": 569, "taxable": true}, {"category": "Breakfast", "combo": "2", "id": "a02", "name": "SE McMuffin", "order": 2, "price": 499, "taxable": true}, {"category": "Breakfast", "combo": "3", "id": "a03", "name": "BEC Biscuit", "order": 3, "price": 519, "taxable": true}, {"category": "Breakfast", "combo": "4", "id": "a04", "name": "SE Biscuit", "order": 4, "price": 489, "taxable": true}, {"category": "Breakfast", "combo": "5", "id": "a05", "name": "BEC McGriddle", "order": 5, "price": 619, "taxable": true}, {"category": "Breakfast", "combo": "6", "id": "a06", "name": "SEC McGriddle", "order": 6, "price": 579, "taxable": true}, {"category": "Breakfast", "combo": "7", "id": "a07", "includes": ["2 SAUS BURRITO"], "meal": true, "mealType": "breakfast", "name": "Saus Burrito", "order": 7, "price": 199, "sizes": {"M": 749}, "taxable": true}, {"category": "Breakfast", "combo": "8", "id": "a08", "name": "BEC Bagel", "order": 8, "price": 669, "taxable": true}, {"category": "Breakfast", "combo": "9", "id": "a09", "name": "Steak EC Bagel", "order": 9, "price": 779, "taxable": true}, {"category": "Breakfast", "combo": "10", "id": "a10", "name": "SEC Bagel", "order": 10, "price": 699, "taxable": true}, {"category": "Breakfast", "id": "a11", "name": "Egg Bacon Muffin", "order": 11, "price": 569, "taxable": true}, {"category": "Breakfast", "id": "a12", "name": "McChicken Biscuit", "order": 12, "price": 439, "taxable": true}, {"category": "Breakfast", "id": "a13", "name": "Chicken McGriddle", "order": 13, "price": 469, "taxable": true}, {"category": "Breakfast", "id": "a14", "meal": true, "mealType": "breakfast", "name": "Saus Biscuit", "order": 14, "price": 189, "sizes": {"M": 400}, "taxable": true}, {"category": "Breakfast", "id": "a15", "name": "Hotcakes", "order": 15, "price": 569, "taxable": true}, {"category": "Breakfast", "id": "a16", "name": "Hotcakes & Sausage", "order": 16, "price": 729, "taxable": true}, {"category": "Breakfast", "id": "a17", "name": "Big Breakfast", "order": 17, "price": 619, "taxable": true}, {"category": "Breakfast", "id": "a18", "name": "Big Breakfast w/ Hotcakes", "order": 18, "price": 729, "taxable": true}, {"category": "Breakfast", "id": "a19", "name": "Oatmeal", "order": 19, "price": 399, "taxable": true}, {"category": "Breakfast", "id": "a20", "meal": true, "mealType": "breakfast", "name": "Saus McMuffin", "order": 20, "price": 199, "sizes": {"M": 400}, "taxable": true}, {"category": "Breakfast", "id": "a21", "name": "Hashbrown", "order": 21, "price": 189, "taxable": true}, {"category": "Breakfast 2", "id": "b01", "name": "Egg Biscuit", "order": 1, "price": 299, "taxable": true}, {"category": "Breakfast 2", "id": "b02", "name": "Egg Chs Biscuit", "order": 2, "price": 419, "taxable": true}, {"category": "Breakfast 2", "id": "b03", "name": "SEC Biscuit", "order": 3, "price": 549, "taxable": true}, {"category": "Breakfast 2", "id": "b04", "name": "Saus McGriddle", "order": 4, "price": 549, "taxable": true}, {"category": "Breakfast 2", "id": "b06", "name": "Egg Chs Bagel", "order": 6, "price": 599, "taxable": true}, {"category": "Breakfast 2", "id": "b08", "name": "Bagel", "order": 8, "price": 239, "taxable": true}, {"category": "Breakfast 2", "id": "b09", "name": "Hotcakes & Bacon", "order": 9, "price": 619, "taxable": true}, {"category": "Lunch", "combo": "1", "id": "c01", "meal": true, "name": "Big Mac", "order": 1, "price": 699, "sizes": {"L": 1299, "M": 1239}, "taxable": true}, {"category": "Lunch", "combo": "2a", "id": "c02", "meal": true, "name": "QPC", "order": 2, "price": 689, "sizes": {"L": 1299, "M": 900}, "taxable": true}, {"category": "Lunch", "combo": "2b", "id": "c03", "meal": true, "name": "Bacon QPC", "order": 3, "price": 859, "sizes": {"L": 1399, "M": 1299}, "taxable": true}, {"category": "Lunch", "combo": "2c", "id": "c04", "meal": true, "name": "QP Deluxe", "order": 4, "price": 719, "sizes": {"L": 1329, "M": 1249}, "taxable": true}, {"category": "Lunch", "combo": "3", "id": "c05", "meal": true, "name": "Dbl QPC", "order": 5, "price": 1049, "sizes": {"L": 1748, "M": 1598}, "taxable": true}, {"category": "Lunch", "id": "c06", "meal": true, "name": "Dbl Bacon QPC", "order": 6, "price": 1099, "sizes": {"L": 1599, "M": 1598}, "taxable": true}, {"category": "Lunch", "combo": "4a", "id": "c07", "meal": true, "name": "McCrispy", "order": 7, "price": 649, "sizes": {"L": 1269, "M": 1119}, "taxable": true}, {"category": "Lunch", "combo": "4b", "id": "c08", "meal": true, "name": "Spicy McCrispy", "order": 8, "price": 699, "sizes": {"L": 1279, "M": 1179}, "taxable": true}, {"category": "Lunch", "combo": "4c", "id": "c09", "meal": true, "name": "Dlx McCrispy", "order": 9, "price": 739, "sizes": {"L": 1299, "M": 1199}, "taxable": true}, {"category": "Lunch", "combo": "4d", "id": "c10", "meal": true, "name": "Dlx Spicy McCrispy", "order": 10, "price": 739, "sizes": {"L": 1299, "M": 1199}, "taxable": true}, {"category": "Lunch", "combo": "5a", "id": "c11", "meal": true, "name": "4 McCrispy Strips", "order": 11, "price": 759, "sizes": {"L": 1279, "M": 1209}, "taxable": true}, {"category": "Lunch", "combo": "5b", "id": "c12", "meal": true, "name": "3 McCrispy Strips", "order": 12, "price": 619, "sizes": {"L": 1159, "M": 1089}, "taxable": true}, {"category": "Lunch", "combo": "6a", "id": "c13", "includes": ["2 SNACK WRAP RANCH"], "meal": true, "name": "Snack Wrap Ranch", "order": 13, "price": 299, "sizes": {"L": 1259, "M": 1099}, "taxable": true}, {"category": "Lunch", "combo": "6b", "id": "c14", "includes": ["2 SNACK WRAP SPICY"], "meal": true, "name": "Snack Wrap Spicy", "order": 14, "price": 299, "sizes": {"L": 1269, "M": 1149}, "taxable": true}, {"alwaysMeal": true, "category": "Lunch", "combo": "6c", "defaultSize": "M", "id": "c15", "includes": ["SNACK WRAP RANCH", "SNACK WRAP SPICY"], "meal": true, "name": "Snack Wrap Mix & Match", "order": 15, "price": 1149, "sizes": {"L": 1269, "M": 1149}, "taxable": true}, {"category": "Lunch", "combo": "7", "id": "c16", "meal": true, "name": "10 Nuggets", "order": 16, "price": 659, "sizes": {"L": 1279, "M": 1099}, "taxable": true}, {"category": "Lunch", "combo": "8", "id": "c17", "meal": true, "name": "Filet-O-Fish", "order": 17, "price": 679, "sizes": {"L": 1259, "M": 1079}, "taxable": true}, {"category": "Lunch", "combo": "9", "id": "c18", "meal": true, "name": "Chs Burger", "order": 18, "price": 279, "sizes": {"L": 1199, "M": 1019}, "taxable": true}, {"category": "Lunch", "id": "c19", "name": "Daily Double", "order": 19, "price": 439, "taxable": true}, {"category": "Lunch", "id": "c20", "name": "Dbl Cheese", "order": 20, "price": 339, "taxable": true}, {"category": "Lunch", "id": "c21", "meal": true, "name": "Triple Chs", "order": 21, "price": 599, "sizes": {"L": 1279, "M": 1129}, "taxable": true}, {"category": "Lunch", "defaultSize": "S", "id": "c22", "name": "Fries", "order": 22, "price": 279, "sizes": {"L": 499, "M": 399, "S": 279}, "taxable": true}, {"category": "Lunch 2", "id": "d01", "name": "4 Nuggets", "order": 1, "price": 259, "taxable": true}, {"category": "Lunch 2", "id": "d02", "meal": true, "name": "6 Nuggets", "order": 2, "price": 379, "sizes": {"L": 1059, "M": 919}, "taxable": true}, {"category": "Lunch 2", "id": "d03", "name": "20 Nuggets", "order": 3, "price": 1029, "taxable": true}, {"category": "Lunch 2", "id": "d04", "name": "40 Nuggets", "order": 4, "price": 1429, "taxable": true}, {"category": "Lunch 2", "id": "d05", "name": "Dbl Filet", "order": 5, "price": 799, "taxable": true}, {"category": "Lunch 2", "id": "d06", "name": "Hamburger", "order": 6, "price": 269, "taxable": true}, {"category": "Lunch 2", "id": "d07", "name": "Dbl Hamburger", "order": 7, "price": 359, "taxable": true}, {"category": "Lunch 2", "id": "d08", "name": "QTR Ham", "order": 8, "price": 599, "taxable": true}, {"category": "Lunch 2", "id": "d09", "name": "McDouble", "order": 9, "price": 289, "taxable": true}, {"category": "Lunch 2", "id": "d10", "name": "McChicken", "order": 10, "price": 269, "taxable": true}, {"category": "Lunch 2", "id": "d12", "name": "Bacon McDbl", "order": 12, "price": 469, "taxable": true}, {"alwaysMeal": true, "category": "McValue", "defaultSize": "S", "id": "e01", "includes": ["SAUS MCMUFFIN"], "meal": true, "mealType": "breakfast", "name": "$4 Saus McMuffin Meal Deal", "order": 1, "price": 400, "sizes": {"S": 400}, "taxable": true}, {"alwaysMeal": true, "category": "McValue", "defaultSize": "S", "id": "e02", "includes": ["SAUS BISCUIT"], "meal": true, "mealType": "breakfast", "name": "$4 Saus Biscuit Meal Deal", "order": 2, "price": 400, "sizes": {"S": 400}, "taxable": true}, {"alwaysMeal": true, "category": "McValue", "defaultSize": "S", "id": "e03", "includes": ["MCCHICKEN", "4 NUGGETS"], "meal": true, "name": "$6 McChicken Meal Deal", "nuggets": 4, "order": 3, "price": 600, "sizes": {"L": 929, "M": 829, "S": 600}, "taxable": true}, {"alwaysMeal": true, "category": "McValue", "defaultSize": "S", "id": "e04", "includes": ["MCDOUBLE", "4 NUGGETS"], "meal": true, "name": "$7 McDouble Meal Deal", "nuggets": 4, "order": 4, "price": 700, "sizes": {"L": 1029, "M": 929, "S": 700}, "taxable": true}, {"category": "McValue", "id": "e05", "includes": ["MCDOUBLE", "SM FRIES"], "name": "McDbl & SFry Bdl", "order": 5, "price": 400, "taxable": true}, {"category": "McValue", "id": "e06", "includes": ["MCCHICKEN", "SM FRIES"], "name": "McCkn & SFry Bdl", "order": 6, "price": 400, "taxable": true}, {"category": "McValue", "id": "e07", "includes": ["6 NUGGETS", "SM FRIES"], "name": "6Ngg SFry Bdl", "nuggets": 6, "order": 7, "price": 400, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f01", "name": "Coke", "order": 1, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f02", "name": "Diet Coke", "order": 2, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f03", "name": "Sprite", "order": 3, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f04", "name": "Dr. Pepper", "order": 4, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f05", "name": "Fanta Orange", "order": 5, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f06", "name": "Coke Zero", "order": 6, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f07", "name": "Orange Hi-C", "order": 7, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199, "XS": 149}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f08", "name": "Iced Tea", "order": 8, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f09", "name": "Swt Tea Glass", "order": 9, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199, "XS": 100}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f10", "name": "Coffee", "order": 10, "price": 159, "sizes": {"L": 239, "M": 199, "S": 159}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f11", "name": "Decaf", "order": 11, "price": 159, "sizes": {"L": 239, "M": 199, "S": 159}, "taxable": true}, {"category": "Drinks", "id": "f12", "name": "Hot Tea", "off": true, "order": 12, "price": 150, "taxable": true}, {"category": "Drinks", "id": "f13", "name": "Dasani Water", "order": 13, "price": 199, "taxable": true}, {"category": "Drinks", "id": "f14", "name": "Orange Juice", "order": 14, "price": 399, "taxable": true}, {"category": "Drinks", "id": "f15", "name": "Apple Juice", "order": 15, "price": 179, "taxable": true}, {"category": "Drinks", "id": "f16", "name": "Milk Jug", "order": 16, "price": 179, "taxable": true}, {"category": "Drinks", "id": "f17", "name": "Choc Milk Jug", "order": 17, "price": 179, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f18", "name": "Fanta Strawberry", "order": 6, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "McCafé", "id": "g01", "name": "Iced Coffee", "order": 1, "price": 369, "taxable": true}, {"category": "McCafé", "id": "g02", "name": "Mocha", "off": true, "order": 2, "price": 339, "taxable": true}, {"category": "McCafé", "id": "g03", "name": "Frappe", "order": 3, "price": 459, "taxable": true}, {"category": "McCafé", "id": "g04", "name": "Hot Chocolate", "off": true, "order": 4, "price": 319, "taxable": true}, {"category": "McCafé", "id": "g05", "name": "Cappuccino", "off": true, "order": 5, "price": 379, "taxable": true}, {"category": "McCafé", "id": "g06", "name": "Macchiato", "off": true, "order": 6, "price": 379, "taxable": true}, {"category": "McCafé", "id": "g07", "name": "Americano", "off": true, "order": 7, "price": 339, "taxable": true}, {"category": "McCafé", "id": "g08", "name": "Espresso", "off": true, "order": 8, "price": 259, "taxable": true}, {"category": "McCafé", "id": "g09", "name": "Chocolate Shake", "order": 9, "price": 539, "taxable": true}, {"category": "McCafé", "id": "g10", "name": "Vanilla Shake", "order": 10, "price": 539, "taxable": true}, {"category": "McCafé", "id": "g11", "name": "Strawberry Shake", "order": 11, "price": 539, "taxable": true}, {"category": "McCafé", "id": "g12", "name": "Strwbry Ban Smoothie", "order": 12, "price": 519, "taxable": true}, {"category": "McCafé", "id": "g13", "name": "Mngo Pinapl Smoothie", "order": 13, "price": 519, "taxable": true}, {"category": "McCafé", "id": "g14", "name": "Lemonade", "order": 14, "price": 269, "taxable": true}, {"category": "McCafé", "id": "g15", "name": "Unswt Tea Lemonade", "order": 15, "price": 269, "taxable": true}, {"category": "McCafé", "id": "g16", "name": "Swt Tea Lemonade", "order": 16, "price": 269, "taxable": true}, {"category": "McCafé", "id": "g17", "name": "Sprt Wht Peach", "order": 17, "price": 339, "taxable": true}, {"category": "McCafé", "id": "g18", "name": "Blu Rasberry", "order": 18, "price": 339, "taxable": true}, {"category": "McCafé", "id": "g19", "name": "Frozen Coke", "order": 19, "price": 339, "taxable": true}, {"category": "McCafé", "id": "g20", "name": "Latte", "off": true, "order": 20, "price": null, "taxable": true}, {"category": "McCafé", "id": "g21", "name": "Wild Cherry", "off": true, "order": 21, "price": 239, "taxable": true}, {"category": "Dessert", "id": "h01", "name": "Apple Pie", "order": 1, "price": 299, "taxable": true}, {"category": "Dessert", "id": "h02", "name": "2 Apple Pies", "order": 2, "price": 500, "taxable": true}, {"category": "Dessert", "id": "h03", "name": "Holiday Pie", "order": 3, "price": 219, "taxable": true}, {"category": "Dessert", "id": "h04", "name": "2 Pack Holiday Pies", "order": 4, "price": 459, "taxable": true}, {"category": "Dessert", "id": "h05", "name": "1 Apple 1 Holiday Pie", "order": 5, "price": 459, "taxable": true}, {"category": "Dessert", "id": "h06", "name": "Vanilla Cone", "order": 6, "price": 339, "taxable": true}, {"category": "Dessert", "id": "h07", "name": "Hot Fudge Sundae", "order": 7, "price": 499, "taxable": true}, {"category": "Dessert", "id": "h08", "name": "Caramel Sundae", "order": 8, "price": 499, "taxable": true}, {"category": "Dessert", "id": "h09", "name": "Plain Sundae", "order": 9, "price": 489, "taxable": true}, {"category": "Dessert", "id": "h10", "name": "1 Cookie", "order": 10, "price": 179, "taxable": true}, {"category": "Dessert", "id": "h11", "name": "3 Cookies", "order": 11, "price": 439, "taxable": true}, {"category": "Dessert", "id": "h12", "name": "Cookie Tote", "order": 12, "price": 729, "taxable": true}, {"category": "Dessert", "id": "h13", "name": "Oreo McFlurry", "order": 13, "price": 589, "taxable": true}, {"category": "Dessert", "id": "h14", "name": "M&M McFlurry", "order": 14, "price": 589, "taxable": true}, {"category": "Bakery", "id": "h15", "name": "Apple Slices", "order": 15, "price": 139, "taxable": true}, {"category": "Dessert", "id": "h16", "name": "1 Apple 1 Pumpkin Pie", "off": true, "order": 16, "price": 459, "taxable": true}, {"category": "Dessert", "id": "h17", "name": "Pumpkin Pie", "off": true, "order": 17, "price": 219, "taxable": true}, {"category": "Dessert", "id": "h18", "name": "2 Pumpkin Pies", "off": true, "order": 18, "price": 459, "taxable": true}, {"category": "Happy Meal", "id": "i01", "includes": ["HAMBURGER"], "kind": "happy", "name": "Hamburger Happy Meal", "order": 1, "price": 619, "taxable": true}, {"category": "Happy Meal", "id": "i02", "includes": ["CHS BURGER"], "kind": "happy", "name": "Chs Burger Happy Meal", "order": 2, "price": 589, "taxable": true}, {"category": "Happy Meal", "id": "i03", "includes": ["4 NUGGETS"], "kind": "happy", "name": "4 Nuggets Happy Meal", "nuggets": 4, "order": 3, "price": 589, "taxable": true}, {"category": "Happy Meal", "id": "i04", "includes": ["6 NUGGETS"], "kind": "happy", "name": "6 Nuggets Happy Meal", "nuggets": 6, "order": 4, "price": 659, "taxable": true}, {"category": "Happy Meal", "id": "i05", "name": "Extra Toy", "order": 5, "price": 249, "taxable": true}, {"category": "Happy Meal", "id": "i08", "kind": "toy", "name": "Surprise Me", "order": 8, "price": 0, "taxable": true}, {"category": "Happy Meal", "id": "i09", "kind": "toy", "name": "Under 3 Toy", "order": 9, "price": 0, "taxable": true}, {"category": "Happy Meal", "id": "i10", "kind": "toy", "name": "No Toy", "order": 10, "price": 0, "taxable": true}, {"category": "Happy Meal", "id": "i11", "kind": "hmside", "name": "Extra Kids Fries", "order": 11, "price": 0, "taxable": true}, {"category": "LSM", "id": "j01", "name": "Dbl Qtr Chs Dlx", "order": 1, "price": 929, "taxable": true}, {"category": "LSM", "id": "j02", "name": "Value Pack", "order": 2, "price": 2249, "taxable": true}, {"category": "LSM 2", "id": "j03", "name": "Jets Pack", "order": 3, "price": 1699, "taxable": true}, {"category": "LSM", "id": "j04", "name": "40 Nuggets 2L Fry", "order": 4, "price": 2099, "taxable": true}, {"category": "LSM", "id": "j05", "name": "Classic Pack Big Mac", "order": 5, "price": 2389, "taxable": true}, {"category": "Condiments", "id": "k01", "name": "BBQ Sauce", "order": 1, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k02", "name": "Sweet & Sour", "order": 2, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k03", "name": "Hot Mustard", "order": 3, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k04", "name": "Ranch", "order": 4, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k05", "name": "Buffalo", "order": 5, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k06", "name": "Honey Mustard", "order": 6, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k07", "name": "Honey", "order": 7, "price": 25, "taxable": true}, {"category": "Condiments", "id": "k08", "name": "Tartar Sauce", "order": 8, "price": 40, "taxable": true}, {"category": "Condiments", "id": "k09", "name": "Spicy Pepper Sauce", "order": 9, "price": 50, "taxable": true}, {"category": "Condiments", "id": "k10", "name": "Extra Sauce", "order": 10, "price": 65, "taxable": true}, {"category": "Condiments", "id": "k11", "name": "Grape Jam", "off": true, "order": 11, "price": 25, "taxable": true}, {"category": "Condiments", "id": "k12", "name": "Syrup", "order": 12, "price": 25, "taxable": true}, {"category": "Condiments", "id": "k13", "name": "No Sauce", "order": 13, "price": 0, "taxable": true}, {"category": "Condiments", "id": "k14", "name": "Ketchup", "order": 14, "price": 0, "taxable": true}, {"category": "Salad", "id": "x01", "kind": "dummy", "name": "Grill Salad", "price": null, "taxable": true}, {"category": "Salad", "id": "x02", "kind": "dummy", "name": "Crispy Salad", "price": null, "taxable": true}, {"category": "Salad", "id": "x03", "kind": "dummy", "name": "No Meat", "price": null, "taxable": true}, {"category": "Gifts", "id": "x10", "kind": "dummy", "name": "Activation $ AMT", "price": 2000, "taxable": false}, {"category": "Gifts", "id": "x11", "kind": "dummy", "name": "Arch Card $5", "price": 500, "taxable": false}, {"category": "Gifts", "id": "x12", "kind": "dummy", "name": "Arch Card $10", "price": 1000, "taxable": false}, {"category": "Gifts", "id": "x13", "kind": "dummy", "name": "Arch Card $25", "price": 2500, "taxable": false}, {"category": "Gifts", "id": "x14", "kind": "dummy", "name": "Arch Card $50", "price": 5000, "taxable": false}, {"category": "Gifts", "id": "x15", "kind": "dummy", "name": "Reload $ AMT", "price": null, "taxable": false}, {"category": "Gifts", "id": "x16", "kind": "dummy", "name": "Reload $5", "price": 500, "taxable": false}, {"category": "Gifts", "id": "x17", "kind": "dummy", "name": "Reload $10", "price": 1000, "taxable": false}, {"category": "Gifts", "id": "x18", "kind": "dummy", "name": "Reload $25", "price": 2500, "taxable": false}, {"category": "Gifts", "id": "x19", "kind": "dummy", "name": "Reload $50", "price": 5000, "taxable": false}, {"category": "Gifts", "id": "x20", "kind": "dummy", "name": "Treat Cert", "price": 145, "taxable": false}, {"category": "Gifts", "id": "x21", "kind": "dummy", "name": "Paper Diploma", "price": null, "taxable": false}, {"category": "Gifts", "id": "x22", "kind": "dummy", "name": "Survey Redemption", "price": null, "taxable": false}, {"category": "Gifts", "id": "x23", "kind": "dummy", "name": "$1 Gift Cert", "price": null, "taxable": false}, {"category": "Gifts", "id": "x24", "kind": "dummy", "name": "$5 Gift Cert", "price": null, "taxable": false}, {"category": "Gifts", "id": "x25", "kind": "dummy", "name": "Daily Paper", "price": 140, "taxable": false}], V = '92c620aae28e'; const saved = LS.get('menu', null); if (saved && LS.get('menuV', '') === V) return saved; const out = E.map(e => { const o = saved && saved.find(s => s.id === e.id); return o && typeof o.off === 'boolean' ? { ...e, off: o.off } : e; }); if (saved) for (const s of saved) if (!/^[a-z]\d{2}$/.test(s.id) && !E.some(e => e.id === s.id)) out.push(s); LS.set('menu', out); LS.set('menuV', V); return out; })(), sales: LS.get('sales', []), pending: LS.get('pending', []),
-  taxRate: LS.get('taxRate', 6.625), mgrPin: LS.get('mgrPin', ''), showPrices: LS.get('showPrices', true),
+  taxRate: LS.get('taxRate', 6.625), mgrPin: LS.get('mgrPin', ''), mgrs: LS.get('mgrs', []), equip: LS.get('equip', {}), hideLast: LS.get('hideLast', false), lastIdx: 0, outage: false, orderType: null, showPrices: LS.get('showPrices', true),
   order: [], sel: -1, cat: null, qty: '', size: null,
   tender: false, entry: '', done: null,
   regDate: today(), editId: null, confirmDel: null
@@ -342,6 +414,8 @@ async function connect(){
   db.doc('settings/config').onSnapshot(d => {
     if (d.exists && typeof d.data().taxRate === 'number'){ S.taxRate = d.data().taxRate; LS.set('taxRate', S.taxRate); }
     if (d.exists && d.data().mgrPin){ S.mgrPin = d.data().mgrPin; LS.set('mgrPin', S.mgrPin); }
+    if (d.exists && Array.isArray(d.data().mgrs)){ S.mgrs = d.data().mgrs; LS.set('mgrs', S.mgrs); }
+    if (d.exists && d.data().equip){ S.equip = d.data().equip; LS.set('equip', S.equip); }
     if (d.exists) render();
   });
   flushPending();
@@ -365,31 +439,34 @@ function categories(){
 function ticketHtml(){
   normalizeSauces();
   const t = calc(S.order, S.taxRate);
-  const lines = S.order.length ? S.order.map((l,i) => `
-    <li data-line="${i}" aria-selected="${i === S.sel}">
-      <span class="num">${l.qty}</span><span>${esc(l.name)}${partsHtml(l)}${l.taxable ? '' : '<span class="nt">*SIN TAX</span>'}</span><span class="num">${plain(lineAmt(l))}</span>
-    </li>`).join('')
-    : S.done ? '' : `<li class="empty">Toca un producto. Para varios, toca primero el número (ej. 3 y luego el producto).</li>`;
   const d = S.done;
+  const nextNum = mergedSales().filter(s => s.date === today()).length + 1;
+  const rows = S.order.length ? displayOrder().map(([i, child]) => { const l = S.order[i]; const amt = lineAmt(l); return `
+    <li data-line="${i}" class="${child ? 'child' : ''}" aria-selected="${i === S.sel}">
+      <span class="num">${l.qty}</span><span>${esc(l.name)}${partsHtml(l)}${l.taxable ? '' : '<span class="nt">*SIN TAX</span>'}</span><span class="num">${amt ? plain(amt) : ''}</span>
+    </li>`; }).join('')
+    : d ? '' : `<li class="empty">Toca un producto. Para varios, toca primero el número (ej. 3 y luego el producto).</li>`;
   return `
   <section class="ticket" aria-label="Orden">
-    <div class="hd"><span>EFECTIVO</span><span class="num">${new Date().toLocaleDateString()}</span></div>
-    ${d ? `<ul class="lines">${d.lines.map(l => `<li style="cursor:default"><span class="num">${l.qty}</span><span>${esc(l.name)}${partsHtml(l)}</span><span class="num">${plain(lineAmt(l))}</span></li>`).join('')}</ul>
-      <div class="tot num"><div><span>Sub Total</span><span>${plain(d.subtotal)}</span></div><div><span>Tax</span><span>${plain(d.tax)}</span></div>
-      <div class="g"><span>Total</span><span>${plain(d.total)}</span></div><div><span>Efectivo</span><span>${plain(d.paid)}</span></div></div>
-      <div class="chg num">CAMBIO ${money(d.change)}</div>
-      <button class="btn go" data-act="receipt" style="margin:0 8px 8px;font-size:16px;padding:10px">Mostrar recibo al cliente</button>`
-    : `<ul class="lines">${lines}</ul>
-      <div class="tot num"><div><span>Sub Total</span><span>${plain(t.sub)}</span></div><div><span>Tax ${S.taxRate}%</span><span>${plain(t.tax)}</span></div>
-      <div class="g"><span>Total</span><span>${plain(t.total)}</span></div></div>`}
-    <div class="foot">${S.qty || S.size ? `Siguiente: ${S.qty ? S.qty + ' × ' : ''}${S.size ? SIZES[S.size] : ''}` : 'Venta sin caja · se guarda en Registro'}</div>
+    <div class="cur">
+      <div class="hd"><span>${esc((d && d.type) || S.orderType || 'OUT')}</span><span>Side1</span><span class="num">${d ? d.num : nextNum}</span></div>
+      ${d ? `<ul class="lines">${saleLinesHtml(d)}</ul>
+        <div class="tot num"><div><span>Sub Total</span><span>${plain(d.subtotal)}</span></div><div><span>Tax</span><span>${plain(d.tax)}</span></div>
+        <div><span>Total ${esc((d.type || 'OUT').toLowerCase())}</span><span>${plain(d.total)}</span></div><div><span>Cash Tendered</span><span>${plain(d.paid)}</span></div>
+        <div class="chg2"><span>Change</span><span>${plain(d.change)}</span></div><div><span>Order Id: ${d.num}</span></div><div class="eos">*** END OF SALE ***</div></div>
+        <button class="btn go" data-act="receipt" style="margin:0 8px 8px;padding:8px">Mostrar recibo al cliente</button>`
+      : `<ul class="lines">${rows}</ul>
+        <div class="tot num"><div><span>Sub Total</span><span>${plain(t.sub)}</span></div><div><span>Tax</span><span>${plain(t.tax)}</span></div>
+        <div class="g"><span>Total ${esc((S.orderType || 'OUT').toLowerCase())}</span><span>${plain(t.total)}</span></div></div>`}
+    </div>
+    ${lastSaleHtml()}
   </section>`;
 }
-function partsHtml(l){ return (l.parts || []).map(p => `<span class="nt">${esc(p)}</span>`).join('') + (l.free ? `<span class="nt">${l.free} GRATIS (NUGGETS)</span>` : '') + (l.promo ? '<span class="nt">PROMO (MANAGER) $0.00</span>' : ''); }
+function partsHtml(l){ return (l.parts || []).map(p => `<span class="nt">${/^\d/.test(p) || /PENDIENTE/.test(p) ? '' : (l.qty || 1) + ' '}${esc(p)}</span>`).join('') + (l.free ? `<span class="nt">${l.free} GRATIS (NUGGETS)</span>` : '') + (l.promo ? '<span class="nt">PROMO (MANAGER) $0.00</span>' : ''); }
 function lineLabel(l){ return l.name + (l.parts && l.parts.length ? ' (' + l.parts.join(', ') + ')' : '') + (l.free ? ` (${l.free} gratis)` : '') + (l.promo ? ' (PROMO)' : ''); }
 /* Nugget sauces: 4 or 6 pc = 1 free, 10 = 2, 20 = 3, 40 = 6; extra sauces are charged. */
 const NUGGET_FREE = { 4:1, 6:1, 10:2, 20:3, 40:6 };
-const SAUCE_RE = /bbq|sour|mustard|honey|ranch|buffalo|spicy pepper|ketchup/i;
+const SAUCE_RE = /bbq|sour|mustard|honey|ranch|buffalo|spicy pepper|ketchup|no sauce/i;
 function freeSaucesFor(l){
   const it = S.menu.find(m => m.id === l.itemId); if (!it) return 0;
   if (it.nuggets) return (NUGGET_FREE[it.nuggets] || 0) * l.qty;
@@ -405,7 +482,7 @@ function normalizeSauces(){
   }
 }
 function viewVenta(){
-  return `<div class="reg">${ticketHtml()}<section class="panel">${S.tender ? tenderHtml() : menuPanelHtml()}</section></div>`;
+  return `<div class="reg">${S.outage ? outageHtml() : ticketHtml()}<section class="panel">${S.tender ? tenderHtml() : menuPanelHtml()}</section></div>`;
 }
 function tabGroups(){
   const cats = categories(), used = new Set(), groups = [];
@@ -758,26 +835,31 @@ function menuPanelHtml(){
     return 'var(--k-red)';
   };
   const textColor = it => /happy meal/i.test(it.category || '') || /shake/i.test(it.name || '') ? '#1a1a1a' : '#fff';
+  const sauceRow = !S.outage && !S.tender && line && !line.sauce && freeSaucesFor(line) > 0
+    ? S.menu.filter(m => /^condiments$/i.test(m.category || '') && SAUCE_RE.test(m.name || '')).sort((a, b) => (a.order ?? 999) - (b.order ?? 999)) : [];
   const cells = screenCells(cat);
   const sizes = SIZE_ROWS[cat] === undefined ? SIZE_ROWS['Breakfast'] : SIZE_ROWS[cat];
   const at = (r, c) => `grid-row:${r};grid-column:${c}`;
   return `
-  <div class="np">
-    ${[0,1,2,3,4,5,6,7,8].map(n => `<button class="digit num" style="${at(1, n + 1)}" data-digit="${n}" aria-pressed="${S.qty !== '' && S.qty.endsWith(String(n))}" aria-label="Cantidad ${n}">${n}</button>`).join('')}
+  ${sauceRow.length ? `<div class="sauce-row">${sauceRow.map(m => `<button class="tile sauce${isOff(m) ? ' off' : ''}" style="--c:var(--k-red)" data-item="${esc(m.id)}"><span class="tn">Condiment</span><span class="sn">${esc(m.name)}</span>${isOff(m) ? '<span class="ua">UNAVAILABLE</span>' : ''}</button>`).join('')}</div>` : ''}
+  <div class="np${S.outage ? ' outage' : ''}${sauceRow.length ? ' compact' : ''}">
+    ${[0,1,2,3,4,5,6,7,8].map(n => S.outage && n === 0 ? `<button class="key eqkey" style="${at(1, 1)}" data-act="equipment">Equipment<br>Outage</button>` : `<button class="digit num" style="${at(1, n + 1)}" data-digit="${n}" aria-pressed="${S.qty !== '' && S.qty.endsWith(String(n))}" aria-label="Cantidad ${n}">${n}</button>`).join('')}
     ${tabs.map((g, i) => `<div class="tab ${g.includes(cat) ? 'on' : ''}" style="${at(2, Math.min(i + 1, 10))}">${g.map(c => `<button data-cat="${esc(c)}" aria-pressed="${c === cat}">${esc(c)}</button>`).join('<hr>')}</div>`).join('')}
     ${(sizes || []).map((k, i) => !k ? '' : ['XS','S','M','L','Mini'].includes(k)
       ? `<button class="key size" style="${at(i + 3, 1)}" data-size="${k}" aria-pressed="${S.size === k}">${k}<small>${SIZE_NAMES[k]}</small></button>`
       : `<button class="key size" style="${at(i + 3, 1)}" disabled title="Ese tamaño no se usa en esta caja">${k}<small>${SIZE_NAMES[k] || ''}</small></button>`).join('')}
-    ${cells.map(({ it, r, c, fs }) => `<button class="tile${it.off ? ' off' : ''}" style="${at(r + 2, c + 1)};--c:${tileColor(it)};--tc:${textColor(it)}" data-item="${esc(it.id)}"${fs ? ` data-fsize="${fs}"` : ''}${it.off ? ' aria-disabled="true"' : ''}><span class="tn">${esc(it.name)}</span><span class="ti">${iconFor(it)}</span>${priceTag(it, fs)}${it.combo ? `<span class="cn">${esc(it.combo)}</span>` : ''}${it.off ? '<span class="ua">UNAVAILABLE</span>' : ''}</button>`).join('')}
+    ${cells.map(({ it, r, c, fs }) => `<button class="tile${isOff(it) ? ' off' : ''}" style="${at(r + 2, c + 1)};--c:${tileColor(it)};--tc:${textColor(it)}" data-item="${esc(it.id)}"${fs ? ` data-fsize="${fs}"` : ''}${isOff(it) && !S.outage ? ' aria-disabled="true"' : ''}><span class="tn">${esc(it.name)}</span><span class="ti">${iconFor(it)}</span>${priceTag(it, fs)}${it.combo ? `<span class="cn">${esc(it.combo)}</span>` : ''}${isOff(it) ? '<span class="ua">UNAVAILABLE</span>' : ''}</button>`).join('')}
     ${MEAL_KEY.has(cat) ? `<button class="key black" style="${at(3, 9)}" data-act="changemeal" ${canChange ? '' : 'disabled'}>Make<br>Change<br>Meal</button>` : ''}
-    ${STANDALONE ? `<button class="key" style="${at(2, 10)};--c:var(--k-green);min-height:46px;font-size:15px" data-act="toprod" title="Ir a la pantalla de producción">Producción</button>` : ''}
+    ${S.outage ? `<button class="key exitout" style="${at(2, 10)}" data-act="exitoutage">Exit<br>Outage</button>` : `<button class="key round sf" style="${at(2, 10)};--c:#d0303a" data-act="special">Special<br>Functions</button>`}
+    ${STANDALONE ? `<button class="key" style="${at(7, 9)};--c:var(--k-green);font-size:14px" data-act="toprod" title="Ir a la pantalla de producción">Producción</button>` : ''}
     <button class="key round" style="${at(1, 10)};--c:#c8102e;max-width:60px;font-size:12px" data-act="manager" title="Activar o desactivar productos">Manager</button>
     <button class="key black round" style="${at(8, 9)}" data-act="prices">Show<br>Prices<small>${S.showPrices ? 'ON' : 'OFF'}</small></button>
     <button class="key mauve" style="${at(3, 10)}" data-act="promo" ${line && !line.promo ? '' : 'disabled'}>Promo<br>Item</button>
     <button class="key mauve" style="${at(4, 10)}" data-act="clear" ${has || S.qty || S.size ? '' : 'disabled'}>Clear<br>Choice</button>
     <button class="key mauve" style="${at(5, 10)}" disabled>Side<br>Choice</button>
     <button class="key mauve" style="${at(6, 10)}" data-act="void" ${S.sel < 0 ? 'disabled' : ''}>Void<br>Line</button>
-    <button class="key round" style="${at(8, 10)};--c:var(--k-green)" data-act="total" ${has ? '' : 'disabled'}>Take Out<br>Total</button>
+    <button class="key round" style="${at(7, 10)};--c:var(--k-green)" data-act="total" data-type="IN" ${has && !S.outage ? '' : 'disabled'}>Eat In<br>Total</button>
+    <button class="key round" style="${at(8, 10)};--c:var(--k-green)" data-act="total" data-type="OUT" ${has && !S.outage ? '' : 'disabled'}>Take Out<br>Total</button>
   </div>`;
 }
 function openChangeMeal(){
@@ -803,7 +885,7 @@ function openChangeMeal(){
 /* ---- combos: side + drink, charging the difference for a pricier drink ---- */
 function mealKind(it){ return it.mealType || (/breakfast/i.test(it.category || '') ? 'breakfast' : 'lunch'); }
 function drinkOptions(){
-  return S.menu.filter(m => /^(drinks|mccaf)/i.test(m.category || '') && !m.off && m.price != null)
+  return S.menu.filter(m => /^(drinks|mccaf)/i.test(m.category || '') && !isOff(m) && m.price != null)
     .sort((a,b) => (a.category > b.category ? 1 : a.category < b.category ? -1 : 0) || (a.order ?? 999) - (b.order ?? 999));
 }
 function drinkCost(d, size){ return d.sizes ? (d.sizes[size] || d.price) : d.price; }
@@ -851,11 +933,11 @@ function buildMealLine(it, size, drink, prev){
   const z = SIZES[size];
   const removed = prev?.removed || [];
   const bk = mealKind(it) === 'breakfast';
-  const side = bk ? 'HASHBROWN' : z + ' FRIES';
-  const name = `${z} ${it.name}` + (/meal/i.test(it.name) ? '' : ' MEAL');
+  const side = bk ? 'Hashbrown' : z + ' Fry';
+  const name = `${it.name}/${SZW[size] || z}`;
   const dsz = bk ? 'S' : size; /* breakfast combos always come with a small drink (small coffee as the base price) */
   const diff = drink ? mealDrinkDiff(it, size, drink) : 0;
-  const parts = [...(it.includes || []), side].filter(p => !removed.includes(p));
+  const parts = [...(it.includes && it.includes.length ? it.includes : [it.name]), side].filter(p => !removed.includes(p));
   return { name, taxable: !!it.taxable, itemId: it.id, size, mealType: 'meal', removed,
     price: it.sizes[size] + diff, drinkId: drink ? drink.id : null, drinkSize: dsz, needsDrink: !drink,
     parts: [...parts, drink ? drinkLabel(drink, dsz, diff) : PENDING_DRINK] };
@@ -1014,8 +1096,8 @@ function sha256Hex(str){
   return h.map(v => v.toString(16).padStart(8, '0')).join('');
 }
 async function saveSettings(){
-  LS.set('taxRate', S.taxRate); LS.set('mgrPin', S.mgrPin || '');
-  if (S.db){ try { await S.db.doc('settings/config').set({ taxRate: S.taxRate, ...(S.mgrPin ? { mgrPin: S.mgrPin } : {}) }); return true; }
+  LS.set('taxRate', S.taxRate); LS.set('mgrPin', S.mgrPin || ''); LS.set('mgrs', S.mgrs); LS.set('equip', S.equip);
+  if (S.db){ try { await S.db.doc('settings/config').set({ taxRate: S.taxRate, mgrs: S.mgrs, equip: S.equip, ...(S.mgrPin ? { mgrPin: S.mgrPin } : {}) }); return true; }
     catch(e){ toast('No se pudo guardar la configuración.'); return false; } }
   return true;
 }
@@ -1035,30 +1117,11 @@ function askPin(title, onOk){
   };
   setTimeout(() => $('#pinAskIn')?.focus(), 30);
 }
-function openManagerMenu(){
-  $('#layer').innerHTML = `
-  <div class="overlay"><div class="dialog" role="dialog" aria-label="Manager">
-    <h3>Manager</h3>
-    <button class="key" style="--c:var(--k-blue);min-height:64px;font-size:20px" data-mgr="registro">Registro de ventas</button>
-    <button class="key" style="--c:var(--k-red);min-height:64px;font-size:20px" data-mgr="menu">Productos, precios, tax y PIN</button>
-    ${STANDALONE ? '<button class="key" style="--c:var(--k-green);min-height:64px;font-size:20px" data-mgr="prod">Pantalla de producción</button>' : ''}
-    <button class="btn" data-mgr="cancel">Volver a la caja</button>
-  </div></div>`;
-  $('#layer').onclick = e => {
-    const b = e.target.closest('[data-mgr]'); if (!b) return;
-    $('#layer').onclick = null; $('#layer').innerHTML = '';
-    if (b.dataset.mgr === 'prod'){ goScreen('prod'); return; }
-    if (b.dataset.mgr !== 'cancel'){ S.view = b.dataset.mgr; S.editId = null; render(); window.scrollTo({ top: 0 }); }
-  };
-}
-function openManager(){
-  if (S.mgrPin) askPin('Manager', openManagerMenu);
-  else { openManagerMenu(); toast('Consejo: crea un PIN en Productos para proteger esta pantalla.'); }
-}
 function openPromo(){
   const l = S.sel >= 0 ? S.order[S.sel] : null;
   if (!l){ return; }
-  if (!S.mgrPin){ toast('Primero un manager debe crear su PIN en Menú → Manager.'); return; }
+  askManager(() => { if (S.order[S.sel] === l){ l.promo = true; render(); toast('Promo aplicada: ' + l.name); } });
+  return;
   $('#layer').innerHTML = `
   <div class="overlay"><form class="dialog" id="promoForm" autocomplete="off" aria-label="Promo Item">
     <h3>Promo Item · ${esc(l.name)}</h3>
@@ -1248,7 +1311,7 @@ function viewProd(){
   return `<div class="screen">
     <div class="sc-head"><h2>Producción</h2><span class="pill-n">${open.length} en espera</span>${offlineTag()}<span class="spacer"></span>
       <button class="btn" data-act="tocaja">Caja</button></div>
-    ${open.length ? `<div class="ocards">${open.map(o => `<article class="ocard ${ageClass(o.ts)}"><header><b>${num(o)}</b><span>${esc(o.time || hhmm(o.ts))}</span><span class="age">${ago(o.ts)}</span></header><ul>${orderLinesHtml(o)}</ul><button class="key" style="--c:var(--k-green)" data-ready="${esc(o.id)}">✓ Lista</button></article>`).join('')}</div>`
+    ${open.length ? `<div class="ocards">${open.map(o => `<article class="ocard ${ageClass(o.ts)}"><header><b>${num(o)}</b><span>${esc(o.type || 'OUT')}</span><span>${esc(o.time || hhmm(o.ts))}</span><span class="age">${ago(o.ts)}</span></header><ul>${orderLinesHtml(o)}</ul><button class="key" style="--c:var(--k-green)" data-ready="${esc(o.id)}">✓ Lista</button></article>`).join('')}</div>`
       : `<p class="empty-p sc-empty">No hay órdenes en espera. Las órdenes que se cobran en la caja aparecen aquí solas.</p>`}
     <h3>Listas</h3>
     ${done.length ? `<div class="ocards small">${done.map(o => `<article class="ocard done"><header><b>${num(o)}</b><span>${esc(o.time || hhmm(o.ts))}</span><span class="age">lista ${o.ready_ts ? hhmm(o.ready_ts) : ''}</span></header><ul>${orderLinesHtml(o)}</ul><button class="btn" data-unready="${esc(o.id)}">Deshacer</button></article>`).join('')}</div>`
@@ -1258,6 +1321,212 @@ function viewProd(){
 function setOrderStatus(id, status){
   const o = S.cloud.find(x => x.id === id); if (o){ o.status = status; o.ready_ts = status === 'ready' ? Date.now() : null; }
   cloudPush('PATCH', '/orders/' + id, { status }); render();
+}
+/* ---------- NP6 screens copied from the store: last sale + Served, Manager number/password, Manager Menu,
+   Restore/Remove menu items, Special Functions, Product Outage and Equipment Outage ---------- */
+const EQUIP = {
+  blended:  { name: 'Blended Ice',      re: /frappe|smoothie/i },
+  shakes:   { name: 'Shakes',           re: /shake/i },
+  dessert:  { name: 'Dessert',          re: /mcflurry|sundae|\bcone\b/i },
+  espresso: { name: 'Espresso Machine', re: /latte|mocha|cappuccino|macchiato|americano|espresso|hot chocolate/i }
+};
+function equipFor(it){ return Object.keys(EQUIP).filter(k => EQUIP[k].re.test(it.name || '')); }
+function isOff(it){ return !!(it && (it.off || equipFor(it).some(k => S.equip[k]))); }
+
+/* Left panel: the receipt of the order being rung up, and under it the previous orders with Served. */
+function displayOrder(){
+  const out = [];
+  S.order.forEach((l, i) => {
+    if (l.sauce && l.for && S.order.some(o => o.key === l.for)) return;
+    out.push([i, false]);
+    S.order.forEach((c, j) => { if (c.sauce && c.for && c.for === l.key) out.push([j, true]); });
+  });
+  return out;
+}
+function recentSales(){ return mergedSales().filter(s => s.date === today() && !s.voided).slice(0, 30); }
+function saleLinesHtml(s){
+  return (s.lines || []).map(l => `<li><span class="num">${l.qty}</span><span>${esc(l.name)}${partsHtml(l)}</span><span class="num">${lineAmt(l) ? plain(lineAmt(l)) : ''}</span></li>`).join('');
+}
+function lastSaleHtml(){
+  if (S.hideLast) return `<button class="hidelast" data-act="togglelast">Click here to show last sale</button>`;
+  const list = recentSales();
+  if (!list.length) return `<div class="last"><div class="last-body"><p class="empty-p" style="padding:10px">Las órdenes cobradas salen aquí.</p></div></div><button class="hidelast" data-act="togglelast">Click here to hide last sale</button>`;
+  S.lastIdx = Math.min(S.lastIdx || 0, list.length - 1);
+  const s = list[S.lastIdx], served = s.status === 'ready';
+  return `<div class="last">
+      <div class="last-body"><div class="hd"><span>${esc(s.type || 'OUT')}</span><span>Side1</span><span class="num">${s.num || ''}</span></div><ul class="lines small">${saleLinesHtml(s)}</ul></div>
+      <div class="last-nav">
+        <button class="navb" data-act="lastolder" ${S.lastIdx >= list.length - 1 ? 'disabled' : ''} aria-label="Orden anterior">→</button>
+        <span class="num">${S.lastIdx + 1}/${list.length}</span>
+        <button class="navb" data-act="lastnewer" ${S.lastIdx === 0 ? 'disabled' : ''} aria-label="Orden más reciente">←</button>
+        <button class="served${served ? ' on' : ''}" data-act="served" data-sid="${esc(s.id)}">${served ? 'Served ✓' : 'Served'}</button>
+      </div>
+    </div><button class="hidelast" data-act="togglelast">Click here to hide last sale</button>`;
+}
+function outageHtml(){
+  const indiv = S.menu.filter(m => m.off && m.kind !== 'dummy');
+  const eqOn = Object.keys(EQUIP).filter(k => S.equip[k]);
+  return `<section class="ticket" aria-label="Outages">
+    <div class="hd"><span>Outages</span></div>
+    <div class="outlist">
+      <b>Individual items</b>
+      <ul>${indiv.length ? indiv.map(m => `<li>• ${esc(m.name)}</li>`).join('') : '<li class="muted">Ninguno</li>'}</ul>
+      ${eqOn.map(k => `<b>${EQUIP[k].name} equipment items</b><ul>${S.menu.filter(m => EQUIP[k].re.test(m.name || '')).map(m => `<li>• ${esc(m.name)}</li>`).join('')}</ul>`).join('')}
+    </div>
+    <div class="foot">Toca un producto para quitarlo o ponerlo. Exit Outage para salir.</div>
+  </section>`;
+}
+
+/* Manager: number, then password, on the NP6 keypad. Without managers set up yet, it lets you in and says so. */
+function askManager(onOk){
+  if (!S.mgrs.length){
+    if (S.mgrPin) return askPin('Manager', onOk);
+    onOk(null); toast('Consejo: crea un manager (número y contraseña) en Productos → Manager.'); return;
+  }
+  let step = 'num', num = '', val = '';
+  const draw = () => {
+    $('#layer').innerHTML = `
+    <div class="overlay"><div class="np-auth" role="dialog" aria-label="Manager">
+      <button class="np-x" data-k="x" aria-label="Cerrar">×</button>
+      <p>Please enter Manager ${step === 'num' ? 'Number' : 'Password'} to authorize this operation.</p>
+      <div class="np-field num">${step === 'num' ? esc(val) : '•'.repeat(val.length)}</div>
+      <div class="np-keys">${[7,8,9,4,5,6,1,2,3].map(n => `<button data-k="${n}">${n}</button>`).join('')}<button data-k="b" class="g" aria-label="Borrar">&lt;</button><button data-k="0">0</button><button data-k="e" class="y">Enter</button></div>
+    </div></div>`;
+  };
+  draw();
+  $('#layer').onclick = async e => {
+    const b = e.target.closest('[data-k]'); if (!b) return;
+    const k = b.dataset.k;
+    if (k === 'x'){ $('#layer').onclick = null; $('#layer').innerHTML = ''; return; }
+    if (k === 'b'){ val = val.slice(0, -1); draw(); return; }
+    if (k === 'e'){
+      if (!val) return;
+      if (step === 'num'){
+        if (!S.mgrs.some(m => m.num === val)){ toast('Ese número de manager no existe.'); val = ''; draw(); return; }
+        num = val; val = ''; step = 'pw'; draw(); return;
+      }
+      const m = S.mgrs.find(x => x.num === num);
+      if ((await pinHash('mgr:' + num + ':' + val)) !== m.hash){ toast('Contraseña incorrecta.'); val = ''; draw(); return; }
+      $('#layer').onclick = null; $('#layer').innerHTML = ''; onOk(m); return;
+    }
+    if (val.length < 10){ val += k; draw(); }
+  };
+}
+function openManagerMenu(){
+  $('#layer').innerHTML = `
+  <div class="overlay steel"><div class="np-menu" role="dialog" aria-label="Manager Menu">
+    <h2 class="np-plate">Manager Menu</h2>
+    <div class="np-menu-grid">
+      <button class="nb red" data-mgr="remove">Remove<br>Menu Item</button>
+      <button class="nb red" data-mgr="restore">Restore<br>Menu Item</button>
+      <button class="nb grey" data-mgr="registro">Registro de<br>ventas</button>
+      <button class="nb grey" data-mgr="menu">Productos,<br>precios y tax</button>
+      ${STANDALONE ? '<button class="nb green" data-mgr="prod">Pantalla de<br>producción</button>' : ''}
+      <button class="nb black" data-mgr="cancel">Return</button>
+    </div>
+  </div></div>`;
+  $('#layer').onclick = e => {
+    const b = e.target.closest('[data-mgr]'); if (!b) return;
+    const k = b.dataset.mgr;
+    $('#layer').onclick = null; $('#layer').innerHTML = '';
+    if (k === 'prod'){ goScreen('prod'); return; }
+    if (k === 'remove' || k === 'restore'){ openRestore(k); return; }
+    if (k !== 'cancel'){ S.view = k; S.editId = null; render(); window.scrollTo({ top: 0 }); }
+  };
+}
+function openManager(){ askManager(openManagerMenu); }
+
+/* Restore / Remove: search, pick on the left, move them to the right, Ok applies. */
+function openRestore(mode){
+  const restoring = mode === 'restore';
+  let q = '', picked = new Set(), staged = [];
+  const pool = () => S.menu.filter(m => m.kind !== 'dummy' && !!m.off === restoring && !staged.includes(m.id)
+      && (!q || ((m.name || '') + ' ' + (m.category || '')).toLowerCase().includes(q)))
+    .sort((a, b) => (a.category || '').localeCompare(b.category || '') || (a.name || '').localeCompare(b.name || ''));
+  const row = (m, attr) => `<tr ${attr}="${esc(m.id)}" class="${picked.has(m.id) ? 'pk' : ''}"><td class="num">${esc(m.id)}</td><td>${esc(m.name)}</td><td>${esc(m.category || '')}</td></tr>`;
+  const lists = () => {
+    const left = pool();
+    $('#rsLeft').innerHTML = left.length ? left.map(m => row(m, 'data-pick')).join('') : `<tr><td colspan="3" class="muted">${restoring ? 'No hay productos desactivados.' : 'Sin resultados.'}</td></tr>`;
+    $('#rsRight').innerHTML = staged.map(id => S.menu.find(m => m.id === id)).filter(Boolean).map(m => row(m, 'data-unstage')).join('');
+  };
+  $('#layer').innerHTML = `
+  <div class="overlay steel"><div class="np-restore" role="dialog" aria-label="${restoring ? 'Restore' : 'Remove'} Menu Item">
+    <h2 class="np-bar">${restoring ? 'Restore' : 'Remove'} Menu Item</h2>
+    <div class="row" style="flex-wrap:nowrap"><span class="np-lbl">Search Products</span><input id="rsQ" placeholder="Nombre del producto o pantalla" style="flex:1"></div>
+    <div class="rs-grid">
+      <div><p class="np-cap">${restoring ? 'Select Product(s) to Restore' : 'Select Product(s) to Remove'}</p><div class="rs-box"><table><thead><tr><th>Code</th><th>Menu item</th><th>Group</th></tr></thead><tbody id="rsLeft"></tbody></table></div></div>
+      <div class="rs-mid"><button class="btn" data-rs="top">TOP</button><button class="btn" data-rs="move">Move<br>Selected &gt;</button><button class="btn" data-rs="all">Move All</button><button class="btn" data-rs="bottom">BOTTOM</button></div>
+      <div><p class="np-cap">${restoring ? 'Restore Product(s)' : 'Remove Product(s)'}</p><div class="rs-box"><table><thead><tr><th>Code</th><th>Menu item</th><th>Group</th></tr></thead><tbody id="rsRight"></tbody></table></div></div>
+      <div class="rs-mid"><button class="btn" data-rs="clearsel">Clear<br>Selected</button><button class="btn" data-rs="clearall">Clear All</button></div>
+    </div>
+    <p class="np-cap">Touch to select the menu item</p>
+    <div class="row"><button class="btn go" data-rs="ok" style="font-size:18px">Ok</button><button class="btn" data-rs="cancel" style="font-size:18px">Cancel</button></div>
+  </div></div>`;
+  lists();
+  $('#rsQ').oninput = e => { q = e.target.value.trim().toLowerCase(); lists(); };
+  $('#layer').onclick = async e => {
+    const tr = e.target.closest('[data-pick],[data-unstage]');
+    if (tr){ const id = tr.dataset.pick || tr.dataset.unstage; picked.has(id) ? picked.delete(id) : picked.add(id); lists(); return; }
+    const b = e.target.closest('[data-rs]'); if (!b) return;
+    const k = b.dataset.rs;
+    if (k === 'top') $('#rsLeft').closest('.rs-box').scrollTop = 0;
+    if (k === 'bottom'){ const box = $('#rsLeft').closest('.rs-box'); box.scrollTop = box.scrollHeight; }
+    if (k === 'move'){ for (const m of pool()) if (picked.has(m.id)){ staged.push(m.id); picked.delete(m.id); } lists(); }
+    if (k === 'all'){ for (const m of pool()) staged.push(m.id); picked.clear(); lists(); }
+    if (k === 'clearsel'){ staged = staged.filter(id => !picked.has(id)); picked.clear(); lists(); }
+    if (k === 'clearall'){ staged = []; picked.clear(); lists(); }
+    if (k === 'cancel'){ $('#layer').onclick = null; $('#layer').innerHTML = ''; return; }
+    if (k === 'ok'){
+      const items = staged.map(id => S.menu.find(m => m.id === id)).filter(Boolean);
+      $('#layer').onclick = null; $('#layer').innerHTML = '';
+      for (const it of items) await saveMenuItem({ ...it, off: !restoring });
+      render();
+      if (items.length) toast(`${items.length} producto(s) ${restoring ? 'disponibles otra vez' : 'quitados'}.`);
+    }
+  };
+  setTimeout(() => $('#rsQ')?.focus(), 30);
+}
+
+/* Special Functions: Product Outage (tap products to take them off or back on) and the last receipt. */
+function openSpecial(){
+  $('#layer').innerHTML = `
+  <div class="overlay steel"><div class="np-menu" role="dialog" aria-label="Special Functions">
+    <h2 class="np-plate">Special Functions</h2>
+    <div class="np-menu-grid">
+      <button class="nb red" data-sf="outage">Product<br>Outage</button>
+      <button class="nb blue" data-sf="reprint">Re-print<br>Receipt</button>
+      <button class="nb black" data-sf="cancel">Return</button>
+    </div>
+  </div></div>`;
+  $('#layer').onclick = e => {
+    const b = e.target.closest('[data-sf]'); if (!b) return;
+    const k = b.dataset.sf;
+    $('#layer').onclick = null; $('#layer').innerHTML = '';
+    if (k === 'outage'){ S.outage = true; S.tender = false; S.qty = ''; S.size = null; render(); }
+    if (k === 'reprint'){ const s = S.done || recentSales()[0]; if (s) openReceipt(s); else toast('Todavía no hay ventas.'); }
+  };
+}
+async function toggleOutage(it){
+  if (equipFor(it).some(k => S.equip[k]) && !it.off){ toast(`${it.name} está apagado por su máquina. Quítalo en Equipment Outage.`); return; }
+  await saveMenuItem({ ...it, off: !it.off });
+  render();
+}
+function openEquipment(){
+  const draw = () => {
+    $('#layer').innerHTML = `
+    <div class="overlay light"><div class="np-equip" role="dialog" aria-label="Equipment Outage">
+      <h3>What equipment is unavailable?</h3>
+      <div class="eq-row">${Object.keys(EQUIP).map(k => `<button class="eq${S.equip[k] ? ' on' : ''}" data-eq="${k}" aria-pressed="${!!S.equip[k]}">${EQUIP[k].name}</button>`).join('')}</div>
+      <button class="btn go" data-eq="done" style="justify-self:end;font-size:16px">Listo</button>
+    </div></div>`;
+  };
+  draw();
+  $('#layer').onclick = async e => {
+    const b = e.target.closest('[data-eq]'); if (!b) return;
+    if (b.dataset.eq === 'done'){ $('#layer').onclick = null; $('#layer').innerHTML = ''; render(); return; }
+    S.equip = { ...S.equip, [b.dataset.eq]: !S.equip[b.dataset.eq] };
+    await saveSettings(); draw(); render();
+  };
 }
 function tenderHtml(){
   const t = calc(S.order, S.taxRate);
@@ -1388,11 +1657,14 @@ function viewMenu(){
         <p class="hint">New Jersey cobra 6.625% de sales tax sobre comida preparada y bebidas. Si un producto no lleva tax, desmárcalo. Confirma la tasa con tu gerente (algunas zonas UEZ cobran menos).</p>
       </div>
       <div class="card" style="align-content:start">
-        <h2>Manager</h2>
-        <p class="hint">PIN para autorizar <b>Promo Item</b> (deja un producto en $0). ${S.mgrPin ? 'Ya hay un PIN guardado; escribe uno nuevo para cambiarlo.' : 'Todavía no hay PIN.'}</p>
-        <form id="pinForm" class="row" autocomplete="off">
-          <label>PIN nuevo (4 a 8 números)<input id="f-pin" type="password" inputmode="numeric" autocomplete="new-password"></label>
-          <button class="btn go" type="submit" style="align-self:end">Guardar PIN</button>
+        <h2>Managers</h2>
+        <p class="hint">Con <b>número</b> y <b>contraseña</b> se entra a Manager y se autoriza Promo Item, igual que en la caja.</p>
+        ${S.mgrs.length ? `<div class="rlist">${S.mgrs.map(m => `<div class="rrow"><span>#${esc(m.num)}</span><span>${esc(m.name || 'Manager')}</span><button class="btn no" style="padding:2px 8px" data-delmgr="${esc(m.num)}">Borrar</button></div>`).join('')}</div>` : '<p class="empty-p">Todavía no hay managers.</p>'}
+        <form id="mgrForm" class="row" autocomplete="off">
+          <label>Número<input id="f-mnum" inputmode="numeric" maxlength="8" required></label>
+          <label>Nombre<input id="f-mname" maxlength="30" placeholder="Opcional"></label>
+          <label>Contraseña (4 a 8 números)<input id="f-mpw" type="password" inputmode="numeric" autocomplete="new-password" required></label>
+          <button class="btn go" type="submit" style="align-self:end">Agregar</button>
         </form>
       </div>
     </div>
@@ -1402,7 +1674,7 @@ function viewMenu(){
 /* ---------- actions ---------- */
 function addItem(it){
   if (it.kind === 'dummy'){ toast(`${it.name}: este botón no se usa sin caja.`); return; }
-  if (it.off){ toast(`${it.name} está desactivado. Actívalo en Menú si ya hay.`); return; }
+  if (isOff(it)){ toast(`${it.name} no está disponible. Se activa en Manager → Restore Menu Item.`); return; }
   const qty = Math.max(1, parseInt(S.qty || '1', 10));
   if (S.size && (it.sizes || S.size === 'Mini') && !(it.sizes && it.sizes[S.size])){ toast(`${it.name} no tiene tamaño ${SIZES[S.size]}.`); return; }
   const p = itemPrice(it, S.size);
@@ -1433,9 +1705,7 @@ function addItem(it){
     const target = sel && !sel.sauce && freeSaucesFor(sel) > 0 ? sel : [...S.order].reverse().find(l => !l.sauce && freeSaucesFor(l) > 0);
     owner = target ? target.key : null;
   }
-  const keepSel = S.sel;
   addLine({ name, price: p.price, taxable: !!it.taxable, itemId: it.id, size: p.size, ...(it.includes && it.includes.length ? { parts: it.includes.slice() } : {}), ...(sauce ? { sauce: true, for: owner } : {}) }, qty);
-  if (sauce && owner){ const oi = S.order.findIndex(l => l.key === owner); if (oi >= 0){ S.sel = oi; render(); } }
 }
 function addLine(it, qty = 1){
   S.done = null;
@@ -1451,9 +1721,9 @@ async function finishSale(paid){
   const now = new Date();
   const sale = { id: uid(), ts: now.getTime(), date: today(now), time: now.toTimeString().slice(0,5),
     lines: S.order.map(l => ({ name:l.name, price:l.price, qty:l.qty, taxable:!!l.taxable, ...(l.parts ? { parts:l.parts } : {}), ...(l.free ? { free:l.free } : {}), ...(l.promo ? { promo:true } : {}) })),
-    num: mergedSales().filter(s => s.date === today(now)).length + 1,
+    num: mergedSales().filter(s => s.date === today(now)).length + 1, type: S.orderType || 'OUT',
     subtotal: t.sub, tax: t.tax, total: t.total, paid, change: paid - t.total, taxRate: S.taxRate, entered:false, voided:false };
-  S.done = sale; S.order = []; S.sel = -1; S.tender = false; S.entry = '';
+  S.done = sale; S.order = []; S.sel = -1; S.tender = false; S.entry = ''; S.orderType = null; S.lastIdx = 0;
   render();
   await saveSale(sale);
 }
@@ -1468,6 +1738,8 @@ $('#main').addEventListener('click', async e => {
   if ((b = g('[data-digit]'))){ S.done = null; S.qty = (S.qty + b.dataset.digit).replace(/^0+/, '').slice(0,2); render(); return; }
   if ((b = g('[data-size]'))){ S.size = S.size === b.dataset.size ? null : b.dataset.size; render(); return; }
   if ((b = g('[data-cat]'))){ S.cat = b.dataset.cat; render(); return; }
+  if ((b = g('[data-delmgr]'))){ if (b.dataset.armed){ S.mgrs = S.mgrs.filter(m => m.num !== b.dataset.delmgr); if (await saveSettings()) render(); } else { b.dataset.armed = '1'; b.textContent = '¿Borrar?'; } return; }
+  if ((b = g('[data-item]')) && S.outage){ const it = S.menu.find(m => m.id === b.dataset.item); if (it) await toggleOutage(it); return; }
   if ((b = g('[data-item]'))){ const it = S.menu.find(m => m.id === b.dataset.item); if (it){ if (b.dataset.fsize && !S.size) S.size = b.dataset.fsize; addItem(it); } return; }
   if ((b = g('[data-pad]'))){ const v = b.dataset.pad; S.entry = v === 'clear' ? '' : (S.entry + v).replace(/^0+/, '').slice(0,7); render(); return; }
   if ((b = g('[data-cash]'))){ const v = b.dataset.cash; await finishSale(v === 'entry' ? parseInt(S.entry || '0', 10) : Number(v)); return; }
@@ -1481,7 +1753,14 @@ $('#main').addEventListener('click', async e => {
   if (act === 'void' && S.sel >= 0){ S.order.splice(S.sel,1); S.sel = -1; render(); }
   if (act === 'clear') clearChoice(b);
   if (act === 'prices'){ S.showPrices = !S.showPrices; LS.set('showPrices', S.showPrices); render(); }
-  if (act === 'total' && S.order.length){ openPendingPicker(); }
+  if (act === 'total' && S.order.length){ S.orderType = b.dataset.type || 'OUT'; openPendingPicker(); }
+  if (act === 'special') openSpecial();
+  if (act === 'exitoutage'){ S.outage = false; render(); }
+  if (act === 'equipment') openEquipment();
+  if (act === 'togglelast'){ S.hideLast = !S.hideLast; LS.set('hideLast', S.hideLast); render(); }
+  if (act === 'lastolder'){ S.lastIdx = (S.lastIdx || 0) + 1; render(); }
+  if (act === 'lastnewer'){ S.lastIdx = Math.max(0, (S.lastIdx || 0) - 1); render(); }
+  if (act === 'served'){ const sv = recentSales().find(x => x.id === b.dataset.sid); if (sv) await patchSale(sv.id, { status: sv.status === 'ready' ? 'new' : 'ready' }); render(); }
   if (act === 'modify'){ S.tender = false; render(); }
   if (act === 'changemeal') openChangeMeal();
   if (act === 'promo') openPromo();
@@ -1526,6 +1805,13 @@ $('#main').addEventListener('submit', async e => {
     } else { delete item.sizes; delete item.defaultSize; item.price = price; }
     const wasEdit = !!S.editId;
     if (await saveMenuItem(item)){ toast(wasEdit ? 'Producto guardado' : 'Producto añadido'); S.editId = null; S.cat = item.category; render(); $('#f-name')?.focus(); }
+  }
+  if (e.target.id === 'mgrForm'){
+    const num = $('#f-mnum').value.trim(), pw = $('#f-mpw').value.trim(), name = $('#f-mname').value.trim();
+    if (!/^\d{1,8}$/.test(num)){ toast('El número de manager debe ser solo números.'); return; }
+    if (!/^\d{4,8}$/.test(pw)){ toast('La contraseña debe tener de 4 a 8 números.'); return; }
+    S.mgrs = S.mgrs.filter(m => m.num !== num).concat([{ num, name, hash: await pinHash('mgr:' + num + ':' + pw) }]);
+    if (await saveSettings()){ toast('Manager guardado'); render(); }
   }
   if (e.target.id === 'pinForm'){
     const p = $('#f-pin').value.trim();
