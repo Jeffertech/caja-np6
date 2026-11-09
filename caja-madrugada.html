@@ -83,9 +83,9 @@ nav button[aria-selected="true"]{background:var(--k-gold);color:var(--ink)}
 
 /* NP6-style category row: one key per menu, split in two when the menu has a second page */
 .tabs{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(66px,1fr);gap:5px;overflow-x:auto;padding-bottom:2px}
-.tab{display:flex;flex-direction:column;border-radius:5px;min-height:50px;background:linear-gradient(180deg,#3d73c4,var(--k-blue) 55%,#163a70);box-shadow:inset 0 1px 0 rgb(255 255 255/.35),0 2px 0 rgb(0 0 0/.3)}
-.tab button{flex:1;border:0;background:transparent;color:#fff;font-family:var(--display);font-weight:600;font-size:13px;line-height:1;padding:3px 2px;text-shadow:0 1px 1px rgb(0 0 0/.5)}
-.tab button[aria-pressed="true"]{color:#ffd84a;text-decoration:underline;text-underline-offset:2px}
+.tab{display:flex;flex-direction:column;border:0;padding:0;font:inherit;cursor:pointer;border-radius:5px;min-height:50px;background:linear-gradient(180deg,#3d73c4,var(--k-blue) 55%,#163a70);box-shadow:inset 0 1px 0 rgb(255 255 255/.35),0 2px 0 rgb(0 0 0/.3)}
+.tab .tc{flex:1;display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--display);font-weight:600;font-size:13px;line-height:1;padding:3px 2px;text-shadow:0 1px 1px rgb(0 0 0/.5)}
+.tab .tc[aria-current="true"]{color:#ffd84a;text-decoration:underline;text-underline-offset:2px}
 .tab hr{margin:0 6px;border:0;border-top:1px solid rgb(255 255 255/.45)}
 .tab.on{outline:3px solid #ffd84a;outline-offset:1px}
 /* product tile: name band, picture, yellow price tag */
@@ -844,7 +844,7 @@ function menuPanelHtml(){
   ${sauceRow.length ? `<div class="sauce-row">${sauceRow.map(m => `<button class="tile sauce${isOff(m) ? ' off' : ''}" style="--c:var(--k-red)" data-item="${esc(m.id)}"><span class="tn">Condiment</span><span class="sn">${esc(m.name)}</span>${isOff(m) ? '<span class="ua">UNAVAILABLE</span>' : ''}</button>`).join('')}</div>` : ''}
   <div class="np${S.outage ? ' outage' : ''}${sauceRow.length ? ' compact' : ''}">
     ${[0,1,2,3,4,5,6,7,8].map(n => S.outage && n === 0 ? `<button class="key eqkey" style="${at(1, 1)}" data-act="equipment">Equipment<br>Outage</button>` : `<button class="digit num" style="${at(1, n + 1)}" data-digit="${n}" aria-pressed="${S.qty !== '' && S.qty.endsWith(String(n))}" aria-label="Cantidad ${n}">${n}</button>`).join('')}
-    ${tabs.map((g, i) => `<div class="tab ${g.includes(cat) ? 'on' : ''}" style="${at(2, Math.min(i + 1, 10))}">${g.map(c => `<button data-cat="${esc(c)}" aria-pressed="${c === cat}">${esc(c)}</button>`).join('<hr>')}</div>`).join('')}
+    ${tabs.map((g, i) => `<button class="tab ${g.includes(cat) ? 'on' : ''}" style="${at(2, Math.min(i + 1, 10))}" data-tabg="${i}" aria-label="${esc(g.join(' / '))}">${g.map(c => `<span class="tc" data-cat-name="${esc(c)}" aria-current="${c === cat}">${esc(c)}</span>`).join('<hr>')}</button>`).join('')}
     ${(sizes || []).map((k, i) => !k ? '' : ['XS','S','M','L','Mini'].includes(k)
       ? `<button class="key size" style="${at(i + 3, 1)}" data-size="${k}" aria-pressed="${S.size === k}">${k}<small>${SIZE_NAMES[k]}</small></button>`
       : `<button class="key size" style="${at(i + 3, 1)}" disabled title="Ese tamaño no se usa en esta caja">${k}<small>${SIZE_NAMES[k] || ''}</small></button>`).join('')}
@@ -1737,6 +1737,7 @@ $('#main').addEventListener('click', async e => {
   if ((b = g('[data-line]'))){ const i = +b.dataset.line; S.sel = S.sel === i ? -1 : i; render(); return; }
   if ((b = g('[data-digit]'))){ S.done = null; S.qty = (S.qty + b.dataset.digit).replace(/^0+/, '').slice(0,2); render(); return; }
   if ((b = g('[data-size]'))){ S.size = S.size === b.dataset.size ? null : b.dataset.size; render(); return; }
+  if ((b = g('[data-tabg]'))){ const grp = allTabs()[+b.dataset.tabg] || []; const i = grp.indexOf(S.cat); S.cat = i < 0 ? grp[0] : grp[(i + 1) % grp.length]; render(); return; }
   if ((b = g('[data-cat]'))){ S.cat = b.dataset.cat; render(); return; }
   if ((b = g('[data-delmgr]'))){ if (b.dataset.armed){ S.mgrs = S.mgrs.filter(m => m.num !== b.dataset.delmgr); if (await saveSettings()) render(); } else { b.dataset.armed = '1'; b.textContent = '¿Borrar?'; } return; }
   if ((b = g('[data-item]')) && S.outage){ const it = S.menu.find(m => m.id === b.dataset.item); if (it) await toggleOutage(it); return; }
