@@ -330,6 +330,76 @@ label{display:grid;gap:3px;font-size:12px;color:var(--muted)}
   .reg{grid-template-columns:minmax(0,1fr)}
   .ticket{order:-1;min-height:0;max-height:38vh}
 }
+/* phone in landscape (~330-430px tall): the whole register fits one screen, with smaller drawings */
+@media (orientation:landscape) and (max-height:500px){
+  body{padding-block:2px;font-size:12px}
+  .wrap{height:calc(100vh - 4px);height:calc(100dvh - 4px);gap:2px}
+  .wrap>main{flex:1;min-height:0}
+  .status{gap:3px;flex-wrap:nowrap;overflow:hidden}
+  .status .cell{font-size:9.5px;padding:1px 5px}
+  .reg{height:100%;min-height:0;gap:4px;grid-template-columns:minmax(150px,190px) minmax(0,1fr)}
+  .reg>*{min-height:0}
+  .ticket{min-height:0;font-size:11px}
+  .ticket .last,.ticket .hidelast{display:none}
+  .ticket .hd{font-size:9.5px;padding:1px 6px}
+  .lines{min-height:0}
+  .reg .panel:has(>.np){display:flex;flex-direction:column;overflow:hidden;gap:2px}
+  .reg .panel>.np{flex:1 1 0;min-height:0}
+  .np,.np.compact{gap:2px;grid-template-rows:auto auto repeat(6,minmax(0,1fr))}
+  .np .digit,.np.compact .digit{max-width:26px;max-height:26px;font-size:15px;border-width:1px}
+  .np .tab,.np.compact .tab{min-height:28px}
+  .tab .tc{font-size:10px;padding:1px}
+  .tab hr{margin:0 2px}
+  .np .tile .ti{display:flex;padding:1px 1px 9px;min-height:0;flex:1 1 0}
+  .np .tile .ti svg{width:100%;height:100%;max-width:56px;max-height:100%;min-height:0}
+  .tn{font-size:9.5px;line-height:1;padding:1px;min-height:0;flex:none}
+  .tp{position:absolute;left:1px;bottom:1px;font-size:8.5px;padding:0 2px;line-height:1.2}
+  .tile .cn{display:none}
+  .np .key{font-size:10px;padding:1px;border-radius:3px;overflow-wrap:normal}
+  .np .key.size{font-size:14px}
+  .np .key.size small{display:none}
+  .np .key.size::before{width:min(26px,80%)}
+  .np .key.round{width:100%;height:auto;max-width:min(40px,100%) !important;max-height:100%;aspect-ratio:1;border-radius:50%;min-height:0;font-size:7.5px}
+  .np [data-act="manager"]{font-size:7.5px !important}
+  .np [data-act="toprod"]{font-size:9px !important}
+  .sauce-row{gap:2px;margin-bottom:0}
+  .sauce-row .tile{min-height:26px}
+  .sauce-row .tn,.sauce-row .sn{font-size:7.5px}
+}
+/* phone in portrait: same 10-column NP6 grid, just smaller — with smaller drawings */
+@media (max-width:600px) and (orientation:portrait){
+  body{padding-left:max(4px,env(safe-area-inset-left,0px));padding-right:max(4px,env(safe-area-inset-right,0px));padding-block:4px}
+  .wrap,.reg{gap:4px}
+  .status{gap:3px;flex-wrap:nowrap;overflow:hidden}
+  .status .cell{font-size:10px;padding:2px 5px}
+  .ticket{height:26vh;max-height:none;font-size:12px}
+  .ticket .last,.ticket .hidelast{display:none}
+  .ticket .hd{font-size:10px;padding:2px 6px}
+  .lines{min-height:0}
+  .np,.np.compact{gap:2px;grid-template-rows:auto auto repeat(6,minmax(54px,auto))}
+  .np .key{overflow-wrap:normal}
+  .np [data-act="toprod"]{font-size:7.5px !important}
+  .np [data-act="manager"]{font-size:7px !important}
+  .np .digit{max-width:32px;max-height:32px;font-size:17px;border-width:1px}
+  .np .tab,.np.compact .tab{min-height:36px}
+  .tab .tc{font-size:8.5px;padding:2px 1px;overflow-wrap:anywhere}
+  .tab hr{margin:0 2px}
+  .tile{border-radius:2px}
+  .np .tile .ti{display:flex;padding:1px 1px 9px;min-height:0;flex:1 1 0}
+  .np .tile .ti svg{width:100%;height:100%;max-width:56px;max-height:100%;min-height:0}
+  .tn{font-size:8.5px;line-height:1;padding:1px;min-height:0;flex:none}
+  .tp{position:absolute;left:1px;bottom:1px;font-size:8.5px;padding:0 2px;line-height:1.2}
+  .tile .cn{display:none}
+  .np .key{font-size:8.5px;padding:1px;border-radius:3px}
+  .np .key.size{font-size:15px}
+  .np .key.size small{display:none}
+  .np .key.size::before{width:min(30px,90%)}
+  .np .key.round{font-size:7.5px;max-width:40px}
+  .np .key.round.sf{max-width:40px;font-size:7px}
+  .sauce-row{gap:2px}
+  .sauce-row .tile{min-height:34px}
+  .sauce-row .tn,.sauce-row .sn{font-size:7.5px}
+}
 @media (max-width:480px){ .digits{grid-template-columns:repeat(5,minmax(0,1fr))} }
 @media (prefers-reduced-motion:reduce){.key:active{transform:none}}
 </style>
@@ -1969,6 +2039,8 @@ $('#main').addEventListener('click', async e => {
     const rows = displayOrder();
     S.sel = rows.length ? rows[Math.min(Math.max(pos, 0), rows.length - 1)][0] : -1;
     render();
+    /* keep the newly selected line on screen, so the next Void Line is seen to apply to it */
+    document.querySelector('.lines li[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' });
   }
   if (act === 'clear') clearChoice(b);
   if (act === 'prices'){ S.showPrices = !S.showPrices; LS.set('showPrices', S.showPrices); render(); }
