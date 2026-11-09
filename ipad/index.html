@@ -176,6 +176,7 @@ nav button[aria-selected="true"]{background:var(--k-gold);color:var(--ink)}
 .overlay.light{background:rgb(0 0 0/.15);align-items:flex-start}
 .np-auth{position:relative;background:#fff;border-top:8px solid #ffbc0d;border-radius:6px;width:min(340px,100%);padding:22px 18px 18px;display:grid;gap:12px;box-shadow:0 10px 30px rgb(0 0 0/.3)}
 .np-auth p{margin:0;text-align:center;font-weight:600;font-size:17px}
+.np-first{display:block;text-align:center;color:#8a5a00;font-size:13px}
 .np-x{position:absolute;right:8px;top:6px;border:0;background:none;font-size:26px;color:#444}
 .np-field{border:1px solid #bbb;height:52px;display:flex;align-items:center;justify-content:center;font-size:26px;letter-spacing:.2em}
 .np-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -209,6 +210,24 @@ nav button[aria-selected="true"]{background:var(--k-gold);color:var(--ink)}
 .eq.on{border:3px solid #f2a900;background:#fff7e0}
 .eq.on::after{content:"✓";position:absolute;right:4px;top:0;background:#f2a900;color:#fff;font-size:13px;padding:0 4px;border-radius:0 3px 0 4px}
 @media (max-width:700px){.rs-grid{grid-template-columns:minmax(0,1fr)}.rs-mid{grid-auto-flow:column;padding:0}.eq-row{grid-template-columns:1fr 1fr}}
+.npp{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:auto repeat(7,minmax(64px,1fr));gap:8px;min-height:calc(100vh - 70px);align-content:start}
+.npp .np-plate{justify-self:center;align-self:center;margin:6px 0 10px}
+.npb{border:2px solid rgb(0 0 0/.35);border-radius:3px;font-family:var(--display);font-weight:700;font-size:clamp(11px,1.35vw,16px);line-height:1.05;color:#fff;text-shadow:0 1px 1px rgb(0 0 0/.45);padding:4px;box-shadow:inset 0 1px 0 rgb(255 255 255/.25),0 2px 2px rgb(0 0 0/.25)}
+.npb.olive{background:linear-gradient(#cbc84e,#9d9a2a)}
+.npb.red{background:linear-gradient(#e2373f,#b81920)}
+.npb.darkred{background:linear-gradient(#a31b22,#781116);font-size:clamp(10px,1.1vw,13px)}
+.npb.grey{background:linear-gradient(#a2a8ae,#717880)}
+.npb.blue{background:linear-gradient(#3b56e0,#1d33b4)}
+.npb.cyan{background:linear-gradient(#7fdbe8,#3fb3c6);color:#123;text-shadow:none}
+.npb.yellow{background:linear-gradient(#fff15a,#f2d400);color:#111;text-shadow:none}
+.npb.orange{background:linear-gradient(#f9a240,#e07812)}
+.npb.white{background:linear-gradient(#ffffff,#e4e4e4);color:#333;text-shadow:none;font-weight:600}
+.npb.black{background:linear-gradient(#2a2a2a,#000)}
+.npb.pill{background:linear-gradient(#ffffff,#dcdcdc);color:#222;text-shadow:none;border-radius:14px}
+.npb .off{color:#e2373f}
+.np-display{background:#b9bec4;border:1px solid #8d949b;box-shadow:inset 0 2px 4px rgb(0 0 0/.25)}
+.npk{border:1px solid #444;border-radius:3px;background:linear-gradient(#3a3a3a,#0d0d0d);color:#fff;font-family:var(--display);font-weight:700;font-size:clamp(20px,3vw,40px)}
+.npk:nth-last-child(n){}
 .key.mauve{--c:#9a6a90}
 .receipt{width:min(380px,100%);background:#fff;font-family:var(--mono);font-size:14px;gap:8px}
 .rc-head{display:grid;text-align:center;gap:2px;border-bottom:1px dashed #999;padding-bottom:8px}
@@ -323,7 +342,7 @@ const PALETTE = ['--k-red','--k-blue','--k-green','--k-gold','--k-maroon','--k-g
 const S = {
   view:'venta', db:null, mode:'loading',
   menu: (function(){ const E = [{"category": "Breakfast", "combo": "1", "id": "a01", "name": "Egg McMuffin", "order": 1, "price": 569, "taxable": true}, {"category": "Breakfast", "combo": "2", "id": "a02", "name": "SE McMuffin", "order": 2, "price": 499, "taxable": true}, {"category": "Breakfast", "combo": "3", "id": "a03", "name": "BEC Biscuit", "order": 3, "price": 519, "taxable": true}, {"category": "Breakfast", "combo": "4", "id": "a04", "name": "SE Biscuit", "order": 4, "price": 489, "taxable": true}, {"category": "Breakfast", "combo": "5", "id": "a05", "name": "BEC McGriddle", "order": 5, "price": 619, "taxable": true}, {"category": "Breakfast", "combo": "6", "id": "a06", "name": "SEC McGriddle", "order": 6, "price": 579, "taxable": true}, {"category": "Breakfast", "combo": "7", "id": "a07", "includes": ["2 SAUS BURRITO"], "meal": true, "mealType": "breakfast", "name": "Saus Burrito", "order": 7, "price": 199, "sizes": {"M": 749}, "taxable": true}, {"category": "Breakfast", "combo": "8", "id": "a08", "name": "BEC Bagel", "order": 8, "price": 669, "taxable": true}, {"category": "Breakfast", "combo": "9", "id": "a09", "name": "Steak EC Bagel", "order": 9, "price": 779, "taxable": true}, {"category": "Breakfast", "combo": "10", "id": "a10", "name": "SEC Bagel", "order": 10, "price": 699, "taxable": true}, {"category": "Breakfast", "id": "a11", "name": "Egg Bacon Muffin", "order": 11, "price": 569, "taxable": true}, {"category": "Breakfast", "id": "a12", "name": "McChicken Biscuit", "order": 12, "price": 439, "taxable": true}, {"category": "Breakfast", "id": "a13", "name": "Chicken McGriddle", "order": 13, "price": 469, "taxable": true}, {"category": "Breakfast", "id": "a14", "meal": true, "mealType": "breakfast", "name": "Saus Biscuit", "order": 14, "price": 189, "sizes": {"M": 400}, "taxable": true}, {"category": "Breakfast", "id": "a15", "name": "Hotcakes", "order": 15, "price": 569, "taxable": true}, {"category": "Breakfast", "id": "a16", "name": "Hotcakes & Sausage", "order": 16, "price": 729, "taxable": true}, {"category": "Breakfast", "id": "a17", "name": "Big Breakfast", "order": 17, "price": 619, "taxable": true}, {"category": "Breakfast", "id": "a18", "name": "Big Breakfast w/ Hotcakes", "order": 18, "price": 729, "taxable": true}, {"category": "Breakfast", "id": "a19", "name": "Oatmeal", "order": 19, "price": 399, "taxable": true}, {"category": "Breakfast", "id": "a20", "meal": true, "mealType": "breakfast", "name": "Saus McMuffin", "order": 20, "price": 199, "sizes": {"M": 400}, "taxable": true}, {"category": "Breakfast", "id": "a21", "name": "Hashbrown", "order": 21, "price": 189, "taxable": true}, {"category": "Breakfast 2", "id": "b01", "name": "Egg Biscuit", "order": 1, "price": 299, "taxable": true}, {"category": "Breakfast 2", "id": "b02", "name": "Egg Chs Biscuit", "order": 2, "price": 419, "taxable": true}, {"category": "Breakfast 2", "id": "b03", "name": "SEC Biscuit", "order": 3, "price": 549, "taxable": true}, {"category": "Breakfast 2", "id": "b04", "name": "Saus McGriddle", "order": 4, "price": 549, "taxable": true}, {"category": "Breakfast 2", "id": "b06", "name": "Egg Chs Bagel", "order": 6, "price": 599, "taxable": true}, {"category": "Breakfast 2", "id": "b08", "name": "Bagel", "order": 8, "price": 239, "taxable": true}, {"category": "Breakfast 2", "id": "b09", "name": "Hotcakes & Bacon", "order": 9, "price": 619, "taxable": true}, {"category": "Lunch", "combo": "1", "id": "c01", "meal": true, "name": "Big Mac", "order": 1, "price": 699, "sizes": {"L": 1299, "M": 1239}, "taxable": true}, {"category": "Lunch", "combo": "2a", "id": "c02", "meal": true, "name": "QPC", "order": 2, "price": 689, "sizes": {"L": 1299, "M": 900}, "taxable": true}, {"category": "Lunch", "combo": "2b", "id": "c03", "meal": true, "name": "Bacon QPC", "order": 3, "price": 859, "sizes": {"L": 1399, "M": 1299}, "taxable": true}, {"category": "Lunch", "combo": "2c", "id": "c04", "meal": true, "name": "QP Deluxe", "order": 4, "price": 719, "sizes": {"L": 1329, "M": 1249}, "taxable": true}, {"category": "Lunch", "combo": "3", "id": "c05", "meal": true, "name": "Dbl QPC", "order": 5, "price": 1049, "sizes": {"L": 1748, "M": 1598}, "taxable": true}, {"category": "Lunch", "id": "c06", "meal": true, "name": "Dbl Bacon QPC", "order": 6, "price": 1099, "sizes": {"L": 1599, "M": 1598}, "taxable": true}, {"category": "Lunch", "combo": "4a", "id": "c07", "meal": true, "name": "McCrispy", "order": 7, "price": 649, "sizes": {"L": 1269, "M": 1119}, "taxable": true}, {"category": "Lunch", "combo": "4b", "id": "c08", "meal": true, "name": "Spicy McCrispy", "order": 8, "price": 699, "sizes": {"L": 1279, "M": 1179}, "taxable": true}, {"category": "Lunch", "combo": "4c", "id": "c09", "meal": true, "name": "Dlx McCrispy", "order": 9, "price": 739, "sizes": {"L": 1299, "M": 1199}, "taxable": true}, {"category": "Lunch", "combo": "4d", "id": "c10", "meal": true, "name": "Dlx Spicy McCrispy", "order": 10, "price": 739, "sizes": {"L": 1299, "M": 1199}, "taxable": true}, {"category": "Lunch", "combo": "5a", "id": "c11", "meal": true, "name": "4 McCrispy Strips", "order": 11, "price": 759, "sizes": {"L": 1279, "M": 1209}, "taxable": true}, {"category": "Lunch", "combo": "5b", "id": "c12", "meal": true, "name": "3 McCrispy Strips", "order": 12, "price": 619, "sizes": {"L": 1159, "M": 1089}, "taxable": true}, {"category": "Lunch", "combo": "6a", "id": "c13", "includes": ["2 SNACK WRAP RANCH"], "meal": true, "name": "Snack Wrap Ranch", "order": 13, "price": 299, "sizes": {"L": 1259, "M": 1099}, "taxable": true}, {"category": "Lunch", "combo": "6b", "id": "c14", "includes": ["2 SNACK WRAP SPICY"], "meal": true, "name": "Snack Wrap Spicy", "order": 14, "price": 299, "sizes": {"L": 1269, "M": 1149}, "taxable": true}, {"alwaysMeal": true, "category": "Lunch", "combo": "6c", "defaultSize": "M", "id": "c15", "includes": ["SNACK WRAP RANCH", "SNACK WRAP SPICY"], "meal": true, "name": "Snack Wrap Mix & Match", "order": 15, "price": 1149, "sizes": {"L": 1269, "M": 1149}, "taxable": true}, {"category": "Lunch", "combo": "7", "id": "c16", "meal": true, "name": "10 Nuggets", "order": 16, "price": 659, "sizes": {"L": 1279, "M": 1099}, "taxable": true}, {"category": "Lunch", "combo": "8", "id": "c17", "meal": true, "name": "Filet-O-Fish", "order": 17, "price": 679, "sizes": {"L": 1259, "M": 1079}, "taxable": true}, {"category": "Lunch", "combo": "9", "id": "c18", "meal": true, "name": "Chs Burger", "order": 18, "price": 279, "sizes": {"L": 1199, "M": 1019}, "taxable": true}, {"category": "Lunch", "id": "c19", "name": "Daily Double", "order": 19, "price": 439, "taxable": true}, {"category": "Lunch", "id": "c20", "name": "Dbl Cheese", "order": 20, "price": 339, "taxable": true}, {"category": "Lunch", "id": "c21", "meal": true, "name": "Triple Chs", "order": 21, "price": 599, "sizes": {"L": 1279, "M": 1129}, "taxable": true}, {"category": "Lunch", "defaultSize": "S", "id": "c22", "name": "Fries", "order": 22, "price": 279, "sizes": {"L": 499, "M": 399, "S": 279}, "taxable": true}, {"category": "Lunch 2", "id": "d01", "name": "4 Nuggets", "order": 1, "price": 259, "taxable": true}, {"category": "Lunch 2", "id": "d02", "meal": true, "name": "6 Nuggets", "order": 2, "price": 379, "sizes": {"L": 1059, "M": 919}, "taxable": true}, {"category": "Lunch 2", "id": "d03", "name": "20 Nuggets", "order": 3, "price": 1029, "taxable": true}, {"category": "Lunch 2", "id": "d04", "name": "40 Nuggets", "order": 4, "price": 1429, "taxable": true}, {"category": "Lunch 2", "id": "d05", "name": "Dbl Filet", "order": 5, "price": 799, "taxable": true}, {"category": "Lunch 2", "id": "d06", "name": "Hamburger", "order": 6, "price": 269, "taxable": true}, {"category": "Lunch 2", "id": "d07", "name": "Dbl Hamburger", "order": 7, "price": 359, "taxable": true}, {"category": "Lunch 2", "id": "d08", "name": "QTR Ham", "order": 8, "price": 599, "taxable": true}, {"category": "Lunch 2", "id": "d09", "name": "McDouble", "order": 9, "price": 289, "taxable": true}, {"category": "Lunch 2", "id": "d10", "name": "McChicken", "order": 10, "price": 269, "taxable": true}, {"category": "Lunch 2", "id": "d12", "name": "Bacon McDbl", "order": 12, "price": 469, "taxable": true}, {"alwaysMeal": true, "category": "McValue", "defaultSize": "S", "id": "e01", "includes": ["SAUS MCMUFFIN"], "meal": true, "mealType": "breakfast", "name": "$4 Saus McMuffin Meal Deal", "order": 1, "price": 400, "sizes": {"S": 400}, "taxable": true}, {"alwaysMeal": true, "category": "McValue", "defaultSize": "S", "id": "e02", "includes": ["SAUS BISCUIT"], "meal": true, "mealType": "breakfast", "name": "$4 Saus Biscuit Meal Deal", "order": 2, "price": 400, "sizes": {"S": 400}, "taxable": true}, {"alwaysMeal": true, "category": "McValue", "defaultSize": "S", "id": "e03", "includes": ["MCCHICKEN", "4 NUGGETS"], "meal": true, "name": "$6 McChicken Meal Deal", "nuggets": 4, "order": 3, "price": 600, "sizes": {"L": 929, "M": 829, "S": 600}, "taxable": true}, {"alwaysMeal": true, "category": "McValue", "defaultSize": "S", "id": "e04", "includes": ["MCDOUBLE", "4 NUGGETS"], "meal": true, "name": "$7 McDouble Meal Deal", "nuggets": 4, "order": 4, "price": 700, "sizes": {"L": 1029, "M": 929, "S": 700}, "taxable": true}, {"category": "McValue", "id": "e05", "includes": ["MCDOUBLE", "SM FRIES"], "name": "McDbl & SFry Bdl", "order": 5, "price": 400, "taxable": true}, {"category": "McValue", "id": "e06", "includes": ["MCCHICKEN", "SM FRIES"], "name": "McCkn & SFry Bdl", "order": 6, "price": 400, "taxable": true}, {"category": "McValue", "id": "e07", "includes": ["6 NUGGETS", "SM FRIES"], "name": "6Ngg SFry Bdl", "nuggets": 6, "order": 7, "price": 400, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f01", "name": "Coke", "order": 1, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f02", "name": "Diet Coke", "order": 2, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f03", "name": "Sprite", "order": 3, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f04", "name": "Dr. Pepper", "order": 4, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f05", "name": "Fanta Orange", "order": 5, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f06", "name": "Coke Zero", "order": 6, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f07", "name": "Orange Hi-C", "order": 7, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199, "XS": 149}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f08", "name": "Iced Tea", "order": 8, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f09", "name": "Swt Tea Glass", "order": 9, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199, "XS": 100}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f10", "name": "Coffee", "order": 10, "price": 159, "sizes": {"L": 239, "M": 199, "S": 159}, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f11", "name": "Decaf", "order": 11, "price": 159, "sizes": {"L": 239, "M": 199, "S": 159}, "taxable": true}, {"category": "Drinks", "id": "f12", "name": "Hot Tea", "off": true, "order": 12, "price": 150, "taxable": true}, {"category": "Drinks", "id": "f13", "name": "Dasani Water", "order": 13, "price": 199, "taxable": true}, {"category": "Drinks", "id": "f14", "name": "Orange Juice", "order": 14, "price": 399, "taxable": true}, {"category": "Drinks", "id": "f15", "name": "Apple Juice", "order": 15, "price": 179, "taxable": true}, {"category": "Drinks", "id": "f16", "name": "Milk Jug", "order": 16, "price": 179, "taxable": true}, {"category": "Drinks", "id": "f17", "name": "Choc Milk Jug", "order": 17, "price": 179, "taxable": true}, {"category": "Drinks", "defaultSize": "S", "id": "f18", "name": "Fanta Strawberry", "order": 6, "price": 199, "sizes": {"L": 249, "M": 199, "S": 199}, "taxable": true}, {"category": "McCafé", "id": "g01", "name": "Iced Coffee", "order": 1, "price": 369, "taxable": true}, {"category": "McCafé", "id": "g02", "name": "Mocha", "off": true, "order": 2, "price": 339, "taxable": true}, {"category": "McCafé", "id": "g03", "name": "Frappe", "order": 3, "price": 459, "taxable": true}, {"category": "McCafé", "id": "g04", "name": "Hot Chocolate", "off": true, "order": 4, "price": 319, "taxable": true}, {"category": "McCafé", "id": "g05", "name": "Cappuccino", "off": true, "order": 5, "price": 379, "taxable": true}, {"category": "McCafé", "id": "g06", "name": "Macchiato", "off": true, "order": 6, "price": 379, "taxable": true}, {"category": "McCafé", "id": "g07", "name": "Americano", "off": true, "order": 7, "price": 339, "taxable": true}, {"category": "McCafé", "id": "g08", "name": "Espresso", "off": true, "order": 8, "price": 259, "taxable": true}, {"category": "McCafé", "id": "g09", "name": "Chocolate Shake", "order": 9, "price": 539, "taxable": true}, {"category": "McCafé", "id": "g10", "name": "Vanilla Shake", "order": 10, "price": 539, "taxable": true}, {"category": "McCafé", "id": "g11", "name": "Strawberry Shake", "order": 11, "price": 539, "taxable": true}, {"category": "McCafé", "id": "g12", "name": "Strwbry Ban Smoothie", "order": 12, "price": 519, "taxable": true}, {"category": "McCafé", "id": "g13", "name": "Mngo Pinapl Smoothie", "order": 13, "price": 519, "taxable": true}, {"category": "McCafé", "id": "g14", "name": "Lemonade", "order": 14, "price": 269, "taxable": true}, {"category": "McCafé", "id": "g15", "name": "Unswt Tea Lemonade", "order": 15, "price": 269, "taxable": true}, {"category": "McCafé", "id": "g16", "name": "Swt Tea Lemonade", "order": 16, "price": 269, "taxable": true}, {"category": "McCafé", "id": "g17", "name": "Sprt Wht Peach", "order": 17, "price": 339, "taxable": true}, {"category": "McCafé", "id": "g18", "name": "Blu Rasberry", "order": 18, "price": 339, "taxable": true}, {"category": "McCafé", "id": "g19", "name": "Frozen Coke", "order": 19, "price": 339, "taxable": true}, {"category": "McCafé", "id": "g20", "name": "Latte", "off": true, "order": 20, "price": null, "taxable": true}, {"category": "McCafé", "id": "g21", "name": "Wild Cherry", "off": true, "order": 21, "price": 239, "taxable": true}, {"category": "Dessert", "id": "h01", "name": "Apple Pie", "order": 1, "price": 299, "taxable": true}, {"category": "Dessert", "id": "h02", "name": "2 Apple Pies", "order": 2, "price": 500, "taxable": true}, {"category": "Dessert", "id": "h03", "name": "Holiday Pie", "order": 3, "price": 219, "taxable": true}, {"category": "Dessert", "id": "h04", "name": "2 Pack Holiday Pies", "order": 4, "price": 459, "taxable": true}, {"category": "Dessert", "id": "h05", "name": "1 Apple 1 Holiday Pie", "order": 5, "price": 459, "taxable": true}, {"category": "Dessert", "id": "h06", "name": "Vanilla Cone", "order": 6, "price": 339, "taxable": true}, {"category": "Dessert", "id": "h07", "name": "Hot Fudge Sundae", "order": 7, "price": 499, "taxable": true}, {"category": "Dessert", "id": "h08", "name": "Caramel Sundae", "order": 8, "price": 499, "taxable": true}, {"category": "Dessert", "id": "h09", "name": "Plain Sundae", "order": 9, "price": 489, "taxable": true}, {"category": "Dessert", "id": "h10", "name": "1 Cookie", "order": 10, "price": 179, "taxable": true}, {"category": "Dessert", "id": "h11", "name": "3 Cookies", "order": 11, "price": 439, "taxable": true}, {"category": "Dessert", "id": "h12", "name": "Cookie Tote", "order": 12, "price": 729, "taxable": true}, {"category": "Dessert", "id": "h13", "name": "Oreo McFlurry", "order": 13, "price": 589, "taxable": true}, {"category": "Dessert", "id": "h14", "name": "M&M McFlurry", "order": 14, "price": 589, "taxable": true}, {"category": "Bakery", "id": "h15", "name": "Apple Slices", "order": 15, "price": 139, "taxable": true}, {"category": "Dessert", "id": "h16", "name": "1 Apple 1 Pumpkin Pie", "off": true, "order": 16, "price": 459, "taxable": true}, {"category": "Dessert", "id": "h17", "name": "Pumpkin Pie", "off": true, "order": 17, "price": 219, "taxable": true}, {"category": "Dessert", "id": "h18", "name": "2 Pumpkin Pies", "off": true, "order": 18, "price": 459, "taxable": true}, {"category": "Happy Meal", "id": "i01", "includes": ["HAMBURGER"], "kind": "happy", "name": "Hamburger Happy Meal", "order": 1, "price": 619, "taxable": true}, {"category": "Happy Meal", "id": "i02", "includes": ["CHS BURGER"], "kind": "happy", "name": "Chs Burger Happy Meal", "order": 2, "price": 589, "taxable": true}, {"category": "Happy Meal", "id": "i03", "includes": ["4 NUGGETS"], "kind": "happy", "name": "4 Nuggets Happy Meal", "nuggets": 4, "order": 3, "price": 589, "taxable": true}, {"category": "Happy Meal", "id": "i04", "includes": ["6 NUGGETS"], "kind": "happy", "name": "6 Nuggets Happy Meal", "nuggets": 6, "order": 4, "price": 659, "taxable": true}, {"category": "Happy Meal", "id": "i05", "name": "Extra Toy", "order": 5, "price": 249, "taxable": true}, {"category": "Happy Meal", "id": "i08", "kind": "toy", "name": "Surprise Me", "order": 8, "price": 0, "taxable": true}, {"category": "Happy Meal", "id": "i09", "kind": "toy", "name": "Under 3 Toy", "order": 9, "price": 0, "taxable": true}, {"category": "Happy Meal", "id": "i10", "kind": "toy", "name": "No Toy", "order": 10, "price": 0, "taxable": true}, {"category": "Happy Meal", "id": "i11", "kind": "hmside", "name": "Extra Kids Fries", "order": 11, "price": 0, "taxable": true}, {"category": "LSM", "id": "j01", "name": "Dbl Qtr Chs Dlx", "order": 1, "price": 929, "taxable": true}, {"category": "LSM", "id": "j02", "name": "Value Pack", "order": 2, "price": 2249, "taxable": true}, {"category": "LSM 2", "id": "j03", "name": "Jets Pack", "order": 3, "price": 1699, "taxable": true}, {"category": "LSM", "id": "j04", "name": "40 Nuggets 2L Fry", "order": 4, "price": 2099, "taxable": true}, {"category": "LSM", "id": "j05", "name": "Classic Pack Big Mac", "order": 5, "price": 2389, "taxable": true}, {"category": "Condiments", "id": "k01", "name": "BBQ Sauce", "order": 1, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k02", "name": "Sweet & Sour", "order": 2, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k03", "name": "Hot Mustard", "order": 3, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k04", "name": "Ranch", "order": 4, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k05", "name": "Buffalo", "order": 5, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k06", "name": "Honey Mustard", "order": 6, "price": 29, "taxable": true}, {"category": "Condiments", "id": "k07", "name": "Honey", "order": 7, "price": 25, "taxable": true}, {"category": "Condiments", "id": "k08", "name": "Tartar Sauce", "order": 8, "price": 40, "taxable": true}, {"category": "Condiments", "id": "k09", "name": "Spicy Pepper Sauce", "order": 9, "price": 50, "taxable": true}, {"category": "Condiments", "id": "k10", "name": "Extra Sauce", "order": 10, "price": 65, "taxable": true}, {"category": "Condiments", "id": "k11", "name": "Grape Jam", "off": true, "order": 11, "price": 25, "taxable": true}, {"category": "Condiments", "id": "k12", "name": "Syrup", "order": 12, "price": 25, "taxable": true}, {"category": "Condiments", "id": "k13", "name": "No Sauce", "order": 13, "price": 0, "taxable": true}, {"category": "Condiments", "id": "k14", "name": "Ketchup", "order": 14, "price": 0, "taxable": true}, {"category": "Salad", "id": "x01", "kind": "dummy", "name": "Grill Salad", "price": null, "taxable": true}, {"category": "Salad", "id": "x02", "kind": "dummy", "name": "Crispy Salad", "price": null, "taxable": true}, {"category": "Salad", "id": "x03", "kind": "dummy", "name": "No Meat", "price": null, "taxable": true}, {"category": "Gifts", "id": "x10", "kind": "dummy", "name": "Activation $ AMT", "price": 2000, "taxable": false}, {"category": "Gifts", "id": "x11", "kind": "dummy", "name": "Arch Card $5", "price": 500, "taxable": false}, {"category": "Gifts", "id": "x12", "kind": "dummy", "name": "Arch Card $10", "price": 1000, "taxable": false}, {"category": "Gifts", "id": "x13", "kind": "dummy", "name": "Arch Card $25", "price": 2500, "taxable": false}, {"category": "Gifts", "id": "x14", "kind": "dummy", "name": "Arch Card $50", "price": 5000, "taxable": false}, {"category": "Gifts", "id": "x15", "kind": "dummy", "name": "Reload $ AMT", "price": null, "taxable": false}, {"category": "Gifts", "id": "x16", "kind": "dummy", "name": "Reload $5", "price": 500, "taxable": false}, {"category": "Gifts", "id": "x17", "kind": "dummy", "name": "Reload $10", "price": 1000, "taxable": false}, {"category": "Gifts", "id": "x18", "kind": "dummy", "name": "Reload $25", "price": 2500, "taxable": false}, {"category": "Gifts", "id": "x19", "kind": "dummy", "name": "Reload $50", "price": 5000, "taxable": false}, {"category": "Gifts", "id": "x20", "kind": "dummy", "name": "Treat Cert", "price": 145, "taxable": false}, {"category": "Gifts", "id": "x21", "kind": "dummy", "name": "Paper Diploma", "price": null, "taxable": false}, {"category": "Gifts", "id": "x22", "kind": "dummy", "name": "Survey Redemption", "price": null, "taxable": false}, {"category": "Gifts", "id": "x23", "kind": "dummy", "name": "$1 Gift Cert", "price": null, "taxable": false}, {"category": "Gifts", "id": "x24", "kind": "dummy", "name": "$5 Gift Cert", "price": null, "taxable": false}, {"category": "Gifts", "id": "x25", "kind": "dummy", "name": "Daily Paper", "price": 140, "taxable": false}], V = '92c620aae28e'; const saved = LS.get('menu', null); if (saved && LS.get('menuV', '') === V) return saved; const out = E.map(e => { const o = saved && saved.find(s => s.id === e.id); return o && typeof o.off === 'boolean' ? { ...e, off: o.off } : e; }); if (saved) for (const s of saved) if (!/^[a-z]\d{2}$/.test(s.id) && !E.some(e => e.id === s.id)) out.push(s); LS.set('menu', out); LS.set('menuV', V); return out; })(), sales: LS.get('sales', []), pending: LS.get('pending', []),
-  taxRate: LS.get('taxRate', 6.625), mgrPin: LS.get('mgrPin', ''), mgrs: LS.get('mgrs', []), equip: LS.get('equip', {}), hideLast: LS.get('hideLast', false), lastIdx: 0, outage: false, orderType: null, showPrices: LS.get('showPrices', true),
+  taxRate: LS.get('taxRate', 6.625), mgrPin: LS.get('mgrPin', ''), mgrs: LS.get('mgrs', []), equip: LS.get('equip', {}), hideLast: LS.get('hideLast', false), lastIdx: 0, panel: null, outage: false, orderType: null, showPrices: LS.get('showPrices', true),
   order: [], sel: -1, cat: null, qty: '', size: null,
   tender: false, entry: '', done: null,
   regDate: today(), editId: null, confirmDel: null
@@ -482,7 +501,7 @@ function normalizeSauces(){
   }
 }
 function viewVenta(){
-  return `<div class="reg">${S.outage ? outageHtml() : ticketHtml()}<section class="panel">${S.tender ? tenderHtml() : menuPanelHtml()}</section></div>`;
+  return `<div class="reg">${S.outage ? outageHtml() : ticketHtml()}<section class="panel">${S.tender ? tenderHtml() : S.panel === 'manager' ? managerPanelHtml() : S.panel === 'special' ? specialPanelHtml() : menuPanelHtml()}</section></div>`;
 }
 function tabGroups(){
   const cats = categories(), used = new Set(), groups = [];
@@ -1379,16 +1398,15 @@ function outageHtml(){
 
 /* Manager: number, then password, on the NP6 keypad. Without managers set up yet, it lets you in and says so. */
 function askManager(onOk){
-  if (!S.mgrs.length){
-    if (S.mgrPin) return askPin('Manager', onOk);
-    onOk(null); toast('Consejo: crea un manager (número y contraseña) en Productos → Manager.'); return;
-  }
+  /* Always the keypad. With no manager saved yet, the first number + password typed become the first manager. */
+  const firstTime = !S.mgrs.length;
   let step = 'num', num = '', val = '';
   const draw = () => {
     $('#layer').innerHTML = `
     <div class="overlay"><div class="np-auth" role="dialog" aria-label="Manager">
       <button class="np-x" data-k="x" aria-label="Cerrar">×</button>
       <p>Please enter Manager ${step === 'num' ? 'Number' : 'Password'} to authorize this operation.</p>
+      ${firstTime ? `<small class="np-first">Primera vez: ${step === 'num' ? 'el número' : 'la contraseña (4 a 8 números)'} que escribas quedará guardado como tu manager.</small>` : ''}
       <div class="np-field num">${step === 'num' ? esc(val) : '•'.repeat(val.length)}</div>
       <div class="np-keys">${[7,8,9,4,5,6,1,2,3].map(n => `<button data-k="${n}">${n}</button>`).join('')}<button data-k="b" class="g" aria-label="Borrar">&lt;</button><button data-k="0">0</button><button data-k="e" class="y">Enter</button></div>
     </div></div>`;
@@ -1402,36 +1420,20 @@ function askManager(onOk){
     if (k === 'e'){
       if (!val) return;
       if (step === 'num'){
-        if (!S.mgrs.some(m => m.num === val)){ toast('Ese número de manager no existe.'); val = ''; draw(); return; }
+        if (!firstTime && !S.mgrs.some(m => m.num === val)){ toast('Ese número de manager no existe.'); val = ''; draw(); return; }
         num = val; val = ''; step = 'pw'; draw(); return;
+      }
+      if (firstTime){
+        if (!/^\d{4,8}$/.test(val)){ toast('La contraseña debe tener de 4 a 8 números.'); val = ''; draw(); return; }
+        S.mgrs = [{ num, name: 'Manager', hash: await pinHash('mgr:' + num + ':' + val) }];
+        await saveSettings(); toast(`Manager #${num} guardado.`);
+        $('#layer').onclick = null; $('#layer').innerHTML = ''; onOk(S.mgrs[0]); return;
       }
       const m = S.mgrs.find(x => x.num === num);
       if ((await pinHash('mgr:' + num + ':' + val)) !== m.hash){ toast('Contraseña incorrecta.'); val = ''; draw(); return; }
       $('#layer').onclick = null; $('#layer').innerHTML = ''; onOk(m); return;
     }
     if (val.length < 10){ val += k; draw(); }
-  };
-}
-function openManagerMenu(){
-  $('#layer').innerHTML = `
-  <div class="overlay steel"><div class="np-menu" role="dialog" aria-label="Manager Menu">
-    <h2 class="np-plate">Manager Menu</h2>
-    <div class="np-menu-grid">
-      <button class="nb red" data-mgr="remove">Remove<br>Menu Item</button>
-      <button class="nb red" data-mgr="restore">Restore<br>Menu Item</button>
-      <button class="nb grey" data-mgr="registro">Registro de<br>ventas</button>
-      <button class="nb grey" data-mgr="menu">Productos,<br>precios y tax</button>
-      ${STANDALONE ? '<button class="nb green" data-mgr="prod">Pantalla de<br>producción</button>' : ''}
-      <button class="nb black" data-mgr="cancel">Return</button>
-    </div>
-  </div></div>`;
-  $('#layer').onclick = e => {
-    const b = e.target.closest('[data-mgr]'); if (!b) return;
-    const k = b.dataset.mgr;
-    $('#layer').onclick = null; $('#layer').innerHTML = '';
-    if (k === 'prod'){ goScreen('prod'); return; }
-    if (k === 'remove' || k === 'restore'){ openRestore(k); return; }
-    if (k !== 'cancel'){ S.view = k; S.editId = null; render(); window.scrollTo({ top: 0 }); }
   };
 }
 function openManager(){ askManager(openManagerMenu); }
@@ -1487,25 +1489,6 @@ function openRestore(mode){
   setTimeout(() => $('#rsQ')?.focus(), 30);
 }
 
-/* Special Functions: Product Outage (tap products to take them off or back on) and the last receipt. */
-function openSpecial(){
-  $('#layer').innerHTML = `
-  <div class="overlay steel"><div class="np-menu" role="dialog" aria-label="Special Functions">
-    <h2 class="np-plate">Special Functions</h2>
-    <div class="np-menu-grid">
-      <button class="nb red" data-sf="outage">Product<br>Outage</button>
-      <button class="nb blue" data-sf="reprint">Re-print<br>Receipt</button>
-      <button class="nb black" data-sf="cancel">Return</button>
-    </div>
-  </div></div>`;
-  $('#layer').onclick = e => {
-    const b = e.target.closest('[data-sf]'); if (!b) return;
-    const k = b.dataset.sf;
-    $('#layer').onclick = null; $('#layer').innerHTML = '';
-    if (k === 'outage'){ S.outage = true; S.tender = false; S.qty = ''; S.size = null; render(); }
-    if (k === 'reprint'){ const s = S.done || recentSales()[0]; if (s) openReceipt(s); else toast('Todavía no hay ventas.'); }
-  };
-}
 async function toggleOutage(it){
   if (equipFor(it).some(k => S.equip[k]) && !it.off){ toast(`${it.name} está apagado por su máquina. Quítalo en Equipment Outage.`); return; }
   await saveMenuItem({ ...it, off: !it.off });
@@ -1527,6 +1510,95 @@ function openEquipment(){
     S.equip = { ...S.equip, [b.dataset.eq]: !S.equip[b.dataset.eq] };
     await saveSettings(); draw(); render();
   };
+}
+/* Manager Menu and Special Functions take over the right side like on the NP6 (ticket stays on the left).
+   Buttons this register has no use for keep their place and colour but only explain that. */
+const NA = 'na';
+function npBtn(r, c, label, cls, act, span = 1, rows = 1){
+  return `<button class="npb ${cls}" style="grid-row:${r}${rows > 1 ? ' / span ' + rows : ''};grid-column:${c}${span > 1 ? ' / span ' + span : ''}" data-np="${act}" data-label="${esc(label.replace(/<br>/g, ' '))}">${label}</button>`;
+}
+function npKeypad(r0){
+  const keys = [['7','8','9'],['4','5','6'],['1','2','3'],['CLEAR','0','ENTER']];
+  return keys.map((row, i) => row.map((k, j) => `<button class="npk" style="grid-row:${r0 + i};grid-column:${j + 1}" data-np="key">${k}</button>`).join('')).join('');
+}
+function managerPanelHtml(){
+  return `<div class="npp">
+    <h2 class="np-plate" style="grid-row:1;grid-column:2 / span 5">Manager Menu</h2>
+    ${npBtn(2, 1, 'LOG IN<br>Cashier FC', 'olive', NA)}
+    ${npBtn(2, 3, 'Kiosk', 'red', NA)}
+    ${npBtn(2, 4, 'SKIM', 'red', NA)}
+    ${npBtn(2, 5, 'OTHER<br>RECEIPTS', 'red', 'receipt')}
+    ${npBtn(2, 6, 'Check<br>Cash in<br>Drawer', 'red', NA)}
+    ${npBtn(2, 7, 'MANAGER<br>REPORTS', 'grey', 'reports')}
+    ${npBtn(3, 1, 'Cash Out<br>Drawer<br>(Cashier)', 'olive', NA)}
+    ${npBtn(3, 2, 'DRAWER<br>OPEN', 'red', NA)}
+    ${npBtn(3, 4, 'Remove<br>Menu Item/<br>Ingredients', 'red', 'remove')}
+    ${npBtn(3, 5, 'Restore<br>Menu Item/<br>Ingredients', 'red', 'restore')}
+    ${npBtn(3, 6, 'MANAGER<br>Drive-Thru<br>OPTIONS', 'grey', NA)}
+    ${npBtn(3, 7, 'MANAGER<br>OPTIONS', 'grey', 'options')}
+    <div class="np-display" style="grid-row:4;grid-column:1 / span 3"></div>
+    ${npBtn(4, 5, 'Set Promo<br>Order<br>Authority', 'red', NA)}
+    ${npBtn(4, 6, 'Set Promo<br>Item<br>Authority', 'red', 'managers')}
+    ${npBtn(4, 7, 'Set Discount<br>Authority', 'red', NA)}
+    ${npKeypad(5)}
+    ${npBtn(5, 5, 'Configure<br>Hourly<br>Reports', 'olive', NA)}
+    ${npBtn(5, 6, 'Production<br>Monitor', 'olive', STANDALONE ? 'prod' : NA)}
+    ${npBtn(6, 6, 'GIFT<br>CARD<br>CASH OUT', 'yellow', NA)}
+    ${npBtn(6, 7, 'Remote<br>Drawer<br>Change', 'olive', NA)}
+    ${npBtn(7, 5, 'Cascade<br>Zones<br>Info', 'red', NA)}
+    ${npBtn(7, 7, 'Biometric<br>Enrollment', 'white', NA)}
+    ${npBtn(8, 6, 'SUPPORT', 'grey', NA)}
+    ${npBtn(8, 7, 'RETURN', 'black', 'return')}
+  </div>`;
+}
+function specialPanelHtml(){
+  return `<div class="npp">
+    <h2 class="np-plate" style="grid-row:1;grid-column:2 / span 5">Special Functions</h2>
+    ${npBtn(2, 1, 'PAUSE<br>NEWPOS', 'olive', NA)}
+    ${npBtn(2, 3, 'Select<br>Main<br>Screen', 'olive', 'return')}
+    ${npBtn(2, 6, 'Picklist<br><span class="off">OFF</span>', 'olive', NA)}
+    ${npBtn(2, 7, 'RE-PRINT<br>RECEIPT', 'blue', 'receipt')}
+    ${npBtn(3, 1, 'Time<br>Punch<br>In/Out', 'cyan', NA, 1, 2)}
+    ${npBtn(3, 2, 'Change<br>Password', 'cyan', NA)}
+    ${npBtn(3, 3, 'Reset<br>Password', 'cyan', NA)}
+    ${npBtn(3, 4, 'Refund', 'red', NA)}
+    ${npBtn(3, 5, 'Refund By Order', 'darkred', NA)}
+    ${npBtn(3, 6, 'Print<br>Picklist', 'olive', NA)}
+    ${npBtn(3, 7, 'GIFT<br>CARD<br>BALANCE', 'yellow', NA)}
+    ${npBtn(4, 2, 'Time Punch<br>Receipt', 'cyan', NA)}
+    ${npBtn(4, 3, 'MyM', 'white', NA)}
+    ${npBtn(4, 4, 'Cancel Waste<br>&amp; Refund', 'red', NA, 2)}
+    ${npBtn(5, 1, 'Manual 3PO<br>Order', 'white', NA)}
+    ${npBtn(5, 3, 'Get<br>Delivery<br>Order', 'blue', NA)}
+    ${npBtn(5, 4, 'Overring', 'red', NA)}
+    ${npBtn(5, 5, 'Promo<br>Order', 'red', NA)}
+    ${npBtn(6, 1, 'Soft Bump<br>Bar', 'orange', NA)}
+    ${npBtn(6, 4, 'Product<br>Outage', 'red', 'outage')}
+    ${npBtn(6, 7, 'Drink<br>Logic<br>Override', 'blue', NA)}
+    ${npBtn(7, 1, 'Coin<br>Dispenser<br>Control', 'orange', NA)}
+    ${npBtn(7, 2, 'Reset<br>Cashless<br>Device', 'orange', NA)}
+    ${npBtn(7, 7, 'eGIFT<br>CARD<br>BALANCE', 'yellow', NA)}
+    ${npBtn(8, 2, 'Reset<br>Barcode<br>Scanner', 'pill', NA)}
+    ${npBtn(8, 3, 'Offers<br>Code', 'pill', NA)}
+    ${npBtn(8, 4, 'View<br>Offer<br>Details', 'pill', NA)}
+    ${npBtn(8, 5, 'Clear<br>Offer', 'pill', NA)}
+    ${npBtn(8, 7, 'RETURN', 'black', 'return')}
+  </div>`;
+}
+function openManagerMenu(){ S.panel = 'manager'; S.tender = false; render(); }
+function openSpecial(){ S.panel = 'special'; S.tender = false; render(); }
+function npAction(b){
+  const a = b.dataset.np;
+  if (a === 'key') return;
+  if (a === NA){ toast(`${b.dataset.label}: no se usa en esta caja.`); return; }
+  S.panel = null;
+  if (a === 'return'){ render(); return; }
+  if (a === 'reports'){ S.view = 'registro'; render(); window.scrollTo({ top: 0 }); return; }
+  if (a === 'options' || a === 'managers'){ S.view = 'menu'; S.editId = null; render(); setTimeout(() => (a === 'managers' ? $('#mgrForm') : null)?.scrollIntoView({ block: 'center' }), 30); return; }
+  if (a === 'remove' || a === 'restore'){ render(); openRestore(a); return; }
+  if (a === 'prod'){ goScreen('prod'); return; }
+  if (a === 'outage'){ S.outage = true; S.qty = ''; S.size = null; render(); return; }
+  if (a === 'receipt'){ render(); const s = S.done || recentSales()[S.lastIdx || 0]; if (s) openReceipt(s); else toast('Todavía no hay ventas.'); }
 }
 function tenderHtml(){
   const t = calc(S.order, S.taxRate);
@@ -1739,6 +1811,7 @@ $('#main').addEventListener('click', async e => {
   if ((b = g('[data-size]'))){ S.size = S.size === b.dataset.size ? null : b.dataset.size; render(); return; }
   if ((b = g('[data-tabg]'))){ const grp = allTabs()[+b.dataset.tabg] || []; const i = grp.indexOf(S.cat); S.cat = i < 0 ? grp[0] : grp[(i + 1) % grp.length]; render(); return; }
   if ((b = g('[data-cat]'))){ S.cat = b.dataset.cat; render(); return; }
+  if ((b = g('[data-np]'))){ npAction(b); return; }
   if ((b = g('[data-delmgr]'))){ if (b.dataset.armed){ S.mgrs = S.mgrs.filter(m => m.num !== b.dataset.delmgr); if (await saveSettings()) render(); } else { b.dataset.armed = '1'; b.textContent = '¿Borrar?'; } return; }
   if ((b = g('[data-item]')) && S.outage){ const it = S.menu.find(m => m.id === b.dataset.item); if (it) await toggleOutage(it); return; }
   if ((b = g('[data-item]'))){ const it = S.menu.find(m => m.id === b.dataset.item); if (it){ if (b.dataset.fsize && !S.size) S.size = b.dataset.fsize; addItem(it); } return; }
