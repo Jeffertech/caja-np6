@@ -1824,7 +1824,15 @@ $('#main').addEventListener('click', async e => {
   if ((b = g('[data-void]'))){ if (b.dataset.armed){ await patchSale(b.dataset.void, { voided:true }); } else { b.dataset.armed = '1'; b.textContent = '¿Anular? toca otra vez'; } return; }
   if (!(b = g('[data-act]'))) return;
   const act = b.dataset.act;
-  if (act === 'void' && S.sel >= 0){ S.order.splice(S.sel,1); S.sel = -1; render(); }
+  if (act === 'void' && S.sel >= 0){
+    /* void the selected line (and the sauces that hang from it), then select the next line, or the previous one at the end */
+    const pos = displayOrder().findIndex(([i]) => i === S.sel);
+    const gone = S.order[S.sel];
+    S.order = S.order.filter(l => l !== gone && !(l.sauce && gone.key && l.for === gone.key));
+    const rows = displayOrder();
+    S.sel = rows.length ? rows[Math.min(Math.max(pos, 0), rows.length - 1)][0] : -1;
+    render();
+  }
   if (act === 'clear') clearChoice(b);
   if (act === 'prices'){ S.showPrices = !S.showPrices; LS.set('showPrices', S.showPrices); render(); }
   if (act === 'total' && S.order.length){ S.orderType = b.dataset.type || 'OUT'; openPendingPicker(); }
