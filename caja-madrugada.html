@@ -167,15 +167,16 @@ nav button[aria-selected="true"]{background:var(--k-gold);color:var(--ink)}
 .np.compact .tile .ti svg{max-height:34px}
 .np.compact .tab{min-height:38px}
 .np.compact .digit{max-height:46px;max-width:46px}
-/* landscape iPads (10.9" store iPad, 13"): the register fills exactly one screen, rows share the height */
-@media (orientation:landscape) and (min-width:861px){
+/* short landscape screens (10.9" store iPad, ~700-820px tall): the register fits exactly one screen so it never needs 90% zoom.
+   Taller screens (13" iPad) keep the natural layout with free space below. */
+@media (orientation:landscape) and (min-width:861px) and (max-height:880px){
   .reg{height:calc(100vh - 51px);height:calc(100dvh - 51px);min-height:520px}
   .reg .ticket{min-height:0}
   .reg>*{min-height:0}
   .reg .panel:has(>.np){display:flex;flex-direction:column;overflow:hidden}
   .reg .panel>.np{flex:1 1 0;min-height:0}
   /* rows shrink to fit a short screen (10.9") but never grow past their normal size on a tall one (13") */
-  .reg .np,.reg .np.compact{grid-template-rows:auto auto repeat(6,minmax(0,98px));align-content:start}
+  .reg .np,.reg .np.compact{grid-template-rows:auto auto repeat(6,minmax(0,1fr))}
   .reg .np .tile .ti svg{min-height:0}
   .np .key.round{width:auto;height:100%;max-height:80px;max-width:100%;min-height:0}
   .np .digit{max-height:min(58px,7vh);max-width:min(58px,7vh)}
