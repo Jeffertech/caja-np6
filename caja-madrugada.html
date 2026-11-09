@@ -998,6 +998,37 @@ function changeOneUnit(idx, next){
 }
 function assignDrink(idx, drink, dsize){ changeOneUnit(idx, rebuildLine(S.order[idx], drink, dsize)); }
 /* Asked only at Take Out Total, one waiting combo at a time. */
+/* A combo left without its drink takes a loose drink already in the order: one goes in on its own, with several the cashier picks. */
+let skipLoose = false;
+function looseDrinks(){
+  return S.order.filter(l => { const it = S.menu.find(m => m.id === l.itemId); return it && isDrink(it) && !l.mealType && !l.sauce; });
+}
+function moveLooseDrink(comboKey, looseKey){
+  const li = S.order.findIndex(l => l.key === looseKey); if (li < 0) return;
+  const loose = S.order[li]; const it = S.menu.find(m => m.id === loose.itemId);
+  if (loose.qty > 1) loose.qty--; else S.order.splice(li, 1);
+  const ci = S.order.findIndex(l => l.key === comboKey); if (ci < 0 || !it) return;
+  assignDrink(ci, it, loose.size);
+}
+function offerLooseDrink(comboIdx, onOther, onDone){
+  const combo = S.order[comboIdx], list = looseDrinks();
+  if (!combo || !list.length){ onOther(); return; }
+  if (list.length === 1){ const d = list[0]; moveLooseDrink(combo.key, d.key); toast(`${d.name} pasó al combo ${combo.name}.`); render(); onDone(); return; }
+  $('#layer').innerHTML = `
+  <div class="overlay"><div class="dialog" role="dialog" aria-label="Bebida del combo">
+    <h3>¿Cuál bebida va en el combo?</h3>
+    <p style="margin:0">${esc(combo.name)} no tiene bebida. Elige una de las bebidas sueltas de la orden.</p>
+    <div style="display:grid;gap:6px">${list.map(d => `<button class="key" style="--c:var(--k-blue);min-height:52px;font-size:18px" data-ld="${esc(d.key)}">${esc(d.name)}${d.qty > 1 ? ` (1 de ${d.qty})` : ''}</button>`).join('')}</div>
+    <div class="row"><button class="btn" data-ld="cancel">Cancelar</button><button class="btn" data-ld="other">Otra bebida</button></div>
+  </div></div>`;
+  $('#layer').onclick = e => {
+    const b = e.target.closest('[data-ld]'); if (!b) return;
+    $('#layer').onclick = null; $('#layer').innerHTML = '';
+    if (b.dataset.ld === 'cancel'){ render(); return; }
+    if (b.dataset.ld === 'other'){ onOther(); return; }
+    moveLooseDrink(combo.key, b.dataset.ld); render(); onDone();
+  };
+}
 function openPendingPicker(){
   const idx = S.order.findIndex(l => l.needsDrink);
   if (idx < 0){
@@ -1007,6 +1038,8 @@ function openPendingPicker(){
   }
   const l = S.order[idx]; const it = S.menu.find(m => m.id === l.itemId);
   if (!it){ l.needsDrink = false; openPendingPicker(); return; }
+  if (!skipLoose && looseDrinks().length){ offerLooseDrink(idx, () => { skipLoose = true; openPendingPicker(); }, () => openPendingPicker()); return; }
+  skipLoose = false;
   const happy = l.mealType === 'happy';
   const left = S.order.filter(x => x.needsDrink).reduce((n, x) => n + x.qty, 0);
   const diffFor = d => happy ? Math.max(0, drinkCost(d, d.defaultSize || null) - HAPPY_DRINK_INCLUDED) : mealDrinkDiff(it, l.size, d);
@@ -1043,7 +1076,7 @@ function choicesFor(l){
 }
 function removeChoice(ch){
   const idx = S.sel, l = S.order[idx]; if (!l) return;
-  if (ch.kind === 'drink') changeOneUnit(idx, rebuildLine(l, null, null));
+  if (ch.kind === 'drink'){ changeOneUnit(idx, rebuildLine(l, null, null)); if (looseDrinks().length){ render(); offerLooseDrink(S.sel, () => render(), () => {}); return; } }
   else if (ch.kind === 'side'){ const tmp = { ...l, removed: [...(l.removed || []), ch.label] };
     const d = l.drinkId && S.menu.find(m => m.id === l.drinkId); changeOneUnit(idx, rebuildLine(tmp, d || null, l.drinkSize)); }
   else if (ch.kind === 'xfries'){ const d = l.drinkId && S.menu.find(m => m.id === l.drinkId); changeOneUnit(idx, rebuildLine({ ...l, extraFries: false }, d || null, l.drinkSize)); }
