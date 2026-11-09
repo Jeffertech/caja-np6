@@ -541,7 +541,7 @@ async function connect(){
 function render(){
   document.querySelectorAll('nav button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.view === S.view)));
   document.querySelector('nav').hidden = S.view === 'venta';
-  /* Registro is one tap away from the register; the Menú page (prices, products) still needs a manager */
+  /* Registro button (manager number + password); the nav only shows Menú after a manager logged in */
   $('#toReg').hidden = S.view !== 'venta' || !!S.screen;
   document.querySelector('nav [data-view="menu"]').hidden = !S.mgrOk;
   const m = $('#main');
@@ -2021,7 +2021,7 @@ async function finishSale(paid){
   render();
   await saveSale(sale);
 }
-$('#toReg').addEventListener('click', () => { S.view = 'registro'; S.panel = null; S.mgrOk = false; render(); window.scrollTo({ top: 0 }); });
+$('#toReg').addEventListener('click', () => askManager(() => { S.view = 'registro'; S.panel = null; S.mgrOk = true; render(); window.scrollTo({ top: 0 }); }));
 document.querySelector('nav').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b){ if (b.dataset.view === 'venta') S.mgrOk = false; S.view = b.dataset.view; S.editId = null; S.confirmDel = null; render(); } });
 $('#main').addEventListener('click', async e => {
   const t = e.target;
