@@ -4,13 +4,16 @@
 
 const MAX_BODY = 64 * 1024;
 const ID_RE = /^[a-z0-9]{6,40}$/;
+const NUM_RE = /^\d{1,8}$/;
+const HASH_RE = /^[0-9a-f]{64}$/;
 let ready = false;
 
 async function ensure(db) {
   if (ready) return;
   await db.batch([
     db.prepare('CREATE TABLE IF NOT EXISTS orders (id TEXT PRIMARY KEY, ts INTEGER NOT NULL, status TEXT NOT NULL DEFAULT \'new\', ready_ts INTEGER, data TEXT NOT NULL)'),
-    db.prepare('CREATE INDEX IF NOT EXISTS orders_ts ON orders (ts)')
+    db.prepare('CREATE INDEX IF NOT EXISTS orders_ts ON orders (ts)'),
+    db.prepare('CREATE TABLE IF NOT EXISTS managers (num TEXT PRIMARY KEY, data TEXT NOT NULL)')
   ]);
   ready = true;
 }
@@ -36,6 +39,26 @@ export async function onRequest({ request, env, params }) {
     const [resource, id] = params.path || [];
     const method = request.method;
     const since = Math.max(0, Number(url.searchParams.get('since')) || 0);
+    if (resource === 'managers') {
+      // Managers: number, name and a SHA-256 hash of the password (never the password itself).
+      if (id !== undefined && !NUM_RE.test(id)) return json({ error: 'número inválido' }, 400);
+      if (method === 'GET' && !id) {
+        const { results } = await db.prepare('SELECT data FROM managers ORDER BY CAST(num AS INTEGER)').all();
+        return json(results.map(r => JSON.parse(r.data)));
+      }
+      if (method === 'PUT' && id) {
+        const b = await readBody(request);
+        if (!HASH_RE.test(String(b.hash || ''))) return json({ error: 'datos inválidos' }, 400);
+        const m = { num: id, name: String(b.name || '').slice(0, 30), hash: b.hash, owner: !!b.owner };
+        await db.prepare('INSERT INTO managers (num, data) VALUES (?, ?) ON CONFLICT(num) DO UPDATE SET data = excluded.data').bind(id, JSON.stringify(m)).run();
+        return json({ ok: true });
+      }
+      if (method === 'DELETE' && id) {
+        await db.prepare('DELETE FROM managers WHERE num = ?').bind(id).run();
+        return json({ ok: true });
+      }
+      return json({ error: 'no encontrado' }, 404);
+    }
     if (id !== undefined && !ID_RE.test(id)) return json({ error: 'id inválido' }, 400);
 
     if (resource === 'orders') {

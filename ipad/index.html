@@ -193,6 +193,9 @@ nav button[aria-selected="true"]{background:var(--k-gold);color:var(--ink)}
 .overlay.light{background:rgb(0 0 0/.15);align-items:flex-start}
 .np-auth{position:relative;background:#fff;border-top:8px solid #ffbc0d;border-radius:6px;width:min(340px,100%);padding:22px 18px 18px;display:grid;gap:12px;box-shadow:0 10px 30px rgb(0 0 0/.3)}
 .np-auth p{margin:0;text-align:center;font-weight:600;font-size:17px}
+.mgr-dlg{width:min(640px,100%)}
+.mrow{grid-template-columns:52px minmax(0,1fr) auto}
+.mbtns{display:flex;gap:4px}
 .np-first{display:block;text-align:center;color:#8a5a00;font-size:13px}
 .np-x{position:absolute;right:8px;top:6px;border:0;background:none;font-size:26px;color:#444}
 .np-field{border:1px solid #bbb;height:52px;display:flex;align-items:center;justify-content:center;font-size:26px;letter-spacing:.2em}
@@ -451,6 +454,7 @@ async function connect(){
     if (d.exists && typeof d.data().taxRate === 'number'){ S.taxRate = d.data().taxRate; LS.set('taxRate', S.taxRate); }
     if (d.exists && d.data().mgrPin){ S.mgrPin = d.data().mgrPin; LS.set('mgrPin', S.mgrPin); }
     if (d.exists && Array.isArray(d.data().mgrs)){ S.mgrs = d.data().mgrs; LS.set('mgrs', S.mgrs); }
+    if (ensureOwner()) saveSettings();
     if (d.exists && d.data().equip){ S.equip = d.data().equip; LS.set('equip', S.equip); }
     if (d.exists) render();
   });
@@ -1447,46 +1451,131 @@ function outageHtml(){
 }
 
 /* Manager: number, then password, on the NP6 keypad. Without managers set up yet, it lets you in and says so. */
-function askManager(onOk){
-  /* Always the keypad. With no manager saved yet, the first number + password typed become the first manager. */
-  const firstTime = !S.mgrs.length;
-  let step = 'num', num = '', val = '';
-  const draw = () => {
-    $('#layer').innerHTML = `
-    <div class="overlay"><div class="np-auth" role="dialog" aria-label="Manager">
-      <button class="np-x" data-k="x" aria-label="Cerrar">×</button>
-      <p>Please enter Manager ${step === 'num' ? 'Number' : 'Password'} to authorize this operation.</p>
-      ${firstTime ? `<small class="np-first">Primera vez: ${step === 'num' ? 'el número' : 'la contraseña (4 a 8 números)'} que escribas quedará guardado como tu manager.</small>` : ''}
-      <div class="np-field num">${step === 'num' ? esc(val) : '•'.repeat(val.length)}</div>
-      <div class="np-keys">${[7,8,9,4,5,6,1,2,3].map(n => `<button data-k="${n}">${n}</button>`).join('')}<button data-k="b" class="g" aria-label="Borrar">&lt;</button><button data-k="0">0</button><button data-k="e" class="y">Enter</button></div>
-    </div></div>`;
-  };
-  draw();
-  $('#layer').onclick = async e => {
-    const b = e.target.closest('[data-k]'); if (!b) return;
-    const k = b.dataset.k;
-    if (k === 'x'){ $('#layer').onclick = null; $('#layer').innerHTML = ''; return; }
-    if (k === 'b'){ val = val.slice(0, -1); draw(); return; }
-    if (k === 'e'){
-      if (!val) return;
-      if (step === 'num'){
-        if (!firstTime && !S.mgrs.some(m => m.num === val)){ toast('Ese número de manager no existe.'); val = ''; draw(); return; }
-        num = val; val = ''; step = 'pw'; draw(); return;
-      }
-      if (firstTime){
-        if (!/^\d{4,8}$/.test(val)){ toast('La contraseña debe tener de 4 a 8 números.'); val = ''; draw(); return; }
-        S.mgrs = [{ num, name: 'Manager', hash: await pinHash('mgr:' + num + ':' + val) }];
-        await saveSettings(); toast(`Manager #${num} guardado.`);
-        $('#layer').onclick = null; $('#layer').innerHTML = ''; onOk(S.mgrs[0]); return;
-      }
-      const m = S.mgrs.find(x => x.num === num);
-      if ((await pinHash('mgr:' + num + ':' + val)) !== m.hash){ toast('Contraseña incorrecta.'); val = ''; draw(); return; }
-      $('#layer').onclick = null; $('#layer').innerHTML = ''; onOk(m); return;
-    }
-    if (val.length < 10){ val += k; draw(); }
-  };
+/* Number keypad like the NP6 one. Resolves with what was typed, or null when closed. */
+function npPrompt(text, masked){
+  return new Promise(res => {
+    let val = '';
+    const close = v => { $('#layer').onclick = null; $('#layer').innerHTML = ''; res(v); };
+    const draw = () => {
+      $('#layer').innerHTML = `
+      <div class="overlay"><div class="np-auth" role="dialog" aria-label="Manager">
+        <button class="np-x" data-k="x" aria-label="Cerrar">×</button>
+        <p>${esc(text)}</p>
+        <div class="np-field num">${masked ? '•'.repeat(val.length) : esc(val)}</div>
+        <div class="np-keys">${[7,8,9,4,5,6,1,2,3].map(n => `<button data-k="${n}">${n}</button>`).join('')}<button data-k="b" class="g" aria-label="Borrar">&lt;</button><button data-k="0">0</button><button data-k="e" class="y">Enter</button></div>
+      </div></div>`;
+    };
+    draw();
+    $('#layer').onclick = e => {
+      const b = e.target.closest('[data-k]'); if (!b) return;
+      const k = b.dataset.k;
+      if (k === 'x') return close(null);
+      if (k === 'b'){ val = val.slice(0, -1); draw(); return; }
+      if (k === 'e'){ if (val) close(val); return; }
+      if (val.length < 10){ val += k; draw(); }
+    };
+  });
+}
+/* Manager Number, then Manager Password; wrong entries ask again. */
+async function askManager(onOk){
+  let m = null;
+  while (!m){
+    const num = await npPrompt('Please enter Manager Number to authorize this operation.', false);
+    if (num === null) return;
+    m = S.mgrs.find(x => x.num === num);
+    if (!m) toast('Ese número de manager no existe.');
+  }
+  while (true){
+    const pw = await npPrompt('Please enter Manager Password to authorize this operation.', true);
+    if (pw === null) return;
+    if ((await pinHash('mgr:' + m.num + ':' + pw)) === m.hash) break;
+    toast('Contraseña incorrecta.');
+  }
+  onOk(m);
 }
 function openManager(){ askManager(openManagerMenu); }
+
+/* Managers are kept in the shared database: D1 on the iPad site, settings/config on claude.ai.
+   #18 is the main manager: only it creates managers and changes other managers' passwords. */
+const OWNER = { num: '18', name: 'Principal', owner: true, hash: 'b23172e407683566fe756cc805eeb8de51cc4166de3b9f04e09db041f64b14af' };
+function ensureOwner(){
+  if (S.mgrs.some(m => m.owner)) return false;
+  S.mgrs = S.mgrs.filter(m => m.num !== OWNER.num).concat([{ ...OWNER }]);
+  return true;
+}
+async function saveManager(m){
+  S.mgrs = S.mgrs.filter(x => x.num !== m.num).concat([m]);
+  await saveSettings(); cloudPush('PUT', '/managers/' + m.num, m);
+}
+async function deleteManager(num){
+  S.mgrs = S.mgrs.filter(x => x.num !== num);
+  await saveSettings(); cloudPush('DELETE', '/managers/' + num);
+}
+async function refreshManagers(){
+  if (!CLOUD || cloudQ.some(j => j.path.startsWith('/managers'))) return;
+  try {
+    const list = await api('/managers');
+    if (!list.length){ ensureOwner(); LS.set('mgrs', S.mgrs); S.mgrs.forEach(m => cloudPush('PUT', '/managers/' + m.num, m)); return; }
+    S.mgrs = list;
+    if (ensureOwner()) cloudPush('PUT', '/managers/' + OWNER.num, OWNER);
+    LS.set('mgrs', S.mgrs);
+  } catch(e){}
+}
+async function askNewPassword(m){
+  const p1 = await npPrompt(`Nueva contraseña para el manager #${m.num} (4 a 8 números).`, true);
+  if (p1 === null) return false;
+  if (!/^\d{4,8}$/.test(p1)){ toast('La contraseña debe tener de 4 a 8 números.'); return false; }
+  const p2 = await npPrompt('Escribe otra vez la nueva contraseña.', true);
+  if (p2 === null) return false;
+  if (p1 !== p2){ toast('Las contraseñas no coinciden. No se cambió nada.'); return false; }
+  await saveManager({ ...m, hash: await pinHash('mgr:' + m.num + ':' + p1) });
+  toast(`Contraseña del manager #${m.num} cambiada.`);
+  return true;
+}
+/* Special Functions → Change Password: any manager changes their own. */
+function openChangePassword(){ askManager(m => askNewPassword(m)); }
+/* Special Functions → Reset Password: only the main manager. */
+function openResetPassword(){
+  askManager(m => {
+    if (!m.owner){ toast(`Solo el manager principal (#${OWNER.num}) crea managers y cambia sus contraseñas. Para cambiar la tuya usa Change Password.`); return; }
+    usersDialog();
+  });
+}
+function usersDialog(){
+  const list = S.mgrs.slice().sort((a, b) => (!!b.owner - !!a.owner) || (+a.num - +b.num));
+  $('#layer').innerHTML = `
+  <div class="overlay"><div class="dialog mgr-dlg" role="dialog" aria-label="Managers">
+    <h3>Managers</h3>
+    <div class="rlist">${list.map(m => `<div class="rrow mrow"><span>#${esc(m.num)}</span><span>${esc(m.name || 'Manager')}${m.owner ? ' · principal' : ''}</span>
+      <span class="mbtns"><button class="btn" data-um="pw" data-n="${esc(m.num)}">Contraseña</button>${m.owner ? '' : `<button class="btn no" data-um="del" data-n="${esc(m.num)}">Borrar</button>`}</span></div>`).join('')}</div>
+    <form id="newMgr" class="row" autocomplete="off">
+      <label>Número<input id="nm-num" inputmode="numeric" maxlength="8" required></label>
+      <label>Nombre<input id="nm-name" maxlength="30" placeholder="Opcional"></label>
+      <label>Contraseña (4 a 8 números)<input id="nm-pw" type="password" inputmode="numeric" autocomplete="new-password" required></label>
+      <button class="btn go" type="submit" style="align-self:end">Crear manager</button>
+    </form>
+    <div class="row"><button class="btn" data-um="close">Cerrar</button></div>
+  </div></div>`;
+  $('#layer').onclick = async e => {
+    const b = e.target.closest('[data-um]'); if (!b) return;
+    const a = b.dataset.um, n = b.dataset.n;
+    if (a === 'close'){ $('#layer').onclick = null; $('#layer').innerHTML = ''; return; }
+    if (a === 'del'){
+      if (!b.dataset.armed){ b.dataset.armed = '1'; b.textContent = '¿Borrar?'; return; }
+      await deleteManager(n); toast(`Manager #${n} borrado.`); usersDialog(); return;
+    }
+    if (a === 'pw'){ const m = S.mgrs.find(x => x.num === n); if (m) await askNewPassword(m); usersDialog(); }
+  };
+  $('#newMgr').onsubmit = async e => {
+    e.preventDefault(); e.stopPropagation();
+    const num = $('#nm-num').value.trim(), name = $('#nm-name').value.trim(), pw = $('#nm-pw').value.trim();
+    if (!/^\d{1,8}$/.test(num)){ toast('El número de manager debe ser solo números.'); return; }
+    if (S.mgrs.some(m => m.num === num)){ toast(`El manager #${num} ya existe. Usa Contraseña para cambiarla.`); return; }
+    if (!/^\d{4,8}$/.test(pw)){ toast('La contraseña debe tener de 4 a 8 números.'); return; }
+    await saveManager({ num, name, hash: await pinHash('mgr:' + num + ':' + pw) });
+    toast(`Manager #${num} creado.`); usersDialog();
+  };
+}
 
 /* Restore / Remove: search, pick on the left, move them to the right, Ok applies. */
 function openRestore(mode){
@@ -1588,7 +1677,7 @@ function managerPanelHtml(){
     ${npBtn(3, 7, 'MANAGER<br>OPTIONS', 'grey', 'options')}
     <div class="np-display" style="grid-row:4;grid-column:1 / span 3"></div>
     ${npBtn(4, 5, 'Set Promo<br>Order<br>Authority', 'red', NA)}
-    ${npBtn(4, 6, 'Set Promo<br>Item<br>Authority', 'red', 'managers')}
+    ${npBtn(4, 6, 'Set Promo<br>Item<br>Authority', 'red', 'resetpw')}
     ${npBtn(4, 7, 'Set Discount<br>Authority', 'red', NA)}
     ${npKeypad(5)}
     ${npBtn(5, 5, 'Configure<br>Hourly<br>Reports', 'olive', NA)}
@@ -1609,8 +1698,8 @@ function specialPanelHtml(){
     ${npBtn(2, 6, 'Picklist<br><span class="off">OFF</span>', 'olive', NA)}
     ${npBtn(2, 7, 'RE-PRINT<br>RECEIPT', 'blue', 'receipt')}
     ${npBtn(3, 1, 'Time<br>Punch<br>In/Out', 'cyan', NA, 1, 2)}
-    ${npBtn(3, 2, 'Change<br>Password', 'cyan', NA)}
-    ${npBtn(3, 3, 'Reset<br>Password', 'cyan', NA)}
+    ${npBtn(3, 2, 'Change<br>Password', 'cyan', 'changepw')}
+    ${npBtn(3, 3, 'Reset<br>Password', 'cyan', 'resetpw')}
     ${npBtn(3, 4, 'Refund', 'red', NA)}
     ${npBtn(3, 5, 'Refund By Order', 'darkred', NA)}
     ${npBtn(3, 6, 'Print<br>Picklist', 'olive', NA)}
@@ -1641,10 +1730,12 @@ function npAction(b){
   const a = b.dataset.np;
   if (a === 'key') return;
   if (a === NA){ toast(`${b.dataset.label}: no se usa en esta caja.`); return; }
+  if (a === 'changepw'){ openChangePassword(); return; }
+  if (a === 'resetpw'){ openResetPassword(); return; }
   S.panel = null;
   if (a === 'return'){ render(); return; }
   if (a === 'reports'){ S.view = 'registro'; render(); window.scrollTo({ top: 0 }); return; }
-  if (a === 'options' || a === 'managers'){ S.view = 'menu'; S.editId = null; render(); setTimeout(() => (a === 'managers' ? $('#mgrForm') : null)?.scrollIntoView({ block: 'center' }), 30); return; }
+  if (a === 'options'){ S.view = 'menu'; S.editId = null; render(); return; }
   if (a === 'remove' || a === 'restore'){ render(); openRestore(a); return; }
   if (a === 'prod'){ goScreen('prod'); return; }
   if (a === 'outage'){ S.outage = true; S.qty = ''; S.size = null; render(); return; }
@@ -1781,13 +1872,8 @@ function viewMenu(){
       <div class="card" style="align-content:start">
         <h2>Managers</h2>
         <p class="hint">Con <b>número</b> y <b>contraseña</b> se entra a Manager y se autoriza Promo Item, igual que en la caja.</p>
-        ${S.mgrs.length ? `<div class="rlist">${S.mgrs.map(m => `<div class="rrow"><span>#${esc(m.num)}</span><span>${esc(m.name || 'Manager')}</span><button class="btn no" style="padding:2px 8px" data-delmgr="${esc(m.num)}">Borrar</button></div>`).join('')}</div>` : '<p class="empty-p">Todavía no hay managers.</p>'}
-        <form id="mgrForm" class="row" autocomplete="off">
-          <label>Número<input id="f-mnum" inputmode="numeric" maxlength="8" required></label>
-          <label>Nombre<input id="f-mname" maxlength="30" placeholder="Opcional"></label>
-          <label>Contraseña (4 a 8 números)<input id="f-mpw" type="password" inputmode="numeric" autocomplete="new-password" required></label>
-          <button class="btn go" type="submit" style="align-self:end">Agregar</button>
-        </form>
+        <div class="rlist">${S.mgrs.slice().sort((a, b) => (!!b.owner - !!a.owner) || (+a.num - +b.num)).map(m => `<div class="rrow"><span>#${esc(m.num)}</span><span>${esc(m.name || 'Manager')}${m.owner ? ' · principal' : ''}</span><span></span></div>`).join('')}</div>
+        <p class="hint">Crear managers o cambiarles la contraseña: <b>Special Functions → Reset Password</b> (solo el manager principal #${OWNER.num}). Cada manager cambia la suya en <b>Change Password</b>.</p>
       </div>
     </div>
   </div>`;
@@ -1862,7 +1948,6 @@ $('#main').addEventListener('click', async e => {
   if ((b = g('[data-tabg]'))){ const grp = allTabs()[+b.dataset.tabg] || []; const i = grp.indexOf(S.cat); S.cat = i < 0 ? grp[0] : grp[(i + 1) % grp.length]; render(); return; }
   if ((b = g('[data-cat]'))){ S.cat = b.dataset.cat; render(); return; }
   if ((b = g('[data-np]'))){ npAction(b); return; }
-  if ((b = g('[data-delmgr]'))){ if (b.dataset.armed){ S.mgrs = S.mgrs.filter(m => m.num !== b.dataset.delmgr); if (await saveSettings()) render(); } else { b.dataset.armed = '1'; b.textContent = '¿Borrar?'; } return; }
   if ((b = g('[data-item]')) && S.outage){ const it = S.menu.find(m => m.id === b.dataset.item); if (it) await toggleOutage(it); return; }
   if ((b = g('[data-item]'))){ const it = S.menu.find(m => m.id === b.dataset.item); if (it){ if (b.dataset.fsize && !S.size) S.size = b.dataset.fsize; addItem(it); } return; }
   if ((b = g('[data-pad]'))){ const v = b.dataset.pad; S.entry = v === 'clear' ? '' : (S.entry + v).replace(/^0+/, '').slice(0,7); render(); return; }
@@ -1938,13 +2023,6 @@ $('#main').addEventListener('submit', async e => {
     const wasEdit = !!S.editId;
     if (await saveMenuItem(item)){ toast(wasEdit ? 'Producto guardado' : 'Producto añadido'); S.editId = null; S.cat = item.category; render(); $('#f-name')?.focus(); }
   }
-  if (e.target.id === 'mgrForm'){
-    const num = $('#f-mnum').value.trim(), pw = $('#f-mpw').value.trim(), name = $('#f-mname').value.trim();
-    if (!/^\d{1,8}$/.test(num)){ toast('El número de manager debe ser solo números.'); return; }
-    if (!/^\d{4,8}$/.test(pw)){ toast('La contraseña debe tener de 4 a 8 números.'); return; }
-    S.mgrs = S.mgrs.filter(m => m.num !== num).concat([{ num, name, hash: await pinHash('mgr:' + num + ':' + pw) }]);
-    if (await saveSettings()){ toast('Manager guardado'); render(); }
-  }
   if (e.target.id === 'pinForm'){
     const p = $('#f-pin').value.trim();
     if (!/^\d{4,8}$/.test(p)){ toast('El PIN debe tener de 4 a 8 números.'); return; }
@@ -1959,12 +2037,15 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#layer'
 
 function tick(){ const d = new Date(); $('#clock').textContent = d.toTimeString().slice(0,5); }
 tick(); setInterval(tick, 15000);
+ensureOwner(); LS.set('mgrs', S.mgrs);
 setSync(); render(); connect();
 if (STANDALONE){
   window.addEventListener('hashchange', route);
   window.addEventListener('online', flushCloud);
   setInterval(() => { if (document.hidden) return; flushCloud(); if (S.screen || S.view === 'registro') refreshCloud(); }, 6000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden){ flushCloud(); if (S.screen || S.view === 'registro') refreshCloud(); } });
+  refreshManagers(); setInterval(() => { if (!document.hidden) refreshManagers(); }, 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshManagers(); });
   route();
   lockScreen();
 }
