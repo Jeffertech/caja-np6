@@ -1,4 +1,4 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="NP6"><meta name="robots" content="noindex,nofollow"><title>NP6</title><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;overscroll-behavior:none}button,.tile,.key,.digit,.tab,nav{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}input,select,textarea{font-size:16px!important}</style><script>window.CM_STANDALONE = true;window.CM_ACCESS_HASH = "fece1fcf033eecc8ccc4ab8d61e9d9665841bf173870a7bc2a227da4498c3067";['gesturestart','gesturechange','gestureend'].forEach(function(t){document.addEventListener(t,function(e){e.preventDefault();},{passive:false});});document.addEventListener('touchmove',function(e){if(e.touches.length>1||(e.scale&&e.scale!==1))e.preventDefault();},{passive:false});document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:false});</script></head><body>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="NP6"><meta name="robots" content="noindex,nofollow"><title>NP6</title><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;overscroll-behavior:none}button,.tile,.key,.digit,.tab,nav{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}input,select,textarea{font-size:16px!important}</style><script>window.CM_STANDALONE = true;['gesturestart','gesturechange','gestureend'].forEach(function(t){document.addEventListener(t,function(e){e.preventDefault();},{passive:false});});document.addEventListener('touchmove',function(e){if(e.touches.length>1||(e.scale&&e.scale!==1))e.preventDefault();},{passive:false});document.addEventListener('dblclick',function(e){e.preventDefault();},{passive:false});</script></head><body>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -1309,38 +1309,6 @@ function openReceipt(sale){
   </div></div>`;
   $('#rcClose').onclick = () => { $('#layer').innerHTML = ''; };
 }
-/* ---- iPad version (no Claude account): access key at open, export of sales ---- */
-function lockScreen(){
-  try { if (sessionStorage.getItem('cm.unlocked') === '1') return; } catch(e){}
-  const fixed = window.CM_ACCESS_HASH || '';
-  const saved = fixed || LS.get('accessPin', '');
-  const creating = !saved;
-  $('#layer').innerHTML = `
-  <div class="overlay" style="background:#2b3036">
-    <form class="dialog" id="lockForm" autocomplete="off" aria-label="Iniciar sesión">
-      <h3>${creating ? 'Crea tu clave de acceso' : 'Iniciar sesión'}</h3>
-      ${fixed ? '<label>Usuario<input id="lockUser" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required></label>' : ''}
-      <label>${fixed ? 'Contraseña' : 'Clave (4 a 8 números)'}<input id="lockPin" type="password" inputmode="numeric" autocomplete="${fixed ? 'current-password' : 'off'}" required></label>
-      ${creating ? '<label>Repite la clave<input id="lockPin2" type="password" inputmode="numeric" autocomplete="off" required></label>' : ''}
-      <button class="btn go" type="submit" style="font-size:18px;padding:12px">Entrar</button>
-    </form>
-  </div>`;
-  $('#lockForm').onsubmit = async e => {
-    e.preventDefault();
-    const p = $('#lockPin').value.trim();
-    if (fixed){
-      const u = ($('#lockUser').value || '').trim().toLowerCase();
-      if ((await pinHash('acc:' + u + ':' + p)) !== fixed){ toast('Usuario o contraseña incorrectos.'); $('#lockPin').value = ''; $('#lockPin').focus(); return; }
-    } else if (creating){
-      if (!/^\d{4,8}$/.test(p)){ toast('La clave debe tener de 4 a 8 números.'); return; }
-      if (p !== $('#lockPin2').value.trim()){ toast('Las claves no coinciden.'); return; }
-      LS.set('accessPin', await pinHash('acc:' + p));
-    } else if ((await pinHash('acc:' + p)) !== saved){ toast('Clave incorrecta.'); $('#lockPin').value = ''; $('#lockPin').focus(); return; }
-    try { sessionStorage.setItem('cm.unlocked', '1'); } catch(e){}
-    $('#layer').innerHTML = '';
-  };
-  setTimeout(() => ($('#lockUser') || $('#lockPin'))?.focus(), 50);
-}
 /* Wipe every saved sale (all dates) once they are in the real register. Two confirmations. */
 function openWipe(){
   const all = mergedSales(); if (!all.length) return;
@@ -2133,7 +2101,6 @@ if (STANDALONE){
   refreshManagers(); setInterval(() => { if (!document.hidden) refreshManagers(); }, 60000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshManagers(); });
   route();
-  lockScreen();
 }
 })();
 </script>

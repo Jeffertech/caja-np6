@@ -1309,38 +1309,6 @@ function openReceipt(sale){
   </div></div>`;
   $('#rcClose').onclick = () => { $('#layer').innerHTML = ''; };
 }
-/* ---- iPad version (no Claude account): access key at open, export of sales ---- */
-function lockScreen(){
-  try { if (sessionStorage.getItem('cm.unlocked') === '1') return; } catch(e){}
-  const fixed = window.CM_ACCESS_HASH || '';
-  const saved = fixed || LS.get('accessPin', '');
-  const creating = !saved;
-  $('#layer').innerHTML = `
-  <div class="overlay" style="background:#2b3036">
-    <form class="dialog" id="lockForm" autocomplete="off" aria-label="Iniciar sesión">
-      <h3>${creating ? 'Crea tu clave de acceso' : 'Iniciar sesión'}</h3>
-      ${fixed ? '<label>Usuario<input id="lockUser" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required></label>' : ''}
-      <label>${fixed ? 'Contraseña' : 'Clave (4 a 8 números)'}<input id="lockPin" type="password" inputmode="numeric" autocomplete="${fixed ? 'current-password' : 'off'}" required></label>
-      ${creating ? '<label>Repite la clave<input id="lockPin2" type="password" inputmode="numeric" autocomplete="off" required></label>' : ''}
-      <button class="btn go" type="submit" style="font-size:18px;padding:12px">Entrar</button>
-    </form>
-  </div>`;
-  $('#lockForm').onsubmit = async e => {
-    e.preventDefault();
-    const p = $('#lockPin').value.trim();
-    if (fixed){
-      const u = ($('#lockUser').value || '').trim().toLowerCase();
-      if ((await pinHash('acc:' + u + ':' + p)) !== fixed){ toast('Usuario o contraseña incorrectos.'); $('#lockPin').value = ''; $('#lockPin').focus(); return; }
-    } else if (creating){
-      if (!/^\d{4,8}$/.test(p)){ toast('La clave debe tener de 4 a 8 números.'); return; }
-      if (p !== $('#lockPin2').value.trim()){ toast('Las claves no coinciden.'); return; }
-      LS.set('accessPin', await pinHash('acc:' + p));
-    } else if ((await pinHash('acc:' + p)) !== saved){ toast('Clave incorrecta.'); $('#lockPin').value = ''; $('#lockPin').focus(); return; }
-    try { sessionStorage.setItem('cm.unlocked', '1'); } catch(e){}
-    $('#layer').innerHTML = '';
-  };
-  setTimeout(() => ($('#lockUser') || $('#lockPin'))?.focus(), 50);
-}
 /* Wipe every saved sale (all dates) once they are in the real register. Two confirmations. */
 function openWipe(){
   const all = mergedSales(); if (!all.length) return;
@@ -2133,7 +2101,6 @@ if (STANDALONE){
   refreshManagers(); setInterval(() => { if (!document.hidden) refreshManagers(); }, 60000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshManagers(); });
   route();
-  lockScreen();
 }
 })();
 </script>

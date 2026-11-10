@@ -6,7 +6,6 @@ Caja en efectivo estilo NP6 para cobrar con tax de NJ cuando no hay cajas, y lle
 - `menu/` — un archivo JSON por producto (precios, tamaños, combos, desactivados).
 - `build-ipad.py` — genera `ipad/index.html` con el menú incluido.
 - `ipad/index.html` — la versión para iPad que publica Cloudflare Pages (carpeta de salida `ipad`, sin comando de build).
-- `acceso.hash` — huella cifrada del usuario y contraseña de entrada (la contraseña no se guarda).
 
 Después de cambiar el código o el menú:
 
