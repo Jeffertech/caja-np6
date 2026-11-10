@@ -186,9 +186,9 @@ nav button[aria-selected="true"]{background:var(--k-gold);color:var(--ink)}
 .np.compact .tile .ti svg{max-height:34px}
 .np.compact .tab{min-height:38px}
 .np.compact .digit{max-height:46px;max-width:46px}
-/* landscape iPads up to 880px tall: the register never grows past its normal size (~856px with the NP6 band)
-   and shrinks to fit a shorter screen (10.9" store iPad) so it never needs 90% zoom. Taller screens keep the natural layout. */
-@media (orientation:landscape) and (min-width:861px) and (max-height:880px){
+/* landscape iPads: the register is always its normal size (~856px with the NP6 band) whatever the right side shows
+   (menu, Manager Menu, Special Functions), and shrinks to fit a shorter screen (10.9" store iPad) so it never needs 90% zoom. */
+@media (orientation:landscape) and (min-width:861px){
   .reg{height:min(calc(100vh - 16px),856px);height:min(calc(100dvh - 16px),856px);min-height:520px}
   .band{grid-template-rows:repeat(2,minmax(40px,6vh));flex:none}
   .reg .ticket{min-height:0}
@@ -204,6 +204,17 @@ nav button[aria-selected="true"]{background:var(--k-gold);color:var(--ink)}
 @media (orientation:landscape) and (min-width:861px) and (max-height:800px){
   .np .ti svg{max-height:40px}
   .last{height:170px}
+}
+/* landscape iPads and phones: the right side is a column (band on top, the rest fills what is left), so the
+   Manager Menu and Special Functions keep the same height as the products screen */
+@media (orientation:landscape) and (min-width:861px), (orientation:landscape) and (max-height:500px){
+  .reg .panel{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+  .reg .panel>.band{flex:none}
+  .reg .panel>:not(.band){flex:1 1 0;min-height:0}
+  .reg .panel>:not(.band):not(.np){overflow:auto}
+  .reg .panel>.npp{min-height:0;grid-template-rows:auto repeat(7,minmax(0,1fr));gap:6px}
+  .reg .panel>.npp .np-plate{margin:2px 0 4px;padding:2px 30px;font-size:clamp(20px,3vh,34px)}
+  .reg .panel>.npp .npk{font-size:clamp(16px,4vh,36px)}
 }
 .sauce-row .sn{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-family:var(--display);font-weight:600;font-size:12px;line-height:1.05;padding:2px;color:#222}
 .np.outage .tile{cursor:pointer}
