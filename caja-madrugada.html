@@ -28,6 +28,25 @@ input,select{font:inherit;color:var(--ink);background:#fff;border:1px solid var(
 
 /* status bar */
 .status{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch}
+.status[hidden]{display:none}
+/* NP6 band above the numbers: info + round keys, or two rows of sauces */
+.band{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));grid-template-rows:repeat(2,52px);gap:4px;margin-bottom:2px;min-width:0}
+.bd-info{display:grid;grid-template-columns:64px 1fr 1.4fr 1.6fr;grid-template-rows:1fr 1fr;border:1px solid #9aa0a7;background:#d3d7db;font-family:var(--mono);font-size:12px;color:#333;min-width:0}
+.bd-info>span{display:flex;align-items:center;justify-content:center;border-right:1px solid #9aa0a7;border-bottom:1px solid #9aa0a7;white-space:nowrap;overflow:hidden;padding:0 4px;background:#e9ebed}
+.bd-info>span.ok{color:#1f7a2e;font-weight:600}
+.bd-info>span.warn{color:#b3261e;font-weight:600}
+.bd-info .bd-user{grid-row:1 / span 2;background:none;color:#7b8fb8;font-family:var(--display);font-weight:700;font-size:13px;line-height:1;text-align:center;white-space:normal}
+.bd-info>span:nth-child(5){grid-column:2}
+.key.round.bdr{max-width:64px;min-height:0;max-height:100%;width:100%;height:auto;aspect-ratio:1;font-size:13px;font-weight:700;padding:2px}
+.key.round.cod{--c:#6a4fb3}
+.key.round.grill{--c:#2f9e44}
+.key.round.mgr{--c:#c8102e;color:#ffd84a}
+.band .tile.sauce{min-height:0}
+.band .tile.sauce .tn{font-size:10px;min-height:0;padding:1px}
+.band .tile.sauce .pk{flex:1 1 0;min-height:0;margin:2px;border-radius:4px;background:linear-gradient(180deg,color-mix(in srgb,var(--sc) 75%,#fff),var(--sc) 45%,color-mix(in srgb,var(--sc) 80%,#000));color:var(--si);display:flex;align-items:center;gap:2px;padding:0 3px;box-shadow:inset 0 1px 0 rgb(255 255 255/.4);overflow:hidden}
+.band .tile.sauce .pki{flex:none;width:30%;max-width:30px;height:100%;display:flex;align-items:center;background:rgb(255 255 255/.85);border-radius:3px}
+.band .tile.sauce .pki svg{width:100%;height:auto;max-height:100%}
+.band .tile.sauce .pkn{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:11px;line-height:1;text-transform:uppercase;text-align:center;overflow-wrap:anywhere;text-shadow:0 1px 0 rgb(0 0 0/.25)}
 .cell{background:var(--bar);color:var(--bar-ink);border-radius:3px;padding:5px 10px;font-family:var(--mono);font-size:13px;display:flex;align-items:center;gap:6px;white-space:nowrap}
 .cell.title{font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
 .cell.ok{background:var(--ok)} .cell.warn{background:var(--warn)}
@@ -167,10 +186,11 @@ nav button[aria-selected="true"]{background:var(--k-gold);color:var(--ink)}
 .np.compact .tile .ti svg{max-height:34px}
 .np.compact .tab{min-height:38px}
 .np.compact .digit{max-height:46px;max-width:46px}
-/* landscape iPads up to 880px tall: the register never grows past its normal size (~745px, 13" iPad with Safari bars)
+/* landscape iPads up to 880px tall: the register never grows past its normal size (~856px with the NP6 band)
    and shrinks to fit a shorter screen (10.9" store iPad) so it never needs 90% zoom. Taller screens keep the natural layout. */
 @media (orientation:landscape) and (min-width:861px) and (max-height:880px){
-  .reg{height:min(calc(100vh - 51px),745px);height:min(calc(100dvh - 51px),745px);min-height:520px}
+  .reg{height:min(calc(100vh - 16px),856px);height:min(calc(100dvh - 16px),856px);min-height:520px}
+  .band{grid-template-rows:repeat(2,minmax(40px,6vh));flex:none}
   .reg .ticket{min-height:0}
   .reg>*{min-height:0}
   .reg .panel:has(>.np){display:flex;flex-direction:column;overflow:hidden}
@@ -362,9 +382,12 @@ label{display:grid;gap:3px;font-size:12px;color:var(--muted)}
   .np .key.round{width:100%;height:auto;max-width:min(40px,100%) !important;max-height:100%;aspect-ratio:1;border-radius:50%;min-height:0;font-size:7.5px}
   .np [data-act="manager"]{font-size:7.5px !important}
   .np [data-act="toprod"]{font-size:9px !important}
-  .sauce-row{gap:2px;margin-bottom:0}
-  .sauce-row .tile{min-height:26px}
-  .sauce-row .tn,.sauce-row .sn{font-size:7.5px}
+  .band{grid-template-rows:repeat(2,24px);gap:2px;flex:none}
+  .bd-info{font-size:9px;grid-template-columns:34px 1fr 1.3fr 1.5fr}
+  .bd-info .bd-user{font-size:8px}
+  .key.round.bdr{font-size:8px;max-width:40px}
+  .band .tile.sauce .tn{display:none}
+  .band .tile.sauce .pkn{font-size:8.5px}
 }
 /* phone in portrait: same 10-column NP6 grid, just smaller — with smaller drawings */
 @media (max-width:600px) and (orientation:portrait){
@@ -396,9 +419,14 @@ label{display:grid;gap:3px;font-size:12px;color:var(--muted)}
   .np .key.size::before{width:min(30px,90%)}
   .np .key.round{font-size:7.5px;max-width:40px}
   .np .key.round.sf{max-width:40px;font-size:7px}
-  .sauce-row{gap:2px}
-  .sauce-row .tile{min-height:34px}
-  .sauce-row .tn,.sauce-row .sn{font-size:7.5px}
+  .band{grid-template-rows:repeat(2,30px);gap:2px}
+  .bd-info{font-size:8px;grid-template-columns:26px 1fr 1.2fr 1.6fr}
+  .bd-info>span{padding:0 1px}
+  .bd-info .bd-user{font-size:7px}
+  .key.round.bdr{font-size:7px;max-width:34px}
+  .band .tile.sauce .tn{display:none}
+  .band .tile.sauce .pki{display:none}
+  .band .tile.sauce .pkn{font-size:8px}
 }
 @media (max-width:480px){ .digits{grid-template-columns:repeat(5,minmax(0,1fr))} }
 @media (prefers-reduced-motion:reduce){.key:active{transform:none}}
@@ -469,6 +497,7 @@ function setSync(){
   else { el.className = 'cell'; el.textContent = 'CONECTANDO…'; }
   const n = mergedSales().filter(s => s.date === today()).length + 1;
   $('#ordno').textContent = 'ORDEN ' + String(n).padStart(3,'0');
+  syncBand();
 }
 function mergedSales(){
   const ids = new Set(S.sales.map(s => s.id));
@@ -538,12 +567,14 @@ async function connect(){
 function render(){
   document.querySelectorAll('nav button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.view === S.view)));
   document.querySelector('nav').hidden = S.view === 'venta';
+  document.querySelector('.status').hidden = S.view === 'venta' && !S.screen;
   /* Registro button (manager number + password); the nav only shows Menú after a manager logged in */
   document.querySelector('nav [data-view="menu"]').hidden = !S.mgrOk;
   const m = $('#main');
   if (S.screen){ document.querySelector('nav').hidden = true; m.innerHTML = viewProd(); return; }
   const keep = document.activeElement?.id;
   m.innerHTML = S.view === 'venta' ? viewVenta() : S.view === 'registro' ? viewRegistro() : viewMenu();
+  syncBand();
   if (keep && document.getElementById(keep) && S.view !== 'venta') document.getElementById(keep).focus();
 }
 function categories(){
@@ -596,7 +627,7 @@ function normalizeSauces(){
   }
 }
 function viewVenta(){
-  return `<div class="reg">${S.outage ? outageHtml() : ticketHtml()}<section class="panel">${S.tender ? tenderHtml() : S.panel === 'manager' ? managerPanelHtml() : S.panel === 'special' ? specialPanelHtml() : menuPanelHtml()}</section></div>`;
+  return `<div class="reg">${S.outage ? outageHtml() : ticketHtml()}<section class="panel">${bandHtml()}${S.tender ? tenderHtml() : S.panel === 'manager' ? managerPanelHtml() : S.panel === 'special' ? specialPanelHtml() : menuPanelHtml()}</section></div>`;
 }
 function tabGroups(){
   const cats = categories(), used = new Set(), groups = [];
@@ -924,6 +955,51 @@ function screenCells(cat){
   }
   return cells;
 }
+/* Nugget sauces offered for the selected line (empty when it is not nuggets). */
+function sauceList(){
+  const line = S.sel >= 0 ? S.order[S.sel] : null;
+  if (S.outage || S.tender || S.panel || !line || line.sauce || !(freeSaucesFor(line) > 0)) return [];
+  return S.menu.filter(m => /^condiments$/i.test(m.category || '') && SAUCE_RE.test(m.name || '')).sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+}
+/* The band above the numbers is always there, as on the NP6: cashier info and the round keys (COD1, COD2, Grill, Manager).
+   While a nugget line is selected its sauces cover it in two rows. */
+function bandHtml(){
+  const at = (r, c, rs = 1, cs = 1) => `grid-row:${r} / span ${rs};grid-column:${c} / span ${cs}`;
+  const sauces = sauceList();
+  const round = (c, label, cls, act) => `<button class="key round bdr ${cls}" style="${at(1, c, 2)}" data-act="${act}">${label}</button>`;
+  const keys = sauces.length
+    ? round(9, 'Grill', 'grill', 'na') + round(10, 'Manager', 'mgr', 'manager')
+    : round(7, 'COD1', 'cod', 'na') + round(8, 'COD2', 'cod', 'na') + round(9, 'Grill', 'grill', 'na') + round(10, 'Manager', 'mgr', 'manager');
+  if (sauces.length){
+    const per = Math.ceil(sauces.length / 2);
+    return `<div class="band sauces">${sauces.map((m, i) => { const [bg, ink] = sauceColors(m.name); return `<button class="tile sauce${isOff(m) ? ' off' : ''}" style="${at(i < per ? 1 : 2, (i % per) + 1)};--c:var(--k-red);--sc:${bg};--si:${ink}" data-item="${esc(m.id)}"><span class="tn">Condiment</span><span class="pk"><span class="pki">${iconFor(m)}</span><span class="pkn">${esc(m.name)}</span></span>${isOff(m) ? '<span class="ua">UNAVAILABLE</span>' : ''}</button>`; }).join('')}${keys}</div>`;
+  }
+  return `<div class="band">
+    <div class="bd-info" style="${at(1, 1, 2, 6)}">
+      <span class="bd-user">User<br>Logged</span>
+      <span data-mirror="clock"></span><span data-mirror="ordno"></span><span class="bd-date"></span>
+      <span>POS 01</span><span>EFECTIVO</span><span data-mirror="sync"></span>
+    </div>
+    ${keys}
+  </div>`;
+}
+/* Packet colours for the sauce keys: [background, text] */
+function sauceColors(name){
+  const n = (name || '').toLowerCase();
+  const C = [[/bbq/,'#6B2E12','#fff'],[/sour/,'#F07C1A','#fff'],[/hot mustard/,'#9C7414','#fff'],[/honey mustard/,'#F2C21B','#3a2a00'],[/ranch/,'#2E7D32','#fff'],
+    [/buffalo/,'#E0491E','#fff'],[/spicy pepper/,'#8E0E1E','#fff'],[/honey/,'#E8A317','#3a2a00'],[/ketchup/,'#C8102E','#fff'],[/no sauce/,'#E9E9E9','#333']];
+  for (const [re, bg, ink] of C) if (re.test(n)) return [bg, ink];
+  return ['#888', '#fff'];
+}
+/* Copy the clock, order number and save status into the band (they live in the top bar, hidden on the register). */
+function syncBand(){
+  document.querySelectorAll('[data-mirror]').forEach(e => {
+    const src = document.getElementById(e.dataset.mirror); if (!src) return;
+    e.textContent = src.textContent; e.className = /warn/.test(src.className) ? 'warn' : /ok/.test(src.className) ? 'ok' : '';
+  });
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  document.querySelectorAll('.bd-date').forEach(e => { e.textContent = `${p(d.getMonth() + 1)}-${p(d.getDate())}-${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`; });
+}
 function menuPanelHtml(){
   const tabs = allTabs();
   if (!tabs.flat().includes(S.cat)) S.cat = 'Breakfast';
@@ -949,14 +1025,11 @@ function menuPanelHtml(){
     return 'var(--k-red)';
   };
   const textColor = it => /happy meal/i.test(it.category || '') || /shake/i.test(it.name || '') ? '#1a1a1a' : '#fff';
-  const sauceRow = !S.outage && !S.tender && line && !line.sauce && freeSaucesFor(line) > 0
-    ? S.menu.filter(m => /^condiments$/i.test(m.category || '') && SAUCE_RE.test(m.name || '')).sort((a, b) => (a.order ?? 999) - (b.order ?? 999)) : [];
   const cells = screenCells(cat);
   const sizes = SIZE_ROWS[cat] === undefined ? SIZE_ROWS['Breakfast'] : SIZE_ROWS[cat];
   const at = (r, c) => `grid-row:${r};grid-column:${c}`;
   return `
-  ${sauceRow.length ? `<div class="sauce-row">${sauceRow.map(m => `<button class="tile sauce${isOff(m) ? ' off' : ''}" style="--c:var(--k-red)" data-item="${esc(m.id)}"><span class="tn">Condiment</span><span class="sn">${esc(m.name)}</span>${isOff(m) ? '<span class="ua">UNAVAILABLE</span>' : ''}</button>`).join('')}</div>` : ''}
-  <div class="np${S.outage ? ' outage' : ''}${sauceRow.length ? ' compact' : ''}">
+  <div class="np${S.outage ? ' outage' : ''}">
     ${[0,1,2,3,4,5,6,7,8].map(n => S.outage && n === 0 ? `<button class="key eqkey" style="${at(1, 1)}" data-act="equipment">Equipment<br>Outage</button>` : `<button class="digit num" style="${at(1, n + 1)}" data-digit="${n}" aria-pressed="${S.qty !== '' && S.qty.endsWith(String(n))}" aria-label="Cantidad ${n}">${n}</button>`).join('')}
     ${tabs.map((g, i) => `<button class="tab ${g.includes(cat) ? 'on' : ''}" style="${at(2, Math.min(i + 1, 10))}" data-tabg="${i}" aria-label="${esc(g.join(' / '))}">${g.map(c => `<span class="tc" data-cat-name="${esc(c)}" aria-current="${c === cat}">${esc(c)}</span>`).join('<hr>')}</button>`).join('')}
     ${(sizes || []).map((k, i) => !k ? '' : ['XS','S','M','L','Mini'].includes(k)
@@ -967,7 +1040,6 @@ function menuPanelHtml(){
     ${S.outage ? `<button class="key exitout" style="${at(2, 10)}" data-act="exitoutage">Exit<br>Outage</button>` : `<button class="key round sf" style="${at(2, 10)};--c:#d0303a" data-act="special">Special<br>Functions</button>`}
     <button class="key regkey" style="${at(6, 9)}" data-act="registro" title="Registro de ventas (pide manager)">Registro</button>
     ${STANDALONE ? `<button class="key" style="${at(7, 9)};--c:var(--k-green);font-size:14px" data-act="toprod" title="Ir a la pantalla de producción">Producción</button>` : ''}
-    <button class="key round" style="${at(1, 10)};--c:#c8102e;max-width:60px;font-size:12px" data-act="manager" title="Activar o desactivar productos">Manager</button>
     <button class="key black round" style="${at(8, 9)}" data-act="prices">Show<br>Prices<small>${S.showPrices ? 'ON' : 'OFF'}</small></button>
     <button class="key mauve" style="${at(3, 10)}" data-act="promo" ${line && !line.promo ? '' : 'disabled'}>Promo<br>Item</button>
     <button class="key mauve" style="${at(4, 10)}" data-act="clear" ${has || S.qty || S.size ? '' : 'disabled'}>Clear<br>Choice</button>
@@ -1373,6 +1445,7 @@ function updateCloudPill(){
   if (cloudQ.length){ el.className = 'cell warn'; el.textContent = `${cloudQ.length} POR SUBIR`; }
   else if (S.cloudOk === false){ el.className = 'cell warn'; el.textContent = 'SIN CONEXIÓN'; }
   else { el.className = 'cell ok'; el.textContent = 'EN LA NUBE'; }
+  syncBand();
 }
 /* Every change goes through a queue kept on the device, so nothing is lost while the internet is down. */
 function cloudPush(method, path, body){ if (!CLOUD) return; cloudQ.push({ method, path, body }); LS.set('cloudq', cloudQ); flushCloud(); }
@@ -2035,6 +2108,7 @@ $('#main').addEventListener('click', async e => {
   if (act === 'changemeal') openChangeMeal();
   if (act === 'promo') openPromo();
   if (act === 'toprod') goScreen('prod');
+  if (act === 'na'){ toast(`${b.textContent.trim()}: no se usa en esta caja.`); return; }
   if (act === 'registro'){ askManager(() => { S.view = 'registro'; S.panel = null; S.mgrOk = true; render(); window.scrollTo({ top: 0 }); }); return; }
   if (act === 'tocaja'){ S.view = 'venta'; S.mgrOk = false; goScreen(null); }
   if (act === 'csv') exportCsv();
@@ -2089,7 +2163,7 @@ $('#main').addEventListener('submit', async e => {
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#layer').innerHTML && !$('#lockForm')) $('#layer').innerHTML = ''; });
 
-function tick(){ const d = new Date(); $('#clock').textContent = d.toTimeString().slice(0,5); }
+function tick(){ const d = new Date(); $('#clock').textContent = d.toTimeString().slice(0,5); syncBand(); }
 tick(); setInterval(tick, 15000);
 ensureOwner(); LS.set('mgrs', S.mgrs);
 setSync(); render(); connect();
