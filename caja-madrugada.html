@@ -167,16 +167,15 @@ nav button[aria-selected="true"]{background:var(--k-gold);color:var(--ink)}
 .np.compact .tile .ti svg{max-height:34px}
 .np.compact .tab{min-height:38px}
 .np.compact .digit{max-height:46px;max-width:46px}
-/* short landscape screens (10.9" store iPad, ~700-820px tall): the register fits exactly one screen so it never needs 90% zoom.
-   Taller screens (13" iPad) keep the natural layout with free space below. */
+/* landscape iPads up to 880px tall: the register never grows past its normal size (~745px, 13" iPad with Safari bars)
+   and shrinks to fit a shorter screen (10.9" store iPad) so it never needs 90% zoom. Taller screens keep the natural layout. */
 @media (orientation:landscape) and (min-width:861px) and (max-height:880px){
-  .reg{height:calc(100vh - 51px);height:calc(100dvh - 51px);min-height:520px}
+  .reg{height:min(calc(100vh - 51px),745px);height:min(calc(100dvh - 51px),745px);min-height:520px}
   .reg .ticket{min-height:0}
   .reg>*{min-height:0}
   .reg .panel:has(>.np){display:flex;flex-direction:column;overflow:hidden}
   .reg .panel>.np{flex:1 1 0;min-height:0}
-  /* rows shrink to fit a short screen (10.9") but never grow past their normal size on a tall one (13") */
-  .reg .np,.reg .np.compact{grid-template-rows:auto auto repeat(6,minmax(0,1fr))}
+  .reg .np,.reg .np.compact{grid-template-rows:auto auto repeat(6,minmax(0,98px));align-content:start}
   .reg .np .tile .ti svg{min-height:0}
   .np .key.round{width:auto;height:100%;max-height:80px;max-width:100%;min-height:0}
   .np .digit{max-height:min(58px,7vh);max-width:min(58px,7vh)}
@@ -198,8 +197,7 @@ nav button[aria-selected="true"]{background:var(--k-gold);color:var(--ink)}
 .mgr-dlg{width:min(640px,100%)}
 .mrow{grid-template-columns:52px minmax(0,1fr) auto}
 .mbtns{display:flex;gap:4px}
-.regbtn{border:0;cursor:pointer;background:var(--k-gold);color:var(--ink);font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.05em;text-transform:uppercase}
-.regbtn[hidden]{display:none}
+.key.regkey{--c:#f2c200;color:#1a1a1a;text-shadow:none;font-size:16px;font-weight:700}
 .np-first{display:block;text-align:center;color:#8a5a00;font-size:13px}
 .np-x{position:absolute;right:8px;top:6px;border:0;background:none;font-size:26px;color:#444}
 .np-field{border:1px solid #bbb;height:52px;display:flex;align-items:center;justify-content:center;font-size:26px;letter-spacing:.2em}
@@ -413,7 +411,6 @@ label{display:grid;gap:3px;font-size:12px;color:var(--muted)}
     <span class="cell">EFECTIVO</span>
     <span class="cell" id="sync">Conectando…</span>
     <span class="spacer"></span>
-    <button class="cell regbtn" id="toReg" type="button">Registro</button>
     <nav role="tablist" hidden>
       <button role="tab" aria-selected="true" data-view="venta">← Volver a la caja</button>
       <button role="tab" aria-selected="false" data-view="registro">Registro</button>
@@ -542,10 +539,9 @@ function render(){
   document.querySelectorAll('nav button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.view === S.view)));
   document.querySelector('nav').hidden = S.view === 'venta';
   /* Registro button (manager number + password); the nav only shows Menú after a manager logged in */
-  $('#toReg').hidden = S.view !== 'venta' || !!S.screen;
   document.querySelector('nav [data-view="menu"]').hidden = !S.mgrOk;
   const m = $('#main');
-  if (S.screen){ document.querySelector('nav').hidden = true; $('#toReg').hidden = true; m.innerHTML = viewProd(); return; }
+  if (S.screen){ document.querySelector('nav').hidden = true; m.innerHTML = viewProd(); return; }
   const keep = document.activeElement?.id;
   m.innerHTML = S.view === 'venta' ? viewVenta() : S.view === 'registro' ? viewRegistro() : viewMenu();
   if (keep && document.getElementById(keep) && S.view !== 'venta') document.getElementById(keep).focus();
@@ -969,6 +965,7 @@ function menuPanelHtml(){
     ${cells.map(({ it, r, c, fs }) => `<button class="tile${isOff(it) ? ' off' : ''}" style="${at(r + 2, c + 1)};--c:${tileColor(it)};--tc:${textColor(it)}" data-item="${esc(it.id)}"${fs ? ` data-fsize="${fs}"` : ''}${isOff(it) && !S.outage ? ' aria-disabled="true"' : ''}><span class="tn">${esc(it.name)}</span><span class="ti">${iconFor(it)}</span>${priceTag(it, fs)}${it.combo ? `<span class="cn">${esc(it.combo)}</span>` : ''}${isOff(it) ? '<span class="ua">UNAVAILABLE</span>' : ''}</button>`).join('')}
     ${MEAL_KEY.has(cat) ? `<button class="key black" style="${at(3, 9)}" data-act="changemeal" ${canChange ? '' : 'disabled'}>Make<br>Change<br>Meal</button>` : ''}
     ${S.outage ? `<button class="key exitout" style="${at(2, 10)}" data-act="exitoutage">Exit<br>Outage</button>` : `<button class="key round sf" style="${at(2, 10)};--c:#d0303a" data-act="special">Special<br>Functions</button>`}
+    <button class="key regkey" style="${at(6, 9)}" data-act="registro" title="Registro de ventas (pide manager)">Registro</button>
     ${STANDALONE ? `<button class="key" style="${at(7, 9)};--c:var(--k-green);font-size:14px" data-act="toprod" title="Ir a la pantalla de producción">Producción</button>` : ''}
     <button class="key round" style="${at(1, 10)};--c:#c8102e;max-width:60px;font-size:12px" data-act="manager" title="Activar o desactivar productos">Manager</button>
     <button class="key black round" style="${at(8, 9)}" data-act="prices">Show<br>Prices<small>${S.showPrices ? 'ON' : 'OFF'}</small></button>
@@ -2021,7 +2018,6 @@ async function finishSale(paid){
   render();
   await saveSale(sale);
 }
-$('#toReg').addEventListener('click', () => askManager(() => { S.view = 'registro'; S.panel = null; S.mgrOk = true; render(); window.scrollTo({ top: 0 }); }));
 document.querySelector('nav').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b){ if (b.dataset.view === 'venta') S.mgrOk = false; S.view = b.dataset.view; S.editId = null; S.confirmDel = null; render(); } });
 $('#main').addEventListener('click', async e => {
   const t = e.target;
@@ -2071,6 +2067,7 @@ $('#main').addEventListener('click', async e => {
   if (act === 'changemeal') openChangeMeal();
   if (act === 'promo') openPromo();
   if (act === 'toprod') goScreen('prod');
+  if (act === 'registro'){ askManager(() => { S.view = 'registro'; S.panel = null; S.mgrOk = true; render(); window.scrollTo({ top: 0 }); }); return; }
   if (act === 'tocaja'){ S.view = 'venta'; S.mgrOk = false; goScreen(null); }
   if (act === 'csv') exportCsv();
   if (act === 'wipe') openWipe();
